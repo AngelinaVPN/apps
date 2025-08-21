@@ -63,10 +63,11 @@
 | `systemProxyButton`  | Кнопка системного прокси (только Desktop)  |
 | `intranetIp`  | Локальный IP-адрес  |
 | `memoryInfo`  | Использование памяти  |
+| `metainfo`  | Информация о подписке  |
 
 Использование:
 ```bash
-    flclashx-widgets: announce,networkSpeed,outboundModeV2,outboundMode,trafficUsage,networkDetection,tunButton,vpnButton,systemProxyButton,intranetIp,memoryInfo
+flclashx-widgets: announce,metainfo,outboundModeV2,networkDetection
 ```
 
    + flclashx-view: настраивает вид страницы прокси, полученным с подписки

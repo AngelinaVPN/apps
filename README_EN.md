@@ -68,10 +68,12 @@ on Mobile:
 | `systemProxyButton`  | System Proxy Button (Desktop only)  |
 | `intranetIp`  | Local IP-Address |
 | `memoryInfo`  | Memory usage  |
+| `metainfo`  | Profile information  |
+
 
 Usage:
 ```bash
-    flclashx-widgets: announce,networkSpeed,outboundModeV2,outboundMode,trafficUsage,networkDetection,tunButton,vpnButton,systemProxyButton,intranetIp,memoryInfo
+    flclashx-widgets: announce,metainfo,outboundModeV2,networkDetection
 ```
    + flclashx-view: Configures the appearance of the proxy page obtained from the subscription.
 
@@ -134,3 +136,5 @@ The following actions are supported:
 The easiest way to support the developers is to click the star (⭐) at the top of the page.<br>
 If you want to support with a small donation, you can <a href="">do so here.</a>
 </p>
+
+**TON USDT:** `UQDSfrJ_k1BdsknhdR_zj4T3Is3OdMylD8PnDJ9mxO35i-TE`
