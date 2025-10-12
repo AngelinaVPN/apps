@@ -40,9 +40,10 @@
         <tr>
             <td>Linux</td>
             <td>
-                <a href="https://github.com/pluralplay/FlClashX/releases/download/vVERSION/FlClashX-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"> </a><br>
-                <a href="https://github.com/pluralplay/FlClashX/releases/download/vVERSION/FlClashX-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF9966.svg?logo=debian"> </a><br>
-                <a href="https://github.com/pluralplay/FlClashX/releases/download/vVERSION/FlClashX-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat"> </a>
+                <a href="https://github.com/pluralplay/FlClashX/releases/download/vVERSION/FlClashX-VERSION-linux-amd64.AppImage"><img src="https://img.shields.io/badge/AppImage-x64-f84e29.svg?logo=linux"></a><br>
+                <a href="https://github.com/pluralplay/FlClashX/releases/download/vVERSION/FlClashX-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/DebPackage-x64-FF9966.svg?logo=debian"></a><br>
+                <a href="https://github.com/pluralplay/FlClashX/releases/download/vVERSION/FlClashX-VERSION-linux-amd64.deb"><img src="https://img.shields.io/badge/RpmPackage-x64-F1B42F.svg?logo=redhat"></a><br>
+                <a href="https://repology.org/project/flclashx/versions"><img src="https://repology.org/badge/vertical-allrepos/flclashx.svg"></a>
             </td>
         </tr>
     </tbody>
