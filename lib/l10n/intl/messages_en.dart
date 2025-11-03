@@ -203,7 +203,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Cut"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
-    "days": MessageLookupByLibrary.simpleMessage("Days"),
+    "day": MessageLookupByLibrary.simpleMessage("day"),
+    "days": MessageLookupByLibrary.simpleMessage("days"),
+    "daysGenitive": MessageLookupByLibrary.simpleMessage("days"),
     "defaultNameserver": MessageLookupByLibrary.simpleMessage(
       "Default nameserver",
     ),
@@ -328,7 +330,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "hotkeyManagementDesc": MessageLookupByLibrary.simpleMessage(
       "Use keyboard to control applications",
     ),
+    "hour": MessageLookupByLibrary.simpleMessage("hour"),
     "hours": MessageLookupByLibrary.simpleMessage("Hours"),
+    "hoursGenitive": MessageLookupByLibrary.simpleMessage("hours"),
+    "hoursPlural": MessageLookupByLibrary.simpleMessage("hours"),
     "icon": MessageLookupByLibrary.simpleMessage("Icon"),
     "iconConfiguration": MessageLookupByLibrary.simpleMessage(
       "Icon configuration",
@@ -582,6 +587,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "redo": MessageLookupByLibrary.simpleMessage("redo"),
     "regExp": MessageLookupByLibrary.simpleMessage("RegExp"),
     "remaining": MessageLookupByLibrary.simpleMessage("Remaining"),
+    "remainingPlural": MessageLookupByLibrary.simpleMessage("Remaining"),
+    "remainingSingular": MessageLookupByLibrary.simpleMessage("Remaining"),
     "remote": MessageLookupByLibrary.simpleMessage("Remote"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "Backup local data to WebDAV",

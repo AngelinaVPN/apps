@@ -11,6 +11,50 @@ import 'package:intl/intl.dart';
 class MetainfoWidget extends ConsumerWidget {
   const MetainfoWidget({super.key});
 
+  // Функция для склонения слова "день"
+  String _getDaysDeclension(int days) {
+    if (days % 100 >= 11 && days % 100 <= 19) {
+      return appLocalizations.days; // дней
+    }
+    switch (days % 10) {
+      case 1:
+        return appLocalizations.day; // день
+      case 2:
+      case 3:
+      case 4:
+        return appLocalizations.daysGenitive; // дня
+      default:
+        return appLocalizations.days; // дней
+    }
+  }
+
+  // Функция для склонения слова "час"
+  String _getHoursDeclension(int hours) {
+    if (hours % 100 >= 11 && hours % 100 <= 19) {
+      return appLocalizations.hoursGenitive; // часов
+    }
+    switch (hours % 10) {
+      case 1:
+        return appLocalizations.hour; // час
+      case 2:
+      case 3:
+      case 4:
+        return appLocalizations.hoursPlural; // часа
+      default:
+        return appLocalizations.hoursGenitive; // часов
+    }
+  }
+
+  // Функция для склонения слова "остался/осталось"
+  String _getRemainingDeclension(int value) {
+    // "остался" для единственного числа (1, 21, 31 и т.д., кроме 11)
+    if (value % 100 != 11 && value % 10 == 1) {
+      return appLocalizations.remainingSingular; // остался
+    }
+    // "осталось" для всех остальных случаев
+    return appLocalizations.remainingPlural; // осталось
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allProfiles = ref.watch(profilesProvider);
@@ -62,14 +106,36 @@ class MetainfoWidget extends ConsumerWidget {
     final bool isPerpetual = subscriptionInfo.expire == 0;
     final supportUrl = currentProfile.supportUrl;
 
-    String daysLeft = '';
+    String timeLeftValue = '';
+    String timeLeftUnit = '';
+    String remainingText = '';
+    bool showTimeLeft = false;
+    
     if (!isPerpetual) {
       final expireDateTime =
           DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000);
-      final diff = expireDateTime.difference(DateTime.now()).inDays;
-      // Only show days left if it's within 3 days
-      if (diff >= 0 && diff <= 3) {
-        daysLeft = diff.toString();
+      final difference = expireDateTime.difference(DateTime.now());
+      final days = difference.inDays;
+      
+      // Показываем если осталось 3 дня или меньше
+      if (days >= 0 && days <= 3) {
+        showTimeLeft = true;
+        if (days > 0) {
+          // Показываем дни
+          timeLeftValue = days.toString();
+          timeLeftUnit = _getDaysDeclension(days);
+          remainingText = _getRemainingDeclension(days);
+        } else {
+          // Если 0 дней - показываем часы
+          final hours = difference.inHours;
+          if (hours >= 0) {
+            timeLeftValue = hours.toString();
+            timeLeftUnit = _getHoursDeclension(hours);
+            remainingText = _getRemainingDeclension(hours);
+          } else {
+            showTimeLeft = false;
+          }
+        }
       }
     }
 
@@ -178,19 +244,19 @@ class MetainfoWidget extends ConsumerWidget {
                   ],
                 ),
               ),
-              if (!isPerpetual && daysLeft.isNotEmpty) ...[
+              if (showTimeLeft) ...[
                 const VerticalDivider(width: 32),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      appLocalizations.remaining,
+                      remainingText,
                       style: theme.textTheme.bodySmall,
                     ),
                     FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
-                        daysLeft,
+                        timeLeftValue,
                         style: theme.textTheme.displaySmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.primary,
@@ -198,7 +264,7 @@ class MetainfoWidget extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      appLocalizations.days,
+                      timeLeftUnit,
                       style: theme.textTheme.bodyMedium,
                     ),
                   ],

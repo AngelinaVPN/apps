@@ -208,7 +208,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "cut": MessageLookupByLibrary.simpleMessage("Вырезать"),
     "dark": MessageLookupByLibrary.simpleMessage("Темный"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Главная"),
-    "days": MessageLookupByLibrary.simpleMessage("Дней"),
+    "day": MessageLookupByLibrary.simpleMessage("день"),
+    "days": MessageLookupByLibrary.simpleMessage("дней"),
+    "daysGenitive": MessageLookupByLibrary.simpleMessage("дня"),
     "defaultNameserver": MessageLookupByLibrary.simpleMessage(
       "Сервер имен по умолчанию",
     ),
@@ -345,7 +347,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "hotkeyManagementDesc": MessageLookupByLibrary.simpleMessage(
       "Управление приложением с помощью клавиатуры",
     ),
+    "hour": MessageLookupByLibrary.simpleMessage("час"),
     "hours": MessageLookupByLibrary.simpleMessage("Часов"),
+    "hoursGenitive": MessageLookupByLibrary.simpleMessage("часов"),
+    "hoursPlural": MessageLookupByLibrary.simpleMessage("часа"),
     "icon": MessageLookupByLibrary.simpleMessage("Иконка"),
     "iconConfiguration": MessageLookupByLibrary.simpleMessage(
       "Конфигурация иконки",
@@ -611,6 +616,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "redo": MessageLookupByLibrary.simpleMessage("Повторить"),
     "regExp": MessageLookupByLibrary.simpleMessage("Регулярное выражение"),
     "remaining": MessageLookupByLibrary.simpleMessage("Осталось"),
+    "remainingPlural": MessageLookupByLibrary.simpleMessage("Осталось"),
+    "remainingSingular": MessageLookupByLibrary.simpleMessage("Остался"),
     "remote": MessageLookupByLibrary.simpleMessage("Удаленный"),
     "remoteBackupDesc": MessageLookupByLibrary.simpleMessage(
       "Резервное копирование локальных данных на WebDAV",

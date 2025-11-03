@@ -504,9 +504,34 @@ class AppLocalizations {
     return Intl.message('Hours', name: 'hours', desc: '', args: []);
   }
 
-  /// `Days`
+  /// `day`
+  String get day {
+    return Intl.message('day', name: 'day', desc: '', args: []);
+  }
+
+  /// `days`
   String get days {
-    return Intl.message('Days', name: 'days', desc: '', args: []);
+    return Intl.message('days', name: 'days', desc: '', args: []);
+  }
+
+  /// `days`
+  String get daysGenitive {
+    return Intl.message('days', name: 'daysGenitive', desc: '', args: []);
+  }
+
+  /// `hour`
+  String get hour {
+    return Intl.message('hour', name: 'hour', desc: '', args: []);
+  }
+
+  /// `hours`
+  String get hoursPlural {
+    return Intl.message('hours', name: 'hoursPlural', desc: '', args: []);
+  }
+
+  /// `hours`
+  String get hoursGenitive {
+    return Intl.message('hours', name: 'hoursGenitive', desc: '', args: []);
   }
 
   /// `Minutes`
@@ -3187,6 +3212,26 @@ class AppLocalizations {
   /// `Remaining`
   String get remaining {
     return Intl.message('Remaining', name: 'remaining', desc: '', args: []);
+  }
+
+  /// `Remaining`
+  String get remainingSingular {
+    return Intl.message(
+      'Remaining',
+      name: 'remainingSingular',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remaining`
+  String get remainingPlural {
+    return Intl.message(
+      'Remaining',
+      name: 'remainingPlural',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `QR code not found`
