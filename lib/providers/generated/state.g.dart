@@ -1454,7 +1454,7 @@ class _GetSelectedProxyNameProviderElement
   String get groupName => (origin as GetSelectedProxyNameProvider).groupName;
 }
 
-String _$getProxyDescHash() => r'c173fe2393d9c4f5d5d17480e69f9126bb76a17d';
+String _$getProxyDescHash() => r'dd1aa9efd5ba1f9f15105bba010a3677fc4bec7c';
 
 /// See also [getProxyDesc].
 @ProviderFor(getProxyDesc)
