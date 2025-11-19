@@ -10,6 +10,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+class OverrideNetworkSettingsItemNetwork extends ConsumerWidget {
+  const OverrideNetworkSettingsItemNetwork({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final overrideNetworkSettings = ref.watch(
+      appSettingProvider.select((state) => state.overrideNetworkSettings),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListItem.switchItem(
+          title: Text(appLocalizations.overrideNetworkSettings),
+          subtitle: Text(appLocalizations.overrideNetworkSettingsDesc),
+          delegate: SwitchDelegate(
+            value: overrideNetworkSettings,
+            onChanged: (value) {
+              ref.read(appSettingProvider.notifier).updateState(
+                    (state) => state.copyWith(
+                      overrideNetworkSettings: value,
+                    ),
+                  );
+            },
+          ),
+        ),
+        if (!overrideNetworkSettings)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    appLocalizations.managedByProvider,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class VPNItem extends ConsumerWidget {
   const VPNItem({super.key});
 
@@ -185,25 +240,37 @@ class TunStackItem extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final stack =
         ref.watch(patchClashConfigProvider.select((state) => state.tun.stack));
+    final overrideNetworkSettings = ref.watch(
+      appSettingProvider.select((state) => state.overrideNetworkSettings),
+    );
+    final isEnabled = overrideNetworkSettings;
+    commonPrint.log("TunStackItem.build: stack=${stack.name}, isEnabled=$isEnabled");
 
-    return ListItem.options(
-      title: Text(appLocalizations.stackMode),
-      subtitle: Text(stack.name),
-      delegate: OptionsDelegate<TunStack>(
-        value: stack,
-        options: TunStack.values,
-        textBuilder: (value) => value.name,
-        onChanged: (value) {
-          if (value == null) {
-            return;
-          }
-          ref.read(patchClashConfigProvider.notifier).updateState(
-                (state) => state.copyWith.tun(
-                  stack: value,
-                ),
-              );
-        },
-        title: appLocalizations.stackMode,
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: ListItem.options(
+          title: Text(appLocalizations.stackMode),
+          subtitle: Text(stack.name),
+          delegate: OptionsDelegate<TunStack>(
+            value: stack,
+            options: TunStack.values,
+            textBuilder: (value) => value.name,
+            onChanged: (value) async {
+              if (value == null) {
+                return;
+              }
+              ref.read(patchClashConfigProvider.notifier).updateState(
+                    (state) => state.copyWith.tun(
+                      stack: value,
+                    ),
+                  );
+              await globalState.appController.updateClashConfigDebounce();
+            },
+            title: appLocalizations.stackMode,
+          ),
+        ),
       ),
     );
   }
@@ -371,6 +438,7 @@ final networkItems = [
   ...generateSection(
     title: appLocalizations.options,
     items: [
+      const OverrideNetworkSettingsItemNetwork(),
       if (system.isDesktop) const TUNItem(),
       if (Platform.isMacOS) const AutoSetSystemDnsItem(),
       const TunStackItem(),

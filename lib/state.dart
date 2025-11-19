@@ -307,6 +307,52 @@ class GlobalState {
     return params;
   }
 
+  Future<ClashConfig> syncNetworkSettingsFromProvider(ClashConfig patchConfig) async {
+    if (config.appSetting.overrideNetworkSettings) {
+      return patchConfig; // User wants to override, keep current settings
+    }
+
+    final profile = config.currentProfile;
+    if (profile == null) {
+      return patchConfig;
+    }
+
+    try {
+      final profileId = profile.id;
+      final configMap = await getProfileConfig(profileId);
+      final rawConfig = await handleEvaluate(configMap);
+
+      final providerIpv6 = rawConfig['ipv6'] as bool? ?? patchConfig.ipv6;
+      final providerAllowLan = rawConfig['allow-lan'] as bool? ?? patchConfig.allowLan;
+      commonPrint.log("syncNetworkSettingsFromProvider: rawConfig['allow-lan']=${rawConfig['allow-lan']}, providerAllowLan=$providerAllowLan, patchConfig.allowLan=${patchConfig.allowLan}");
+      final providerFindProcessModeStr = rawConfig['find-process-mode'] as String?;
+      final providerFindProcessMode = providerFindProcessModeStr != null 
+          ? FindProcessMode.values.firstWhere(
+              (e) => e.name.toLowerCase() == providerFindProcessModeStr.toLowerCase(),
+              orElse: () => patchConfig.findProcessMode,
+            )
+          : patchConfig.findProcessMode;
+      
+      final providerTunStackStr = rawConfig['tun']?['stack'] as String?;
+      final providerTunStack = providerTunStackStr != null
+          ? TunStack.values.firstWhere(
+              (e) => e.name.toLowerCase() == providerTunStackStr.toLowerCase(),
+              orElse: () => patchConfig.tun.stack,
+            )
+          : patchConfig.tun.stack;
+      commonPrint.log("syncNetworkSettingsFromProvider: rawConfig['tun']['stack']=$providerTunStackStr, providerTunStack=${providerTunStack.name}, patchConfig.tun.stack=${patchConfig.tun.stack.name}");
+
+      return patchConfig.copyWith(
+        ipv6: providerIpv6,
+        allowLan: providerAllowLan,
+        findProcessMode: providerFindProcessMode,
+      ).copyWith.tun(stack: providerTunStack);
+    } catch (e) {
+      commonPrint.log("Error syncing network settings from provider: $e");
+      return patchConfig;
+    }
+  }
+
   Future<Map<String, dynamic>> patchRawConfig({
     required ClashConfig patchConfig,
   }) async {
@@ -317,6 +363,7 @@ class GlobalState {
     final profileId = profile.id;
     final configMap = await getProfileConfig(profileId);
     final rawConfig = await handleEvaluate(configMap);
+    
     final realPatchConfig = patchConfig.copyWith(
       tun: patchConfig.tun.getRealTun(config.networkProps.routeMode),
     );
@@ -330,7 +377,6 @@ class GlobalState {
     }
     rawConfig["tcp-concurrent"] = realPatchConfig.tcpConcurrent;
     rawConfig["unified-delay"] = realPatchConfig.unifiedDelay;
-    rawConfig["ipv6"] = realPatchConfig.ipv6;
     rawConfig["log-level"] = realPatchConfig.logLevel.name;
     rawConfig["port"] = 0;
     rawConfig["socks-port"] = 0;
@@ -340,16 +386,53 @@ class GlobalState {
     rawConfig["socks-port"] = realPatchConfig.socksPort;
     rawConfig["redir-port"] = realPatchConfig.redirPort;
     rawConfig["tproxy-port"] = realPatchConfig.tproxyPort;
-    rawConfig["find-process-mode"] = realPatchConfig.findProcessMode.name;
-    rawConfig["allow-lan"] = realPatchConfig.allowLan;
     rawConfig["mode"] = realPatchConfig.mode.name;
+    
+    // Set network settings: use patchConfig if overriding, otherwise keep provider values
+    if (config.appSetting.overrideNetworkSettings) {
+      // User wants to override - use values from UI (always write)
+      rawConfig["find-process-mode"] = realPatchConfig.findProcessMode.name;
+      rawConfig["allow-lan"] = realPatchConfig.allowLan;
+      rawConfig["ipv6"] = realPatchConfig.ipv6;
+      commonPrint.log("patchRawConfig [OVERRIDE]: allow-lan=${realPatchConfig.allowLan}, ipv6=${realPatchConfig.ipv6}, find-process-mode=${realPatchConfig.findProcessMode.name}");
+    } else {
+      // Use provider values - only set if not already in rawConfig, use patchConfig values (which are synced from provider)
+      if (rawConfig["find-process-mode"] == null) {
+        rawConfig["find-process-mode"] = realPatchConfig.findProcessMode.name;
+      }
+      if (rawConfig["allow-lan"] == null) {
+        rawConfig["allow-lan"] = realPatchConfig.allowLan;
+      }
+      if (rawConfig["ipv6"] == null) {
+        rawConfig["ipv6"] = realPatchConfig.ipv6;
+      }
+      commonPrint.log("patchRawConfig [PROVIDER]: allow-lan from rawConfig=${rawConfig['allow-lan']}, realPatchConfig.allowLan=${realPatchConfig.allowLan}");
+    }
+    
     if (rawConfig["tun"] == null) {
       rawConfig["tun"] = {};
     }
     rawConfig["tun"]["enable"] = realPatchConfig.tun.enable;
     rawConfig["tun"]["device"] = realPatchConfig.tun.device;
     rawConfig["tun"]["dns-hijack"] = realPatchConfig.tun.dnsHijack;
-    rawConfig["tun"]["stack"] = realPatchConfig.tun.stack.name;
+    
+    // Set TUN stack
+    if (config.appSetting.overrideNetworkSettings) {
+      // User wants to override - use value from UI (always write)
+      rawConfig["tun"]["stack"] = realPatchConfig.tun.stack.name;
+      commonPrint.log("patchRawConfig [OVERRIDE TUN]: stack=${realPatchConfig.tun.stack.name}");
+    } else {
+      // Use provider value - only set if not already in rawConfig, use patchConfig value (which is synced from provider)
+      final currentStack = rawConfig["tun"]["stack"];
+      commonPrint.log("patchRawConfig [PROVIDER TUN]: currentStack from rawConfig=$currentStack, realPatchConfig.tun.stack=${realPatchConfig.tun.stack.name}");
+      if (currentStack == null) {
+        rawConfig["tun"]["stack"] = realPatchConfig.tun.stack.name;
+        commonPrint.log("patchRawConfig [PROVIDER TUN]: Setting stack to ${realPatchConfig.tun.stack.name} because rawConfig was null");
+      } else {
+        commonPrint.log("patchRawConfig [PROVIDER TUN]: Keeping stack=$currentStack from rawConfig");
+      }
+    }
+    
     rawConfig["tun"]["route-address"] = realPatchConfig.tun.routeAddress;
     rawConfig["tun"]["auto-route"] = realPatchConfig.tun.autoRoute;
     rawConfig["geodata-loader"] = realPatchConfig.geodataLoader.name;

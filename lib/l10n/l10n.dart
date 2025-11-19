@@ -424,6 +424,36 @@ class AppLocalizations {
     );
   }
 
+  /// `Override network settings`
+  String get overrideNetworkSettings {
+    return Intl.message(
+      'Override network settings',
+      name: 'overrideNetworkSettings',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ignore network settings from provider config`
+  String get overrideNetworkSettingsDesc {
+    return Intl.message(
+      'Ignore network settings from provider config',
+      name: 'overrideNetworkSettingsDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `These parameters are managed by your provider`
+  String get managedByProviderNetwork {
+    return Intl.message(
+      'These parameters are managed by your provider',
+      name: 'managedByProviderNetwork',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Logcat`
   String get logcat {
     return Intl.message('Logcat', name: 'logcat', desc: '', args: []);
@@ -2952,6 +2982,10 @@ class AppLocalizations {
   /// `Clear Data`
   String get clearData {
     return Intl.message('Clear Data', name: 'clearData', desc: '', args: []);
+  }
+
+  String get clearDataTip {
+    return Intl.message('This will delete all app data and restart the application. Are you sure?', name: 'clearDataTip', desc: '', args: []);
   }
 
   /// `Text Scaling`

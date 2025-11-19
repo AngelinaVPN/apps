@@ -135,6 +135,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "managedByProvider": MessageLookupByLibrary.simpleMessage(
       "These settings are managed by your provider",
     ),
+    "overrideNetworkSettings": MessageLookupByLibrary.simpleMessage(
+      "Override network settings",
+    ),
+    "overrideNetworkSettingsDesc": MessageLookupByLibrary.simpleMessage(
+      "Ignore network settings from provider config",
+    ),
+    "managedByProviderNetwork": MessageLookupByLibrary.simpleMessage(
+      "These parameters are managed by your provider",
+    ),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage(
       "Auto set system DNS",
     ),
@@ -178,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "checking": MessageLookupByLibrary.simpleMessage("Checking..."),
     "clearData": MessageLookupByLibrary.simpleMessage("Clear Data"),
+    "clearDataTip": MessageLookupByLibrary.simpleMessage("This will delete all app data and restart the application. Are you sure?"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("Export clipboard"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("Clipboard import"),
     "color": MessageLookupByLibrary.simpleMessage("Color"),

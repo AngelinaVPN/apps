@@ -2,10 +2,47 @@ import 'dart:io';
 
 import 'package:flclashx/common/common.dart';
 import 'package:flclashx/providers/config.dart';
+import 'package:flclashx/state.dart';
 import 'package:flclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+
+class ResetAppItem extends ConsumerWidget {
+  const ResetAppItem({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListItem(
+      title: Text(
+        appLocalizations.clearData,
+        style: TextStyle(
+          color: context.colorScheme.error,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      leading: Icon(
+        Icons.delete_forever,
+        color: context.colorScheme.error,
+      ),
+      onTap: () async {
+        final res = await globalState.showMessage(
+          title: appLocalizations.clearData,
+          message: TextSpan(
+            text: appLocalizations.clearDataTip,
+            style: TextStyle(
+              color: context.colorScheme.onSurface,
+            ),
+          ),
+        );
+        if (res == true) {
+          await globalState.appController.handleClear();
+          system.exit();
+        }
+      },
+    );
+  }
+}
 
 class OverrideProviderSettingsItem extends ConsumerWidget {
   const OverrideProviderSettingsItem({super.key});
@@ -373,6 +410,8 @@ class ApplicationSettingView extends StatelessWidget {
       CloseConnectionsItem(),
       UsageItem(),
       AutoCheckUpdateItem(),
+      const Divider(height: 16),
+      ResetAppItem(),
     ];
     return ListView.separated(
       itemBuilder: (_, index) {

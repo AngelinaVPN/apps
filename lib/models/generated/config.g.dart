@@ -29,6 +29,8 @@ _$AppSettingPropsImpl _$$AppSettingPropsImplFromJson(
       developerMode: json['developerMode'] as bool? ?? false,
       overrideProviderSettings:
           json['overrideProviderSettings'] as bool? ?? false,
+      overrideNetworkSettings:
+          json['overrideNetworkSettings'] as bool? ?? false,
       recoveryStrategy: $enumDecodeNullable(
               _$RecoveryStrategyEnumMap, json['recoveryStrategy']) ??
           RecoveryStrategy.compatible,
@@ -56,6 +58,7 @@ Map<String, dynamic> _$$AppSettingPropsImplToJson(
       'hidden': instance.hidden,
       'developerMode': instance.developerMode,
       'overrideProviderSettings': instance.overrideProviderSettings,
+      'overrideNetworkSettings': instance.overrideNetworkSettings,
       'recoveryStrategy': _$RecoveryStrategyEnumMap[instance.recoveryStrategy]!,
     };
 
@@ -232,8 +235,8 @@ const _$ProxiesLayoutEnumMap = {
 };
 
 const _$ProxiesIconStyleEnumMap = {
-  ProxiesIconStyle.none: 'none',
   ProxiesIconStyle.icon: 'icon',
+  ProxiesIconStyle.none: 'none',
 };
 
 const _$ProxyCardTypeEnumMap = {

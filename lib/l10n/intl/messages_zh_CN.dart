@@ -94,6 +94,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "managedByProvider": MessageLookupByLibrary.simpleMessage(
       "这些设置由您的提供商管理",
     ),
+    "overrideNetworkSettings": MessageLookupByLibrary.simpleMessage(
+      "覆盖网络设置",
+    ),
+    "overrideNetworkSettingsDesc": MessageLookupByLibrary.simpleMessage(
+      "忽略提供商配置中的网络设置",
+    ),
+    "managedByProviderNetwork": MessageLookupByLibrary.simpleMessage(
+      "这些参数由您的提供商管理",
+    ),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("自动设置系统DNS"),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自动更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自动更新间隔（分钟）"),
@@ -119,6 +128,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("当前应用已经是最新版了"),
     "checking": MessageLookupByLibrary.simpleMessage("检测中..."),
     "clearData": MessageLookupByLibrary.simpleMessage("清除数据"),
+    "clearDataTip": MessageLookupByLibrary.simpleMessage("这将删除所有应用数据并重新启动应用程序。您确定吗？"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("导出剪贴板"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("剪贴板导入"),
     "color": MessageLookupByLibrary.simpleMessage("颜色"),
