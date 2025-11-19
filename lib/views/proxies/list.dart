@@ -105,42 +105,46 @@ class _ProxiesListViewState extends State<ProxiesListView> {
         continue;
       }
       final chunks = group.all.chunks(columns);
-      final rows = chunks.map<Widget>((proxies) {
-        final children = proxies
-            .map<Widget>(
-              (proxy) => Flexible(
-                flex: 1,
-                child: ProxyCard(
-                  testUrl: group.testUrl,
-                  type: type,
-                  groupType: group.type,
-                  key: ValueKey('$groupName.${proxy.name}'),
-                  proxy: proxy,
-                  groupName: groupName,
-                ),
-              ),
-            )
-            .separated(
-              const SizedBox(
-                width: 8,
-              ),
+      final rows = chunks
+          .map<Widget>((proxies) {
+            final children = proxies
+                .map<Widget>(
+                  (proxy) => Flexible(
+                    flex: 1,
+                    child: ProxyCard(
+                      testUrl: group.testUrl,
+                      type: type,
+                      groupType: group.type,
+                      key: ValueKey('$groupName.${proxy.name}'),
+                      proxy: proxy,
+                      groupName: groupName,
+                    ),
+                  ),
+                )
+                .fill(
+                  columns,
+                  filler: (_) => const Flexible(
+                    child: SizedBox(),
+                  ),
+                )
+                .separated(
+                  const SizedBox(
+                    width: 8,
+                  ),
+                );
+
+            return Row(
+              children: children.toList(),
             );
+          })
+          .separated(
+            SizedBox(
+              height: type == ProxyCardType.oneline ? 4 : 8,
+            ),
+          )
+          .toList();
 
-        return Row(
-          children: children.toList(),
-        );
-      }).separated(
-        const SizedBox(
-          height: 8,
-        ),
-      ).toList();
-
-      items.add(
-        ProxyGroupCard(
-          group: group,
-          proxies: rows
-        )
-      );
+      items.add(ProxyGroupCard(group: group, proxies: rows));
     }
     _lastGroupNameProxiesMap = groupNameProxiesMap;
     return items;
@@ -222,7 +226,8 @@ class ProxyGroupCard extends StatefulWidget {
   State<ProxyGroupCard> createState() => _ProxyGroupCardState();
 }
 
-class _ProxyGroupCardState extends State<ProxyGroupCard> with AutomaticKeepAliveClientMixin {
+class _ProxyGroupCardState extends State<ProxyGroupCard>
+    with AutomaticKeepAliveClientMixin {
   final _expansibleController = ExpansibleController();
 
   var isLock = false;
@@ -310,138 +315,129 @@ class _ProxyGroupCardState extends State<ProxyGroupCard> with AutomaticKeepAlive
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
     return Expansible(
-      controller: _expansibleController,
-      headerBuilder: (context, animation) => GestureDetector(
-        onTap: () => _toggleExpansion(),
-        child: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLow.opacity80,
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          margin: const EdgeInsets.symmetric(vertical: 4.0),
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
+        controller: _expansibleController,
+        headerBuilder: (context, animation) => GestureDetector(
+            onTap: () => _toggleExpansion(),
+            child: Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerLow.opacity80,
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 16.0),
                 child: Row(
-                  children: [
-                    _buildIcon(),
-                    Flexible(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                          child: Row(children: [
+                        _buildIcon(),
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                groupName,
+                                style: context.textTheme.titleMedium,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      groupType,
+                                      style: context
+                                          .textTheme.labelMedium?.toLight,
+                                    ),
+                                    Flexible(
+                                      flex: 1,
+                                      child: Consumer(
+                                        builder: (_, ref, __) {
+                                          final proxyName = ref
+                                              .watch(
+                                                  getSelectedProxyNameProvider(
+                                                groupName,
+                                              ))
+                                              .getSafeValue("");
+                                          return Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              if (proxyName.isNotEmpty) ...[
+                                                Flexible(
+                                                  flex: 1,
+                                                  child: EmojiText(
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    " · $proxyName",
+                                                    style: context.textTheme
+                                                        .labelMedium?.toLight,
+                                                  ),
+                                                ),
+                                              ]
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ])),
+                      Row(
                         children: [
-                          Text(
-                            groupName,
-                            style: context.textTheme.titleMedium,
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  groupType,
-                                  style: context.textTheme.labelMedium?.toLight,
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Consumer(
-                                    builder: (_, ref, __) {
-                                      final proxyName = ref
-                                          .watch(getSelectedProxyNameProvider(
-                                            groupName,
-                                          ))
-                                          .getSafeValue("");
-                                      return Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          if (proxyName.isNotEmpty) ...[
-                                            Flexible(
-                                              flex: 1,
-                                              child: EmojiText(
-                                                overflow: TextOverflow.ellipsis,
-                                                " · $proxyName",
-                                                style: context.textTheme
-                                                    .labelMedium?.toLight,
-                                              ),
-                                            ),
-                                          ]
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
+                          if (isExpand) ...[
+                            IconButton(
+                              onPressed: _delayTest,
+                              visualDensity: VisualDensity.standard,
+                              icon: const Icon(
+                                Icons.network_ping,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 4,
-                          ),
+                            const SizedBox(
+                              width: 6,
+                            ),
+                          ] else
+                            SizedBox(
+                              width: 4,
+                            ),
+                          IconButton.filledTonal(
+                            onPressed: () {
+                              _toggleExpansion();
+                            },
+                            icon: CommonExpandIcon(
+                              expand: isExpand,
+                            ),
+                          )
                         ],
-                      ),
-                    ),
-                  ]
-                )
-              ),
-              Row(
-                children: [
-                  if (isExpand) ...[
-                    IconButton(
-                      onPressed: _delayTest,
-                      visualDensity: VisualDensity.standard,
-                      icon: const Icon(
-                        Icons.network_ping,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 6,
-                    ),
-                  ] else
-                    SizedBox(
-                      width: 4,
-                    ),
-                  IconButton.filledTonal(
-                    onPressed: () {
-                      _toggleExpansion();
-                    },
-                    icon: CommonExpandIcon(
-                      expand: isExpand,
-                    ),
-                  )
-                ],
-              )
-            ]
-          )
-        )
-      ),
-      bodyBuilder: (context, animation) => SizeTransition(
-        sizeFactor: animation,
-        axisAlignment: -1.0,
-        child: FadeTransition(
-          opacity: animation,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Column(
-              children: widget.proxies
-            )
-          )
-        )
-      ),
-      expansibleBuilder: (context, header, body, animation) => Column(
-        children: [header, body]
-      )
-    );
+                      )
+                    ]))),
+        bodyBuilder: (context, animation) => SizeTransition(
+            sizeFactor: animation,
+            axisAlignment: -1.0,
+            child: FadeTransition(
+                opacity: animation,
+                child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Column(children: widget.proxies)))),
+        expansibleBuilder: (context, header, body, animation) =>
+            Column(children: [header, body]));
   }
 
   @override
