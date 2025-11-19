@@ -70,25 +70,18 @@ class CloseConnectionsItem extends ConsumerWidget {
     final closeConnections = ref.watch(
       appSettingProvider.select((state) => state.closeConnections),
     );
-    final overrideProviderSettings = ref.watch(
-      appSettingProvider.select((state) => state.overrideProviderSettings),
-    );
-    final isEnabled = overrideProviderSettings;
-    return Opacity(
-      opacity: isEnabled ? 1.0 : 0.5,
-      child: ListItem.switchItem(
-        title: Text(appLocalizations.autoCloseConnections),
-        subtitle: Text(appLocalizations.autoCloseConnectionsDesc),
-        delegate: SwitchDelegate(
-          value: closeConnections,
-          onChanged: isEnabled ? (value) async {
-            ref.read(appSettingProvider.notifier).updateState(
-                  (state) => state.copyWith(
-                    closeConnections: value,
-                  ),
-                );
-          } : null,
-        ),
+    return ListItem.switchItem(
+      title: Text(appLocalizations.autoCloseConnections),
+      subtitle: Text(appLocalizations.autoCloseConnectionsDesc),
+      delegate: SwitchDelegate(
+        value: closeConnections,
+        onChanged: (value) async {
+          ref.read(appSettingProvider.notifier).updateState(
+                (state) => state.copyWith(
+                  closeConnections: value,
+                ),
+              );
+        },
       ),
     );
   }
