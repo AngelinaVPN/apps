@@ -8,6 +8,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class OverrideNetworkSettingsItem extends ConsumerWidget {
+  const OverrideNetworkSettingsItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final overrideNetworkSettings = ref.watch(
+      appSettingProvider.select((state) => state.overrideNetworkSettings),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListItem.switchItem(
+          title: Text(appLocalizations.overrideNetworkSettings),
+          subtitle: Text(appLocalizations.overrideNetworkSettingsDesc),
+          delegate: SwitchDelegate(
+            value: overrideNetworkSettings,
+            onChanged: (value) {
+              ref.read(appSettingProvider.notifier).updateState(
+                    (state) => state.copyWith(
+                      overrideNetworkSettings: value,
+                    ),
+                  );
+            },
+          ),
+        ),
+        if (!overrideNetworkSettings)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    appLocalizations.managedByProvider,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 class LogLevelItem extends ConsumerWidget {
   const LogLevelItem({super.key});
 
@@ -297,19 +352,31 @@ class Ipv6Item extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final ipv6 =
         ref.watch(patchClashConfigProvider.select((state) => state.ipv6));
-    return ListItem.switchItem(
-      leading: const Icon(Icons.water_outlined),
-      title: const Text("IPv6"),
-      subtitle: Text(appLocalizations.ipv6Desc),
-      delegate: SwitchDelegate(
-        value: ipv6,
-        onChanged: (bool value) async {
-          ref.read(patchClashConfigProvider.notifier).updateState(
-                (state) => state.copyWith(
-                  ipv6: value,
-                ),
-              );
-        },
+    final overrideNetworkSettings = ref.watch(
+      appSettingProvider.select((state) => state.overrideNetworkSettings),
+    );
+    final isEnabled = overrideNetworkSettings;
+    
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: ListItem.switchItem(
+          leading: const Icon(Icons.water_outlined),
+          title: const Text("IPv6"),
+          subtitle: Text(appLocalizations.ipv6Desc),
+          delegate: SwitchDelegate(
+            value: ipv6,
+            onChanged: (bool value) async {
+              ref.read(patchClashConfigProvider.notifier).updateState(
+                    (state) => state.copyWith(
+                      ipv6: value,
+                    ),
+                  );
+              await globalState.appController.updateClashConfigDebounce();
+            },
+          ),
+        ),
       ),
     );
   }
@@ -322,19 +389,31 @@ class AllowLanItem extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final allowLan =
         ref.watch(patchClashConfigProvider.select((state) => state.allowLan));
-    return ListItem.switchItem(
-      leading: const Icon(Icons.device_hub),
-      title: Text(appLocalizations.allowLan),
-      subtitle: Text(appLocalizations.allowLanDesc),
-      delegate: SwitchDelegate(
-        value: allowLan,
-        onChanged: (bool value) async {
-          ref.read(patchClashConfigProvider.notifier).updateState(
-                (state) => state.copyWith(
-                  allowLan: value,
-                ),
-              );
-        },
+    final overrideNetworkSettings = ref.watch(
+      appSettingProvider.select((state) => state.overrideNetworkSettings),
+    );
+    final isEnabled = overrideNetworkSettings;
+    
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: ListItem.switchItem(
+          leading: const Icon(Icons.device_hub),
+          title: Text(appLocalizations.allowLan),
+          subtitle: Text(appLocalizations.allowLanDesc),
+          delegate: SwitchDelegate(
+            value: allowLan,
+            onChanged: (bool value) async {
+              ref.read(patchClashConfigProvider.notifier).updateState(
+                    (state) => state.copyWith(
+                      allowLan: value,
+                    ),
+                  );
+              await globalState.appController.updateClashConfigDebounce();
+            },
+          ),
+        ),
       ),
     );
   }
@@ -369,25 +448,51 @@ class UnifiedDelayItem extends ConsumerWidget {
 class FindProcessItem extends ConsumerWidget {
   const FindProcessItem({super.key});
 
+  String _getFindProcessModeLabel(FindProcessMode mode) {
+    switch (mode) {
+      case FindProcessMode.off:
+        return 'Off';
+      case FindProcessMode.strict:
+        return 'Strict';
+      case FindProcessMode.always:
+        return 'Always';
+    }
+  }
+
   @override
   Widget build(BuildContext context, ref) {
-    final findProcess = ref.watch(patchClashConfigProvider
-        .select((state) => state.findProcessMode == FindProcessMode.always));
+    final findProcessMode = ref.watch(
+      patchClashConfigProvider.select((state) => state.findProcessMode),
+    );
+    final overrideNetworkSettings = ref.watch(
+      appSettingProvider.select((state) => state.overrideNetworkSettings),
+    );
+    final isEnabled = overrideNetworkSettings;
 
-    return ListItem.switchItem(
-      leading: const Icon(Icons.polymer_outlined),
-      title: Text(appLocalizations.findProcessMode),
-      subtitle: Text(appLocalizations.findProcessModeDesc),
-      delegate: SwitchDelegate(
-        value: findProcess,
-        onChanged: (bool value) async {
-          ref.read(patchClashConfigProvider.notifier).updateState(
-                (state) => state.copyWith(
-                  findProcessMode:
-                      value ? FindProcessMode.always : FindProcessMode.off,
-                ),
-              );
-        },
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.5,
+        child: ListItem<FindProcessMode>.options(
+          leading: const Icon(Icons.polymer_outlined),
+          title: Text(appLocalizations.findProcessMode),
+          subtitle: Text(_getFindProcessModeLabel(findProcessMode)),
+          delegate: OptionsDelegate<FindProcessMode>(
+            title: appLocalizations.findProcessMode,
+            options: FindProcessMode.values,
+            onChanged: (FindProcessMode? value) async {
+              if (value == null) return;
+              ref.read(patchClashConfigProvider.notifier).updateState(
+                    (state) => state.copyWith(
+                      findProcessMode: value,
+                    ),
+                  );
+              await globalState.appController.updateClashConfigDebounce();
+            },
+            textBuilder: (mode) => _getFindProcessModeLabel(mode),
+            value: findProcessMode,
+          ),
+        ),
       ),
     );
   }
@@ -473,6 +578,7 @@ class ExternalControllerItem extends ConsumerWidget {
 }
 
 final generalItems = <Widget>[
+  OverrideNetworkSettingsItem(),
   LogLevelItem(),
   UaItem(),
   if (system.isDesktop) KeepAliveIntervalItem(),

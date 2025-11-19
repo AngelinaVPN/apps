@@ -100,6 +100,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "managedByProvider": MessageLookupByLibrary.simpleMessage(
       "これらの設定はプロバイダーによって管理されています",
     ),
+    "overrideNetworkSettings": MessageLookupByLibrary.simpleMessage(
+      "ネットワーク設定を上書き",
+    ),
+    "overrideNetworkSettingsDesc": MessageLookupByLibrary.simpleMessage(
+      "プロバイダー設定のネットワーク設定を無視",
+    ),
+    "managedByProviderNetwork": MessageLookupByLibrary.simpleMessage(
+      "これらのパラメータはプロバイダーによって管理されています",
+    ),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage("オートセットシステムDNS"),
     "autoUpdate": MessageLookupByLibrary.simpleMessage("自動更新"),
     "autoUpdateInterval": MessageLookupByLibrary.simpleMessage("自動更新間隔（分）"),
@@ -129,6 +138,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "checkUpdateError": MessageLookupByLibrary.simpleMessage("アプリは最新版です"),
     "checking": MessageLookupByLibrary.simpleMessage("確認中..."),
     "clearData": MessageLookupByLibrary.simpleMessage("データを消去"),
+    "clearDataTip": MessageLookupByLibrary.simpleMessage("これによりすべてのアプリデータが削除され、アプリケーションが再起動されます。よろしいですか？"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage("クリップボードにエクスポート"),
     "clipboardImport": MessageLookupByLibrary.simpleMessage("クリップボードからインポート"),
     "color": MessageLookupByLibrary.simpleMessage("カラー"),

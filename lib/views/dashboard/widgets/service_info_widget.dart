@@ -4,9 +4,56 @@ import 'package:flclashx/state.dart';
 import 'package:flclashx/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ServiceInfoWidget extends ConsumerWidget {
   const ServiceInfoWidget({super.key});
+
+  Widget _buildLogo(BuildContext context, String? logoUrl) {
+    if (logoUrl == null || logoUrl.isEmpty) {
+      return Icon(
+        Icons.contact_mail,
+        size: 28,
+        color: context.colorScheme.primary,
+      );
+    }
+
+    final isSvg = logoUrl.toLowerCase().endsWith('.svg');
+
+    if (isSvg) {
+      return SvgPicture.network(
+        logoUrl,
+        width: 28,
+        height: 28,
+        placeholderBuilder: (context) => Icon(
+          Icons.contact_mail,
+          size: 28,
+          color: context.colorScheme.primary,
+        ),
+      );
+    }
+
+    return Image.network(
+      logoUrl,
+      width: 28,
+      height: 28,
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(
+          Icons.contact_mail,
+          size: 28,
+          color: context.colorScheme.primary,
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Icon(
+          Icons.contact_mail,
+          size: 28,
+          color: context.colorScheme.primary,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,6 +65,7 @@ class ServiceInfoWidget extends ConsumerWidget {
 
     final serviceName = profile.serviceName;
     final supportUrl = profile.supportUrl;
+    final logoUrl = profile.providerHeaders['flclashx-servicelogo'];
 
     if (serviceName == null || serviceName.isEmpty) {
       return const SizedBox.shrink();
@@ -46,11 +94,7 @@ class ServiceInfoWidget extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.contact_mail,
-                      size: 28,
-                      color: context.colorScheme.primary,
-                    ),
+                    _buildLogo(context, logoUrl),
                     const SizedBox(width: 12),
                     Flexible(
                       child: Text(

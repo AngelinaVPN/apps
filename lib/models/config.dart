@@ -81,6 +81,7 @@ class AppSettingProps with _$AppSettingProps {
     @Default(false) bool hidden,
     @Default(false) bool developerMode,
     @Default(false) bool overrideProviderSettings,
+    @Default(false) bool overrideNetworkSettings,
     @Default(RecoveryStrategy.compatible) RecoveryStrategy recoveryStrategy,
   }) = _AppSettingProps;
 
@@ -163,7 +164,7 @@ class ProxiesStyle with _$ProxiesStyle {
     @Default(ProxiesType.list) ProxiesType type,
     @Default(ProxiesSortType.none) ProxiesSortType sortType,
     @Default(ProxiesLayout.standard) ProxiesLayout layout,
-    @Default(ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,
+    @Default(ProxiesIconStyle.icon) ProxiesIconStyle iconStyle,
     @Default(ProxyCardType.expand) ProxyCardType cardType,
     @Default({}) Map<String, String> iconMap,
   }) = _ProxiesStyle;

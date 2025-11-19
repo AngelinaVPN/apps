@@ -53,7 +53,7 @@ fun Service.createFlClashXNotificationBuilder(): Deferred<NotificationCompat.Bui
                 this@createFlClashXNotificationBuilder, GlobalState.NOTIFICATION_CHANNEL
             )
         ) {
-            setSmallIcon(R.drawable.ic_notification)
+            setSmallIcon(R.drawable.ic)
             setContentTitle("FlClashX")
             setContentIntent(pendingIntent)
             setCategory(NotificationCompat.CATEGORY_SERVICE)

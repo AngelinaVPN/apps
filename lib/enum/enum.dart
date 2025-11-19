@@ -139,7 +139,7 @@ enum InvokeMessageType {
   process,
 }
 
-enum FindProcessMode { always, off }
+enum FindProcessMode { always, off, strict }
 
 enum RecoveryOption {
   all,
@@ -231,9 +231,8 @@ enum HotAction {
 }
 
 enum ProxiesIconStyle {
-  standard,
-  none,
   icon,
+  none,
 }
 
 enum FontFamily {

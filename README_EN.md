@@ -10,7 +10,7 @@
 [![Last Version](https://img.shields.io/github/release/pluralplay/FlClashX/all.svg?style=flat-square)](https://github.com/pluralplay/FlClashX/releases/)
 [![License](https://img.shields.io/github/license/pluralplay/FlClashX?style=flat-square)](LICENSE)
 
-[![Channel](https://img.shields.io/badge/Telegram-Chat-blue?style=flat-square&logo=telegram)](https://t.me/FlClash)
+[![Channel](https://img.shields.io/badge/Telegram-Chat-blue?style=flat-square&logo=telegram)](https://t.me/FlClashX)
 
 A fork of the multi-platform proxy client FlClash based on ClashMeta, simple and easy to use, open source and ad-free.
 
@@ -26,33 +26,33 @@ on Mobile:
     <img alt="mobile" src="snapshots/mobile.gif">
 </p>
 
-## Added Functionality:
+## Added Functionality
 
 🛠️ Fixed default settings: process search mode on, TUN mode on, system proxy mode off, proxy list display mode set to 'list', changed camera behavior when adding a subscription via QR.
 
 🇷🇺 Added Russian language to the installer and redesigned the localization in the application.
 
-✈️ Transmit HWID to the panel (Works only with <a href="">Remnawave</a>).
+✈️ Transmit HWID to the panel (Works only with <a href="https://github.com/remnawave/panel">Remnawave</a>).
 
-💻 Added a new "Announcements" widget. It transmits announcements from the panel to the widget. (Works only with <a href="">Remnawave</a>).
+💻 Added a new "Announcements" widget. It transmits announcements from the panel to the widget. (Works only with <a href="https://github.com/remnawave/panel">Remnawave</a>).
 
-📺 Optimized controls for Android TV.
+📺 Optimized controls for Android TV:
 
 - Added a "Paste" button to the menu for adding a subscription via a link.
-
 - Added a profile selection button.
-
 - Added the ability to transfer a profile from the mobile app via a QR code.
 
 🪪 Redesigned the profile card:
 
-- Used traffic amount with a color-changing traffic bar (not displayed if traffic is unlimited).
-
-- Subscription expiration date (if the year is 2099, it displays "permanent subscription").
-
+- Uses a traffic volume indicator with color change (not displayed if traffic is unlimited).
+- Displays subscription expiration date (if the year is 2099, it displays "Your subscription is permanent").
 - Added a new "Support" button in the profile, which pulls the supportUrl from the panel.
+- The autoupdateinterval parameter for the profile is now correctly transmitted from the panel.
 
-- The autoupdateinterval for the profile is now correctly transmitted from the panel.
+🪪
+- Added "Meta-Info" widget. Transmits subscription parameters to the widget: remaining traffic, subscription expiration date, profile name, and prominently displays days remaining until subscription expires (3 days before expiration).
+- Added "serviceInfo" widget. Displays your service name. You can additionally pass the `flclashx-servicelogo` header for a custom logo (supports svg/png links), and clicking opens the support link (supportURL).
+- Added "changeServerButton" widget. Clicking redirects to the proxy page.
 
 🌐 Added parsing of custom headers from the subscription page:
 
@@ -118,12 +118,28 @@ Usage:
     flclashx-denywidgets: true
 ```
 
-- flclashx-servicename: The name of the service for the serviceInfo widget.
+- flclashx-servicename: Your service name displayed in the ServiceInfo widget.
 
 Usage:
 
 ```bash
     flclashx-servicename: FlClashX
+```
+
+- flclashx-servicelogo: Your logo used in the ServiceInfo widget (works only with active flclashx-servicename header). Supports png/svg.
+
+Usage:
+
+```bash
+    flclashx-servicelogo: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/remnawave.svg
+```
+
+- flclashx-settings: Manage application settings via header (with client-side override option), such as: Minimize on exit, Auto-launch, Silent launch, Auto-start proxy, Auto-check updates. If you don't pass a parameter, it will be disabled.
+
+Usage:
+
+```bash
+    flclashx-settings: minimize, autostart, shadowstart, autorun, autoupdate
 ```
 
 ## Application Usage
@@ -151,13 +167,13 @@ The following actions are supported:
 
 ## Download
 
-<a href=""><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
+<a href="https://github.com/pluralplay/FlClashX/releases"><img alt="Get it on GitHub" src="snapshots/get-it-on-github.svg" width="200px"/></a>
 
 ## Star
 
 <p style="text-align: center;">
 The easiest way to support the developers is to click the star (⭐) at the top of the page.<br>
-If you want to support with a small donation, you can <a href="">do so here.</a>
+If you want to support with a small donation, you can <a href="https://t.me/tribute/app?startapp=dtyh">do so here.</a>
 </p>
 
 **TON USDT:** `UQDSfrJ_k1BdsknhdR_zj4T3Is3OdMylD8PnDJ9mxO35i-TE`
