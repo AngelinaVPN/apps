@@ -590,7 +590,24 @@ class AppController {
 
   _setupClashConfig() async {
     await _ref.read(currentProfileProvider)?.checkAndUpdate();
-    final patchConfig = _ref.read(patchClashConfigProvider);
+    var patchConfig = _ref.read(patchClashConfigProvider);
+    commonPrint.log("_setupClashConfig BEFORE sync: patchConfig.tun.stack=${patchConfig.tun.stack.name}");
+    
+    // Sync network settings from provider config if not overriding
+    final appSetting = _ref.read(appSettingProvider);
+    if (!appSetting.overrideNetworkSettings) {
+      final syncedConfig = await globalState.syncNetworkSettingsFromProvider(patchConfig);
+      commonPrint.log("_setupClashConfig AFTER syncNetworkSettingsFromProvider: syncedConfig.tun.stack=${syncedConfig.tun.stack.name}");
+      // Always update provider when using provider settings to ensure UI reflects config
+      _ref.read(patchClashConfigProvider.notifier).updateState((state) => syncedConfig);
+      patchConfig = syncedConfig;
+      commonPrint.log("Synced network settings from provider: ipv6=${syncedConfig.ipv6}, allowLan=${syncedConfig.allowLan}, findProcessMode=${syncedConfig.findProcessMode.name}, tunStack=${syncedConfig.tun.stack.name}");
+      
+      // Verify that provider was actually updated
+      final verifyConfig = _ref.read(patchClashConfigProvider);
+      commonPrint.log("_setupClashConfig VERIFY after updateState: verifyConfig.tun.stack=${verifyConfig.tun.stack.name}");
+    }
+    
     final res = await _requestAdmin(patchConfig.tun.enable);
     if (res.isError) {
       return;
@@ -776,11 +793,36 @@ class AppController {
   }
 
   Future handleClear() async {
-    await preferences.clearPreferences();
-    commonPrint.log("clear preferences");
-    globalState.config = const Config(
-      themeProps: defaultThemeProps,
-    );
+    try {
+      // Stop proxy/VPN first
+      await globalState.handleStop();
+      commonPrint.log("stopped proxy/VPN");
+      
+      // Stop core
+      await clashCore.shutdown();
+      commonPrint.log("shutdown core");
+      
+      // Clear preferences
+      await preferences.clearPreferences();
+      commonPrint.log("clear preferences");
+      
+      // Delete home directory
+      final homePath = await appPath.homeDirPath;
+      final homeDir = Directory(homePath);
+      if (await homeDir.exists()) {
+        await homeDir.delete(recursive: true);
+        commonPrint.log("deleted home directory: $homePath");
+      }
+      
+      // Reset config
+      globalState.config = const Config(
+        themeProps: defaultThemeProps,
+      );
+      
+      commonPrint.log("handleClear completed");
+    } catch (e) {
+      commonPrint.log("handleClear error: $e");
+    }
   }
 
   autoCheckUpdate() async {
@@ -1205,16 +1247,13 @@ class AppController {
               case 'icon':
                 switch (value) {
                   case 'standard':
+                  case 'icon':
                     newState =
-                        newState.copyWith(iconStyle: ProxiesIconStyle.standard);
+                        newState.copyWith(iconStyle: ProxiesIconStyle.icon);
                     break;
                   case 'none':
                     newState =
                         newState.copyWith(iconStyle: ProxiesIconStyle.none);
-                    break;
-                  case 'icon':
-                    newState =
-                        newState.copyWith(iconStyle: ProxiesIconStyle.icon);
                     break;
                 }
                 break;

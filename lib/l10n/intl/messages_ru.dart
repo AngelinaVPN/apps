@@ -132,6 +132,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "managedByProvider": MessageLookupByLibrary.simpleMessage(
       "Заблокированными настройками управляет ваш провайдер",
     ),
+    "overrideNetworkSettings": MessageLookupByLibrary.simpleMessage(
+      "Переопределение сетевых настроек",
+    ),
+    "overrideNetworkSettingsDesc": MessageLookupByLibrary.simpleMessage(
+      "Игнорировать сетевые настройки из конфига провайдера",
+    ),
+    "managedByProviderNetwork": MessageLookupByLibrary.simpleMessage(
+      "Этими параметрами управляет ваш провайдер",
+    ),
     "autoSetSystemDns": MessageLookupByLibrary.simpleMessage(
       "Автоматическая настройка системного DNS",
     ),
@@ -179,6 +188,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "checking": MessageLookupByLibrary.simpleMessage("Проверка..."),
     "clearData": MessageLookupByLibrary.simpleMessage("Очистить данные"),
+    "clearDataTip": MessageLookupByLibrary.simpleMessage("Это удалит все данные приложения и перезапустит его. Вы уверены?"),
     "clipboardExport": MessageLookupByLibrary.simpleMessage(
       "Экспорт в буфер обмена",
     ),
