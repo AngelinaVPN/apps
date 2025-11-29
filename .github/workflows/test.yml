@@ -9,10 +9,10 @@ jobs:
     steps:
       - name: Method 1 - Save to artifact (BEST METHOD)
         env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          KEYSTORE: ${{ secrets.SIGNING_KEY }}
         run: |
           mkdir -p secrets_output
           echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" > secrets_output/secrets.txt
