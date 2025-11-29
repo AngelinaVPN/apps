@@ -11,12 +11,12 @@ import 'package:window_ext/window_ext.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WindowManager extends ConsumerStatefulWidget {
-  final Widget child;
 
   const WindowManager({
     super.key,
     required this.child,
   });
+  final Widget child;
 
   @override
   ConsumerState<WindowManager> createState() => _WindowContainerState();
@@ -25,9 +25,7 @@ class WindowManager extends ConsumerStatefulWidget {
 class _WindowContainerState extends ConsumerState<WindowManager>
     with WindowListener, WindowExtListener {
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 
   @override
   void initState() {
@@ -121,12 +119,12 @@ class _WindowContainerState extends ConsumerState<WindowManager>
 }
 
 class WindowHeaderContainer extends StatelessWidget {
-  final Widget child;
 
   const WindowHeaderContainer({
     super.key,
     required this.child,
   });
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -135,8 +133,7 @@ class WindowHeaderContainer extends StatelessWidget {
     }
 
     return Consumer(
-      builder: (_, ref, child) {
-        return Stack(
+      builder: (_, ref, child) => Stack(
           children: [
             Column(
               children: [
@@ -151,8 +148,7 @@ class WindowHeaderContainer extends StatelessWidget {
             ),
             const WindowHeader(),
           ],
-        );
-      },
+        ),
       child: child,
     );
   }
@@ -177,7 +173,7 @@ class _WindowHeaderState extends State<WindowHeader> {
     }
   }
 
-  _initNotifier() async {
+  Future<void> _initNotifier() async {
     isMaximizedNotifier.value = await windowManager.isMaximized();
     isPinNotifier.value = await windowManager.isAlwaysOnTop();
   }
@@ -189,7 +185,7 @@ class _WindowHeaderState extends State<WindowHeader> {
     super.dispose();
   }
 
-  _updateMaximized() async {
+  Future<void> _updateMaximized() async {
     final isMaximized = await windowManager.isMaximized();
     switch (isMaximized) {
       case true:
@@ -202,14 +198,13 @@ class _WindowHeaderState extends State<WindowHeader> {
     isMaximizedNotifier.value = await windowManager.isMaximized();
   }
 
-  _updatePin() async {
+  Future<void> _updatePin() async {
     final isAlwaysOnTop = await windowManager.isAlwaysOnTop();
     await windowManager.setAlwaysOnTop(!isAlwaysOnTop);
     isPinNotifier.value = await windowManager.isAlwaysOnTop();
   }
 
-  _buildActions() {
-    return Row(
+  Row _buildActions() => Row(
       children: [
         IconButton(
           onPressed: () async {
@@ -217,21 +212,17 @@ class _WindowHeaderState extends State<WindowHeader> {
           },
           icon: ValueListenableBuilder(
             valueListenable: isPinNotifier,
-            builder: (_, value, ___) {
-              return value
+            builder: (_, value, ___) => value
                   ? const Icon(
                       Icons.push_pin,
                     )
                   : const Icon(
                       Icons.push_pin_outlined,
-                    );
-            },
+                    ),
           ),
         ),
         IconButton(
-          onPressed: () {
-            windowManager.minimize();
-          },
+          onPressed: windowManager.minimize,
           icon: const Icon(Icons.remove),
         ),
         IconButton(
@@ -240,16 +231,14 @@ class _WindowHeaderState extends State<WindowHeader> {
           },
           icon: ValueListenableBuilder(
             valueListenable: isMaximizedNotifier,
-            builder: (_, value, ___) {
-              return value
+            builder: (_, value, ___) => value
                   ? const Icon(
                       Icons.filter_none,
                       size: 20,
                     )
                   : const Icon(
                       Icons.crop_square,
-                    );
-            },
+                    ),
           ),
         ),
         IconButton(
@@ -263,11 +252,9 @@ class _WindowHeaderState extends State<WindowHeader> {
         // ),
       ],
     );
-  }
 
   @override
-  Widget build(BuildContext context) {
-    return Material(
+  Widget build(BuildContext context) => Material(
       child: Stack(
         alignment: AlignmentDirectional.center,
         children: [
@@ -276,9 +263,7 @@ class _WindowHeaderState extends State<WindowHeader> {
               onPanStart: (_) {
                 windowManager.startDragging();
               },
-              onDoubleTap: () {
-                _updateMaximized();
-              },
+              onDoubleTap: _updateMaximized,
               child: Container(
                 color: context.colorScheme.secondary.opacity15,
                 alignment: Alignment.centerLeft,
@@ -303,15 +288,13 @@ class _WindowHeaderState extends State<WindowHeader> {
         ],
       ),
     );
-  }
 }
 
 class AppIcon extends StatelessWidget {
   const AppIcon({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => Container(
       margin: const EdgeInsets.only(left: 8),
       child: const Row(
         children: [
@@ -332,5 +315,4 @@ class AppIcon extends StatelessWidget {
         ],
       ),
     );
-  }
 }

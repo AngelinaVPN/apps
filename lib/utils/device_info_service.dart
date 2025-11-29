@@ -1,18 +1,14 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flclashx/common/common.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flclashx/common/common.dart';
 import 'package:win32_registry/win32_registry.dart';
 
 class DeviceDetails {
-  final String? hwid;
-  final String? os;
-  final String? osVersion;
-  final String? model;
-  final String? appVersion;
 
   DeviceDetails({
     this.hwid,
@@ -21,6 +17,11 @@ class DeviceDetails {
     this.model,
     this.appVersion,
   });
+  final String? hwid;
+  final String? os;
+  final String? osVersion;
+  final String? model;
+  final String? appVersion;
 }
 
 class DeviceInfoService {
@@ -92,7 +93,7 @@ class DeviceInfoService {
     try {
       final prefs = await SharedPreferences.getInstance();
       
-      String? storedHwid = prefs.getString(_hwidStorageKey);
+      final storedHwid = prefs.getString(_hwidStorageKey);
       if (storedHwid != null && storedHwid.length == 16) {
         commonPrint.log("Using stored HWID: $storedHwid");
         return storedHwid;

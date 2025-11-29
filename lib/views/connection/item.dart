@@ -10,9 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectionItem extends ConsumerWidget {
-  final Connection connection;
-  final Function(String)? onClickKeyword;
-  final Widget? trailing;
 
   const ConnectionItem({
     super.key,
@@ -20,10 +17,11 @@ class ConnectionItem extends ConsumerWidget {
     this.onClickKeyword,
     this.trailing,
   });
+  final Connection connection;
+  final Function(String)? onClickKeyword;
+  final Widget? trailing;
 
-  Future<ImageProvider?> _getPackageIcon(Connection connection) async {
-    return await app?.getPackageIcon(connection.metadata.process);
-  }
+  Future<ImageProvider?> _getPackageIcon(Connection connection) async => await app?.getPackageIcon(connection.metadata.process);
 
   String _getSourceText(Connection connection) {
     final metadata = connection.metadata;
@@ -34,7 +32,7 @@ class ConnectionItem extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final value = ref.watch(
       patchClashConfigProvider.select(
         (state) =>

@@ -28,8 +28,7 @@ class ToolsView extends ConsumerStatefulWidget {
 }
 
 class _ToolboxViewState extends ConsumerState<ToolsView> {
-  _buildNavigationMenuItem(NavigationItem navigationItem) {
-    return ListItem.open(
+  ListItem<dynamic> _buildNavigationMenuItem(NavigationItem navigationItem) => ListItem.open(
       leading: navigationItem.icon,
       title: Text(Intl.message(navigationItem.label.name)),
       subtitle: navigationItem.description != null
@@ -40,10 +39,8 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
         widget: navigationItem.view,
       ),
     );
-  }
 
-  Widget _buildNavigationMenu(List<NavigationItem> navigationItems) {
-    return Column(
+  Widget _buildNavigationMenu(List<NavigationItem> navigationItems) => Column(
       children: [
         for (final navigationItem in navigationItems) ...[
           _buildNavigationMenuItem(navigationItem),
@@ -55,34 +52,29 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
         ]
       ],
     );
-  }
 
-  List<Widget> _getOtherList(bool enableDeveloperMode) {
-    return generateSection(
+  List<Widget> _getOtherList(bool enableDeveloperMode) => generateSection(
       title: appLocalizations.other,
       items: [
-        _DisclaimerItem(),
-        if (enableDeveloperMode) _DeveloperItem(),
-        _InfoItem(),
+        const _DisclaimerItem(),
+        if (enableDeveloperMode) const _DeveloperItem(),
+        const _InfoItem(),
       ],
     );
-  }
 
-  _getSettingList() {
-    return generateSection(
+  List<Widget> _getSettingList() => generateSection(
       title: appLocalizations.settings,
       items: [
-        _LocaleItem(),
-        _ThemeItem(),
-        _BackupItem(),
-        if (system.isDesktop) _HotkeyItem(),
-        if (Platform.isWindows) _LoopbackItem(),
-        if (Platform.isAndroid) _AccessItem(),
-        _ConfigItem(),
-        _SettingItem(),
+        const _LocaleItem(),
+        const _ThemeItem(),
+        const _BackupItem(),
+        if (system.isDesktop) const _HotkeyItem(),
+        if (Platform.isWindows) const _LoopbackItem(),
+        if (Platform.isAndroid) const _AccessItem(),
+        const _ConfigItem(),
+        const _SettingItem(),
       ],
     );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,12 +130,12 @@ class _LocaleItem extends ConsumerWidget {
       delegate: OptionsDelegate(
         title: appLocalizations.language,
         options: [null, ...AppLocalizations.delegate.supportedLocales],
-        onChanged: (Locale? locale) {
+        onChanged: (locale) {
           ref.read(appSettingProvider.notifier).updateState(
                 (state) => state.copyWith(locale: locale?.toString()),
               );
         },
-        textBuilder: (locale) => _getLocaleString(locale),
+        textBuilder: _getLocaleString,
         value: currentLocale,
       ),
     );
@@ -154,8 +146,7 @@ class _ThemeItem extends StatelessWidget {
   const _ThemeItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.style),
       title: Text(appLocalizations.theme),
       subtitle: Text(appLocalizations.themeDesc),
@@ -164,15 +155,13 @@ class _ThemeItem extends StatelessWidget {
         widget: const ThemeView(),
       ),
     );
-  }
 }
 
 class _BackupItem extends StatelessWidget {
   const _BackupItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.cloud_sync),
       title: Text(appLocalizations.backupAndRecovery),
       subtitle: Text(appLocalizations.backupAndRecoveryDesc),
@@ -181,15 +170,13 @@ class _BackupItem extends StatelessWidget {
         widget: const BackupAndRecovery(),
       ),
     );
-  }
 }
 
 class _HotkeyItem extends StatelessWidget {
   const _HotkeyItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.keyboard),
       title: Text(appLocalizations.hotkeyManagement),
       subtitle: Text(appLocalizations.hotkeyManagementDesc),
@@ -198,15 +185,13 @@ class _HotkeyItem extends StatelessWidget {
         widget: const HotKeyView(),
       ),
     );
-  }
 }
 
 class _LoopbackItem extends StatelessWidget {
   const _LoopbackItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem(
+  Widget build(BuildContext context) => ListItem(
       leading: const Icon(Icons.lock),
       title: Text(appLocalizations.loopback),
       subtitle: Text(appLocalizations.loopbackDesc),
@@ -217,15 +202,13 @@ class _LoopbackItem extends StatelessWidget {
         );
       },
     );
-  }
 }
 
 class _AccessItem extends StatelessWidget {
   const _AccessItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.view_list),
       title: Text(appLocalizations.accessControl),
       subtitle: Text(appLocalizations.accessControlDesc),
@@ -234,15 +217,13 @@ class _AccessItem extends StatelessWidget {
         widget: const AccessView(),
       ),
     );
-  }
 }
 
 class _ConfigItem extends StatelessWidget {
   const _ConfigItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.edit),
       title: Text(appLocalizations.basicConfig),
       subtitle: Text(appLocalizations.basicConfigDesc),
@@ -251,15 +232,13 @@ class _ConfigItem extends StatelessWidget {
         widget: const ConfigView(),
       ),
     );
-  }
 }
 
 class _SettingItem extends StatelessWidget {
   const _SettingItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.settings),
       title: Text(appLocalizations.application),
       subtitle: Text(appLocalizations.applicationDesc),
@@ -268,15 +247,13 @@ class _SettingItem extends StatelessWidget {
         widget: const ApplicationSettingView(),
       ),
     );
-  }
 }
 
 class _DisclaimerItem extends StatelessWidget {
   const _DisclaimerItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem(
+  Widget build(BuildContext context) => ListItem(
       leading: const Icon(Icons.gavel),
       title: Text(appLocalizations.disclaimer),
       onTap: () async {
@@ -287,15 +264,13 @@ class _DisclaimerItem extends StatelessWidget {
         }
       },
     );
-  }
 }
 
 class _InfoItem extends StatelessWidget {
   const _InfoItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.info),
       title: Text(appLocalizations.about),
       delegate: OpenDelegate(
@@ -303,15 +278,13 @@ class _InfoItem extends StatelessWidget {
         widget: const AboutView(),
       ),
     );
-  }
 }
 
 class _DeveloperItem extends StatelessWidget {
   const _DeveloperItem();
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       leading: const Icon(Icons.developer_board),
       title: Text(appLocalizations.developerMode),
       delegate: OpenDelegate(
@@ -319,5 +292,4 @@ class _DeveloperItem extends StatelessWidget {
         widget: const DeveloperView(),
       ),
     );
-  }
 }

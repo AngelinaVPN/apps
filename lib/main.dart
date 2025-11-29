@@ -33,8 +33,8 @@ Future<void> main() async {
   await android?.init();
   await window?.init(version);
   HttpOverrides.global = FlClashHttpOverrides();
-  runApp(ProviderScope(
-    child: const Application(),
+  runApp(const ProviderScope(
+    child: Application(),
   ));
 }
 
@@ -67,7 +67,7 @@ Future<void> _service(List<String> flags) async {
 
   vpn?.addListener(
     _VpnListenerWithService(
-      onDnsChanged: (String dns) {
+      onDnsChanged: (dns) {
         print("handle dns $dns");
         clashLibHandler.updateDns(dns);
       },
@@ -84,7 +84,7 @@ Future<void> _service(List<String> flags) async {
     final clashConfig = globalState.config.patchClashConfig.copyWith.tun(
       enable: false,
     );
-    Future(() async {
+    unawaited(Future(() async {
       final profileId = globalState.config.currentProfileId;
       if (profileId == null) {
         return;
@@ -109,11 +109,11 @@ Future<void> _service(List<String> flags) async {
         clashLibHandler.getAndroidVpnOptions(),
       );
       clashLibHandler.startListener();
-    });
+    }));
   }
 }
 
-_handleMainIpc(ClashLibHandler clashLibHandler) {
+void _handleMainIpc(ClashLibHandler clashLibHandler) {
   final sendPort = IsolateNameServer.lookupPortByName(mainIsolate);
   if (sendPort == null) {
     return;
@@ -128,18 +128,16 @@ _handleMainIpc(ClashLibHandler clashLibHandler) {
   clashLibHandler.attachMessagePort(
     messageReceiverPort.sendPort.nativePort,
   );
-  messageReceiverPort.listen((message) {
-    sendPort.send(message);
-  });
+  messageReceiverPort.listen(sendPort.send);
 }
 
 @immutable
 class _TileListenerWithService with TileListener {
-  final Function() _onStop;
 
   const _TileListenerWithService({
     required Function() onStop,
   }) : _onStop = onStop;
+  final Function() _onStop;
 
   @override
   void onStop() {
@@ -149,11 +147,11 @@ class _TileListenerWithService with TileListener {
 
 @immutable
 class _VpnListenerWithService with VpnListener {
-  final Function(String dns) _onDnsChanged;
 
   const _VpnListenerWithService({
     required Function(String dns) onDnsChanged,
   }) : _onDnsChanged = onDnsChanged;
+  final Function(String dns) _onDnsChanged;
 
   @override
   void onDnsChanged(String dns) {

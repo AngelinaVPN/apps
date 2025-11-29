@@ -9,11 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProxyCard extends StatelessWidget {
-  final String groupName;
-  final Proxy proxy;
-  final GroupType groupType;
-  final ProxyCardType type;
-  final String? testUrl;
 
   const ProxyCard({
     super.key,
@@ -23,18 +18,22 @@ class ProxyCard extends StatelessWidget {
     required this.groupType,
     required this.type,
   });
+  final String groupName;
+  final Proxy proxy;
+  final GroupType groupType;
+  final ProxyCardType type;
+  final String? testUrl;
 
   Measure get measure => globalState.measure;
 
-  _handleTestCurrentDelay() {
+  void _handleTestCurrentDelay() {
     proxyDelayTest(
       proxy,
       testUrl,
     );
   }
 
-  Widget _buildDelayText() {
-    return SizedBox(
+  Widget _buildDelayText() => SizedBox(
       height: measure.labelSmallHeight,
       child: Consumer(
         builder: (context, ref, __) {
@@ -72,7 +71,6 @@ class ProxyCard extends StatelessWidget {
         },
       ),
     );
-  }
 
   Widget _buildProxyNameText(BuildContext context) {
     if (type == ProxyCardType.oneline) {
@@ -84,7 +82,7 @@ class ProxyCard extends StatelessWidget {
           return Padding(
             padding:
                 isSelected ? const EdgeInsets.only(right: 32) : EdgeInsets.zero,
-            child: child!,
+            child: child,
           );
         },
         child: SizedBox(
@@ -130,7 +128,7 @@ class ProxyCard extends StatelessWidget {
     }
   }
 
-  _changeProxy(WidgetRef ref) async {
+  Future<void> _changeProxy(WidgetRef ref) async {
     final isComputedSelected = groupType.isComputedSelected;
     final isSelector = groupType == GroupType.Selector;
     if (isComputedSelected || isSelector) {
@@ -144,7 +142,7 @@ class ProxyCard extends StatelessWidget {
         groupName,
         nextProxyName,
       );
-      await appController.changeProxyDebounce(groupName, nextProxyName);
+      appController.changeProxyDebounce(groupName, nextProxyName);
       return;
     }
     globalState.showNotifier(
@@ -240,11 +238,11 @@ class ProxyCard extends StatelessWidget {
 }
 
 class _ProxyDesc extends ConsumerWidget {
-  final Proxy proxy;
 
   const _ProxyDesc({
     required this.proxy,
   });
+  final Proxy proxy;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -262,15 +260,15 @@ class _ProxyDesc extends ConsumerWidget {
 }
 
 class _ProxyComputedMark extends ConsumerWidget {
-  final String groupName;
-  final Proxy proxy;
-  final ProxyCardType cardType;
 
   const _ProxyComputedMark({
     required this.groupName,
     required this.proxy,
     required this.cardType,
   });
+  final String groupName;
+  final Proxy proxy;
+  final ProxyCardType cardType;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

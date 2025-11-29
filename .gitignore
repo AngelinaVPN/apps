@@ -57,6 +57,10 @@ app.*.map.json
 /android/app/src/main/jniLibs/
 /android/core/src/main/jniLibs/
 
+# Signing keys (sensitive data)
+/android/app/keystore.jks
+*.jks
+
 # Environment variables (contains sensitive data)
 .env
 *.local.sh

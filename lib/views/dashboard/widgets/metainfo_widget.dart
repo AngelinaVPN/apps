@@ -91,14 +91,14 @@ class MetainfoWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final bool isUnlimitedTraffic = subscriptionInfo.total == 0;
-    final bool isPerpetual = subscriptionInfo.expire == 0;
+    final isUnlimitedTraffic = subscriptionInfo.total == 0;
+    final isPerpetual = subscriptionInfo.expire == 0;
     final supportUrl = currentProfile.supportUrl;
 
-    String timeLeftValue = '';
-    String timeLeftUnit = '';
-    String remainingText = '';
-    bool showTimeLeft = false;
+    var timeLeftValue = '';
+    var timeLeftUnit = '';
+    var remainingText = '';
+    var showTimeLeft = false;
 
     if (!isPerpetual) {
       final expireDateTime =
@@ -181,7 +181,7 @@ class MetainfoWidget extends ConsumerWidget {
                         final usedTraffic =
                             TrafficValue(value: usedTrafficValue);
 
-                        double progress = 0.0;
+                        var progress = 0.0;
                         if (subscriptionInfo.total > 0) {
                           progress = usedTrafficValue / subscriptionInfo.total;
                         }

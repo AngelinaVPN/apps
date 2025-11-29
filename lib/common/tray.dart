@@ -39,7 +39,7 @@ class Tray {
     }
   }
 
-  update({
+  Future<void> update({
     required TrayState trayState,
     bool focus = false,
   }) async {
@@ -53,7 +53,7 @@ class Tray {
         force: focus,
       );
     }
-    List<MenuItem> menuItems = [];
+    final menuItems = <MenuItem>[];
     final showMenuItem = MenuItem(
       label: appLocalizations.show,
       onClick: (_) {
@@ -136,7 +136,7 @@ class Tray {
     }
   }
 
-  updateTrayTitle([Traffic? traffic]) async {
+  Future<void> updateTrayTitle([Traffic? traffic]) async {
     // if (!Platform.isMacOS) {
     //   return;
     // }

@@ -42,9 +42,7 @@ class ApplicationState extends ConsumerState<Application> {
   ColorScheme _getAppColorScheme({
     required Brightness brightness,
     int? primaryColor,
-  }) {
-    return ref.read(genColorSchemeProvider(brightness));
-  }
+  }) => ref.read(genColorSchemeProvider(brightness));
 
   @override
   void initState() {
@@ -68,7 +66,7 @@ class ApplicationState extends ConsumerState<Application> {
     });
   }
 
-  _autoUpdateGroupTask() {
+  void _autoUpdateGroupTask() {
     _autoUpdateGroupTaskTimer = Timer(const Duration(milliseconds: 20000), () {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         globalState.appController.updateGroupsDebounce();
@@ -77,14 +75,14 @@ class ApplicationState extends ConsumerState<Application> {
     });
   }
 
-  _autoUpdateProfilesTask() {
+  void _autoUpdateProfilesTask() {
     _autoUpdateProfilesTaskTimer = Timer(const Duration(minutes: 20), () async {
       await globalState.appController.autoUpdateProfiles();
       _autoUpdateProfilesTask();
     });
   }
 
-  _buildPlatformState(Widget child) {
+  Widget _buildPlatformState(Widget child) {
     if (system.isDesktop) {
       return WindowManager(
         child: TrayManager(
@@ -103,24 +101,22 @@ class ApplicationState extends ConsumerState<Application> {
     );
   }
 
-  _buildState(Widget child) {
-    return AppStateManager(
-      child: ClashManager(
-        child: ConnectivityManager(
-          onConnectivityChanged: (results) async {
-            if (!results.contains(ConnectivityResult.vpn)) {
-              await clashCore.closeConnections();
-            }
-            globalState.appController.updateLocalIp();
-            globalState.appController.addCheckIpNumDebounce();
-          },
-          child: child,
+  Widget _buildState(Widget child) => AppStateManager(
+        child: ClashManager(
+          child: ConnectivityManager(
+            onConnectivityChanged: (results) async {
+              if (!results.contains(ConnectivityResult.vpn)) {
+                clashCore.closeConnections();
+              }
+              globalState.appController.updateLocalIp();
+              globalState.appController.addCheckIpNumDebounce();
+            },
+            child: child,
+          ),
         ),
-      ),
-    );
-  }
+      );
 
-  _buildPlatformApp(Widget child) {
+  Widget _buildPlatformApp(Widget child) {
     if (system.isDesktop) {
       return WindowHeaderContainer(
         child: child,
@@ -131,17 +127,14 @@ class ApplicationState extends ConsumerState<Application> {
     );
   }
 
-  _buildApp(Widget child) {
-    return MessageManager(
-      child: ThemeManager(
-        child: child,
-      ),
-    );
-  }
+  Widget _buildApp(Widget child) => MessageManager(
+        child: ThemeManager(
+          child: child,
+        ),
+      );
 
   @override
-  Widget build(context) {
-    return _buildPlatformState(
+  Widget build(BuildContext context) => _buildPlatformState(
       _buildState(
         Consumer(
           builder: (_, ref, child) {
@@ -161,7 +154,7 @@ class ApplicationState extends ConsumerState<Application> {
                 GlobalWidgetsLocalizations.delegate
               ],
               builder: (_, child) {
-                Widget app = AppEnvManager(
+                final Widget app = AppEnvManager(
                   child: _buildPlatformApp(
                     _buildApp(child!),
                   ),
@@ -213,7 +206,6 @@ class ApplicationState extends ConsumerState<Application> {
         ),
       ),
     );
-  }
 
   @override
   Future<void> dispose() async {

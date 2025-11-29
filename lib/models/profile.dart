@@ -7,8 +7,8 @@ import 'package:flclashx/clash/core.dart';
 import 'package:flclashx/common/common.dart';
 import 'package:flclashx/enum/enum.dart';
 import 'package:flclashx/state.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flclashx/utils/device_info_service.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'clash_config.dart';
 
@@ -32,7 +32,7 @@ class SubscriptionInfo with _$SubscriptionInfo {
   factory SubscriptionInfo.formHString(String? info) {
     if (info == null) return const SubscriptionInfo();
     final list = info.split(";");
-    Map<String, int?> map = {};
+    final map = <String, int?>{};
     for (final i in list) {
       final keyValue = i.trim().split("=");
       map[keyValue[0]] = int.tryParse(keyValue[1]);
@@ -80,14 +80,12 @@ class Profile with _$Profile {
   factory Profile.normal({
     String? label,
     String url = '',
-  }) {
-    return Profile(
+  }) => Profile(
       label: label,
       url: url,
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       autoUpdateDuration: defaultUpdateDuration,
     );
-  }
 }
 
 @freezed
@@ -179,7 +177,7 @@ extension ProfileExtension on Profile {
 
   Future<bool> check() async {
     final profilePath = await appPath.getProfilePath(id);
-    return await File(profilePath).exists();
+    return File(profilePath).exists();
   }
 
   Future<File> getFile() async {
@@ -198,7 +196,7 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update({bool shouldSendHeaders = true}) async {
-    final Map<String, dynamic> headers = {};
+    final headers = <String, dynamic>{};
 
     if (shouldSendHeaders) {
       final deviceInfoService = DeviceInfoService();
@@ -266,7 +264,7 @@ extension ProfileExtension on Profile {
     
     globalState.appController.applySubscriptionSettings(parsedSettings);
 
-    return await copyWith(
+    return copyWith(
       label: label ?? utils.getFileNameForDisposition(disposition) ?? id,
       subscriptionInfo: SubscriptionInfo.formHString(userinfo),
       announceText: announce,

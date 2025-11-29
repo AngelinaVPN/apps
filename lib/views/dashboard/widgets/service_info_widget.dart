@@ -37,13 +37,11 @@ class ServiceInfoWidget extends ConsumerWidget {
       logoUrl,
       width: 28,
       height: 28,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
+      errorBuilder: (context, error, stackTrace) => Icon(
           Icons.contact_mail,
           size: 28,
           color: context.colorScheme.primary,
-        );
-      },
+        ),
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Icon(

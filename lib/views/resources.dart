@@ -14,10 +14,6 @@ import 'package:path/path.dart' hide context;
 
 @immutable
 class GeoItem {
-  final String label;
-  final String key;
-  final String fileName;
-  final String geoType;
 
   const GeoItem({
     required this.label,
@@ -25,6 +21,10 @@ class GeoItem {
     required this.fileName,
     required this.geoType,
   });
+  final String label;
+  final String key;
+  final String fileName;
+  final String geoType;
 }
 
 class ResourcesView extends ConsumerStatefulWidget {
@@ -59,7 +59,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
     try {
       setState(() => _currentlyUpdating = "GeoIP.dat");
       try {
-        final result1 = await clashCore.updateGeoData(UpdateGeoDataParams(geoType: "GeoIp", geoName: "GeoIP.dat"));
+        final result1 = await clashCore.updateGeoData(const UpdateGeoDataParams(geoType: "GeoIp", geoName: "GeoIP.dat"));
         if (result1.isNotEmpty) {
           throw Exception("GeoIP.dat: $result1");
         }
@@ -69,7 +69,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
       
       setState(() => _currentlyUpdating = "geoip.metadb");
       try {
-        final result2 = await clashCore.updateGeoData(UpdateGeoDataParams(geoType: "MMDB", geoName: "geoip.metadb"));
+        final result2 = await clashCore.updateGeoData(const UpdateGeoDataParams(geoType: "MMDB", geoName: "geoip.metadb"));
         if (result2.isNotEmpty) {
           throw Exception("geoip.metadb: $result2");
         }
@@ -79,7 +79,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
       
       setState(() => _currentlyUpdating = "GeoSite.dat");
       try {
-        final result3 = await clashCore.updateGeoData(UpdateGeoDataParams(geoType: "GeoSite", geoName: "GeoSite.dat"));
+        final result3 = await clashCore.updateGeoData(const UpdateGeoDataParams(geoType: "GeoSite", geoName: "GeoSite.dat"));
         if (result3.isNotEmpty) {
           throw Exception("GeoSite.dat: $result3");
         }
@@ -89,7 +89,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
       
       setState(() => _currentlyUpdating = "ASN.mmdb");
       try {
-        final result4 = await clashCore.updateGeoData(UpdateGeoDataParams(geoType: "ASN", geoName: "ASN.mmdb"));
+        final result4 = await clashCore.updateGeoData(const UpdateGeoDataParams(geoType: "ASN", geoName: "ASN.mmdb"));
         if (result4.isNotEmpty) {
           throw Exception("ASN.mmdb: $result4");
         }
@@ -148,11 +148,9 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
                 onUpdateStatusChanged: _setFileUpdating,
               );
             },
-            separatorBuilder: (BuildContext context, int index) {
-              return const Divider(
+            separatorBuilder: (context, index) => const Divider(
                 height: 0,
-              );
-            },
+              ),
             itemCount: geoItems.length,
           ),
         ),
@@ -164,7 +162,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 4,
-                offset: Offset(0, -2),
+                offset: const Offset(0, -2),
               ),
             ],
           ),
@@ -172,8 +170,7 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
             child: SizedBox(
               width: double.infinity,
               child: Builder(
-                builder: (context) {
-                  return FilledButton.icon(
+                builder: (context) => FilledButton.icon(
                     icon: _isUpdatingAll
                         ? SizedBox(
                             width: 20,
@@ -185,15 +182,14 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
                               ),
                             ),
                           )
-                        : Icon(Icons.sync),
+                        : const Icon(Icons.sync),
                     label: Text(AppLocalizations.of(context).updateAllGeoData),
                     onPressed: (_isUpdatingAll || _individuallyUpdating.isNotEmpty)
                         ? null
                         : () async {
-                            await globalState.safeRun(() => _updateAllGeoFiles());
+                            await globalState.safeRun(_updateAllGeoFiles);
                           },
-                  );
-                },
+                  ),
               ),
             ),
           ),
@@ -204,10 +200,6 @@ class _ResourcesViewState extends ConsumerState<ResourcesView> {
 }
 
 class GeoDataListItem extends StatefulWidget {
-  final GeoItem geoItem;
-  final bool isGlobalUpdating;
-  final String? currentlyUpdatingFile;
-  final void Function(String fileName, bool isUpdating) onUpdateStatusChanged;
 
   const GeoDataListItem({
     super.key,
@@ -216,6 +208,10 @@ class GeoDataListItem extends StatefulWidget {
     this.currentlyUpdatingFile,
     required this.onUpdateStatusChanged,
   });
+  final GeoItem geoItem;
+  final bool isGlobalUpdating;
+  final String? currentlyUpdatingFile;
+  final void Function(String fileName, bool isUpdating) onUpdateStatusChanged;
 
   @override
   State<GeoDataListItem> createState() => _GeoDataListItemState();
@@ -303,16 +299,14 @@ class _GeoDataListItemState extends State<GeoDataListItem> {
     return ref.read(patchClashConfigProvider.select((state) => state.geoXUrl.toJson()[geoItem.key]));
   }
 
-  Widget _buildSubtitle() {
-    return Consumer(
-      builder: (_, ref, __) {
-        return FutureBuilder<String?>(
+  Widget _buildSubtitle() => Consumer(
+      builder: (_, ref, __) => FutureBuilder<String?>(
           future: _getActiveGeoUrl(ref),
           builder: (context, urlSnapshot) {
             final url = urlSnapshot.data;
             
             if (url == null) {
-              return SizedBox();
+              return const SizedBox();
             }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,7 +324,7 @@ class _GeoDataListItemState extends State<GeoDataListItem> {
                       ? SizedBox(
                           width: height,
                           height: height,
-                          child: CircularProgressIndicator(
+                          child: const CircularProgressIndicator(
                             strokeWidth: 2,
                           ),
                         )
@@ -348,10 +342,8 @@ class _GeoDataListItemState extends State<GeoDataListItem> {
               ],
             );
           },
-        );
-      },
+        ),
     );
-  }
 
 
 
@@ -369,7 +361,7 @@ class _GeoDataListItemState extends State<GeoDataListItem> {
       title: Text(geoItem.label),
       subtitle: _buildSubtitle(),
       trailing: (_isUpdating || isThisFileUpdating)
-          ? SizedBox(
+          ? const SizedBox(
               width: 24,
               height: 24,
               child: CircularProgressIndicator(
@@ -377,7 +369,7 @@ class _GeoDataListItemState extends State<GeoDataListItem> {
               ),
             )
           : IconButton(
-              icon: Icon(Icons.sync),
+              icon: const Icon(Icons.sync),
               tooltip: appLocalizations.update,
               onPressed: isDisabled ? null : _updateGeoFile,
             ),
@@ -386,12 +378,12 @@ class _GeoDataListItemState extends State<GeoDataListItem> {
 }
 
 class UpdateGeoUrlFormDialog extends StatefulWidget {
-  final String title;
-  final String url;
-  final String? defaultValue;
 
   const UpdateGeoUrlFormDialog(
       {super.key, required this.title, required this.url, this.defaultValue});
+  final String title;
+  final String url;
+  final String? defaultValue;
 
   @override
   State<UpdateGeoUrlFormDialog> createState() => _UpdateGeoUrlFormDialogState();
@@ -406,22 +398,21 @@ class _UpdateGeoUrlFormDialogState extends State<UpdateGeoUrlFormDialog> {
     urlController = TextEditingController(text: widget.url);
   }
 
-  _handleReset() async {
+  Future<void> _handleReset() async {
     if (widget.defaultValue == null) {
       return;
     }
     Navigator.of(context).pop<String>(widget.defaultValue);
   }
 
-  _handleUpdate() async {
+  Future<void> _handleUpdate() async {
     final url = urlController.value.text;
     if (url.isEmpty) return;
     Navigator.of(context).pop<String>(url);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return CommonDialog(
+  Widget build(BuildContext context) => CommonDialog(
       title: widget.title,
       actions: [
         if (widget.defaultValue != null &&
@@ -453,5 +444,4 @@ class _UpdateGeoUrlFormDialogState extends State<UpdateGeoUrlFormDialog> {
         ],
       ),
     );
-  }
 }

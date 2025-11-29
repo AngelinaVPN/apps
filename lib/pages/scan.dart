@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:math';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flclashx/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:file_picker/file_picker.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -43,15 +44,15 @@ class _ScanPageState extends State<ScanPage> {
     } 
 
     else {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         imagePath = image.path;
       }
     }
 
     if (imagePath != null) {
-      final BarcodeCapture? result = await _scannerController.analyzeImage(imagePath);
+      final result = await _scannerController.analyzeImage(imagePath);
       if (result != null && result.barcodes.isNotEmpty) {
         _handleBarcode(result);
       } else {
@@ -70,7 +71,7 @@ class _ScanPageState extends State<ScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    double sideLength = min(400, MediaQuery.of(context).size.width * 0.67);
+    final double sideLength = min(400, MediaQuery.of(context).size.width * 0.67);
     
     final screenSize = MediaQuery.of(context).size;
     final scanWindow = Rect.fromCenter(
@@ -113,7 +114,7 @@ class _ScanPageState extends State<ScanPage> {
                     }
                   },
                 ),
-                onPressed: () => _scannerController.toggleTorch(),
+                onPressed: _scannerController.toggleTorch,
               ),
             ],
           ),
@@ -192,8 +193,6 @@ class ScannerOverlay extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ScannerOverlay oldDelegate) {
-    return scanWindow != oldDelegate.scanWindow ||
+  bool shouldRepaint(ScannerOverlay oldDelegate) => scanWindow != oldDelegate.scanWindow ||
         borderRadius != oldDelegate.borderRadius;
-  }
 }

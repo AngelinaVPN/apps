@@ -254,7 +254,7 @@ ProfilesSelectorState profilesSelectorState(Ref ref) {
   final profiles = ref.watch(profilesProvider);
   final columns = ref.watch(
     viewWidthProvider.select(
-      (state) => utils.getProfilesColumns(state),
+      utils.getProfilesColumns,
     ),
   );
   return ProfilesSelectorState(
@@ -266,9 +266,7 @@ ProfilesSelectorState profilesSelectorState(Ref ref) {
 
 @riverpod
 ProxiesListSelectorState proxiesListSelectorState(Ref ref) {
-  final groupNames = ref.watch(currentGroupsStateProvider.select((state) {
-    return state.value.map((e) => e.name).toList();
-  }));
+  final groupNames = ref.watch(currentGroupsStateProvider.select((state) => state.value.map((e) => e.name).toList()));
   final currentUnfoldSet = ref.watch(unfoldSetProvider);
   final proxiesStyle = ref.watch(proxiesStyleSettingProvider);
   final sortNum = ref.watch(sortNumProvider);
@@ -293,9 +291,7 @@ ProxiesListSelectorState proxiesListSelectorState(Ref ref) {
 ProxiesSelectorState proxiesSelectorState(Ref ref) {
   final groupNames = ref.watch(
     currentGroupsStateProvider.select(
-      (state) {
-        return state.value.map((e) => e.name).toList();
-      },
+      (state) => state.value.map((e) => e.name).toList(),
     ),
   );
   final currentGroupName = ref.watch(currentProfileProvider.select(
@@ -308,17 +304,13 @@ ProxiesSelectorState proxiesSelectorState(Ref ref) {
 }
 
 @riverpod
-GroupNamesState groupNamesState(Ref ref) {
-  return GroupNamesState(
+GroupNamesState groupNamesState(Ref ref) => GroupNamesState(
     groupNames: ref.watch(
       currentGroupsStateProvider.select(
-        (state) {
-          return state.value.map((e) => e.name).toList();
-        },
+        (state) => state.value.map((e) => e.name).toList(),
       ),
     ),
   );
-}
 
 @riverpod
 ProxyGroupSelectorState proxyGroupSelectorState(Ref ref, String groupName) {
@@ -334,9 +326,7 @@ ProxyGroupSelectorState proxyGroupSelectorState(Ref ref, String groupName) {
   final columns = ref.watch(getProxiesColumnsProvider);
   final query =
       ref.watch(proxiesQueryProvider.select((state) => state.toLowerCase()));
-  final proxies = group?.all.where((item) {
-        return item.name.toLowerCase().contains(query);
-      }).toList() ??
+  final proxies = group?.all.where((item) => item.name.toLowerCase().contains(query)).toList() ??
       [];
   return ProxyGroupSelectorState(
     testUrl: group?.testUrl,
@@ -363,8 +353,7 @@ PackageListSelectorState packageListSelectorState(Ref ref) {
 @riverpod
 MoreToolsSelectorState moreToolsSelectorState(Ref ref) {
   final viewMode = ref.watch(viewModeProvider);
-  final navigationItems = ref.watch(navigationsStateProvider.select((state) {
-    return state.value.where((element) {
+  final navigationItems = ref.watch(navigationsStateProvider.select((state) => state.value.where((element) {
       final isMore = element.modes.contains(NavigationItemMode.more);
       final isDesktop = element.modes.contains(NavigationItemMode.desktop);
       if (isMore && !isDesktop) return true;
@@ -372,8 +361,7 @@ MoreToolsSelectorState moreToolsSelectorState(Ref ref) {
         return false;
       }
       return true;
-    }).toList();
-  }));
+    }).toList()));
 
   return MoreToolsSelectorState(navigationItems: navigationItems);
 }
@@ -442,8 +430,7 @@ Set<String> unfoldSet(Ref ref) {
 }
 
 @riverpod
-HotKeyAction getHotKeyAction(Ref ref, HotAction hotAction) {
-  return ref.watch(
+HotKeyAction getHotKeyAction(Ref ref, HotAction hotAction) => ref.watch(
     hotKeyActionsProvider.select(
       (state) {
         final index = state.indexWhere((item) => item.action == hotAction);
@@ -455,7 +442,6 @@ HotKeyAction getHotKeyAction(Ref ref, HotAction hotAction) {
       },
     ),
   );
-}
 
 @riverpod
 Profile? currentProfile(Ref ref) {
@@ -540,13 +526,11 @@ String getProxyDesc(Ref ref, Proxy proxy) {
 @riverpod
 class ProfileOverrideState extends _$ProfileOverrideState {
   @override
-  ProfileOverrideStateModel build() {
-    return ProfileOverrideStateModel(
+  ProfileOverrideStateModel build() => const ProfileOverrideStateModel(
       selectedRules: {},
     );
-  }
 
-  updateState(
+  void updateState(
     ProfileOverrideStateModel? Function(ProfileOverrideStateModel state)
         builder,
   ) {
@@ -559,13 +543,11 @@ class ProfileOverrideState extends _$ProfileOverrideState {
 }
 
 @riverpod
-OverrideData? getProfileOverrideData(Ref ref, String profileId) {
-  return ref.watch(
+OverrideData? getProfileOverrideData(Ref ref, String profileId) => ref.watch(
     profilesProvider.select(
       (state) => state.getProfile(profileId)?.overrideData,
     ),
   );
-}
 
 @riverpod
 VM2? layoutChange(Ref ref) {

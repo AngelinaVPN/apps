@@ -6,7 +6,6 @@ import 'package:flclashx/models/models.dart';
 import 'package:flclashx/providers/app.dart';
 import 'package:flclashx/providers/config.dart';
 import 'package:flclashx/providers/state.dart';
-import 'package:flclashx/state.dart';
 import 'package:flclashx/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +31,7 @@ class _ProxiesListViewState extends State<ProxiesListView> {
       currentIndex: 0,
     ),
   );
-  List<double> _headerOffset = [];
+  final List<double> _headerOffset = [];
   GroupNameProxiesMap _lastGroupNameProxiesMap = {};
 
   int _lastGroupsVersion = 0;
@@ -44,11 +43,11 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     _controller.addListener(_adjustHeader);
   }
 
-  _adjustHeader() {
+  void _adjustHeader() {
     final offset = _controller.offset;
     final index = _headerOffset.findInterval(offset);
     final currentIndex = index;
-    double headerOffset = 0.0;
+    var headerOffset = 0.0;
     if (index + 1 <= _headerOffset.length - 1) {
       final endOffset = _headerOffset[index + 1];
       final startOffset = endOffset - listHeaderHeight - 8;
@@ -68,21 +67,6 @@ class _ProxiesListViewState extends State<ProxiesListView> {
     _controller.removeListener(_adjustHeader);
     _controller.dispose();
     super.dispose();
-  }
-
-  _handleChange(Set<String> currentUnfoldSet, String groupName) {
-    final tempUnfoldSet = Set<String>.from(currentUnfoldSet);
-    if (tempUnfoldSet.contains(groupName)) {
-      tempUnfoldSet.remove(groupName);
-    } else {
-      tempUnfoldSet.add(groupName);
-    }
-    globalState.appController.updateCurrentUnfoldSet(
-      tempUnfoldSet,
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _adjustHeader();
-    });
   }
 
   List<Widget> _buildItems(
@@ -111,13 +95,15 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                 .map<Widget>(
                   (proxy) => Flexible(
                     flex: 1,
-                    child: ProxyCard(
-                      testUrl: group.testUrl,
-                      type: type,
-                      groupType: group.type,
-                      key: ValueKey('$groupName.${proxy.name}'),
-                      proxy: proxy,
-                      groupName: groupName,
+                    child: RepaintBoundary(
+                      child: ProxyCard(
+                        testUrl: group.testUrl,
+                        type: type,
+                        groupType: group.type,
+                        key: ValueKey('$groupName.${proxy.name}'),
+                        proxy: proxy,
+                        groupName: groupName,
+                      ),
                     ),
                   ),
                 )
@@ -151,8 +137,7 @@ class _ProxiesListViewState extends State<ProxiesListView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer(
+  Widget build(BuildContext context) => Consumer(
       builder: (_, ref, __) {
         final state = ref.watch(proxiesListSelectorStateProvider);
 
@@ -187,10 +172,11 @@ class _ProxiesListViewState extends State<ProxiesListView> {
           type: state.proxyCardType,
           query: state.query,
         );
-        return CommonScrollBar(
-          controller: _controller,
-          child: Stack(
-            children: [
+        return RepaintBoundary(
+          child: CommonScrollBar(
+            controller: _controller,
+            child: Stack(
+              children: [
               Positioned.fill(
                 child: ScrollConfiguration(
                   behavior: HiddenBarScrollBehavior(),
@@ -198,29 +184,27 @@ class _ProxiesListViewState extends State<ProxiesListView> {
                     padding: const EdgeInsets.all(16),
                     controller: _controller,
                     itemCount: items.length,
-                    itemBuilder: (_, index) {
-                      return items[index];
-                    },
+                    itemBuilder: (_, index) => items[index],
                   ),
                 ),
               ),
-            ],
+              ],
+            ),
           ),
         );
       },
     );
-  }
 }
 
 class ProxyGroupCard extends StatefulWidget {
-  final Group group;
-  final List<Widget> proxies;
 
   const ProxyGroupCard({
     super.key,
     required this.group,
     required this.proxies,
   });
+  final Group group;
+  final List<Widget> proxies;
 
   @override
   State<ProxyGroupCard> createState() => _ProxyGroupCardState();
@@ -230,7 +214,7 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
     with AutomaticKeepAliveClientMixin {
   final _expansibleController = ExpansibleController();
 
-  var isLock = false;
+  bool isLock = false;
 
   String get icon => widget.group.icon;
 
@@ -240,10 +224,6 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
 
   bool get isExpand => _expansibleController.isExpanded;
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {
@@ -259,7 +239,7 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
     }
   }
 
-  _delayTest() async {
+  Future<void> _delayTest() async {
     if (isLock) return;
     isLock = true;
     await delayTest(
@@ -269,8 +249,7 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
     isLock = false;
   }
 
-  Widget _buildIcon() {
-    return Consumer(
+  Widget _buildIcon() => Consumer(
       builder: (_, ref, child) {
         final iconStyle = ref.watch(
           proxiesStyleSettingProvider.select(
@@ -297,27 +276,26 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                 right: 16,
               ),
               child: LayoutBuilder(
-                builder: (_, constraints) {
-                  return CommonTargetIcon(
+                builder: (_, constraints) => CommonTargetIcon(
                     src: icon,
                     size: 38,
-                  );
-                },
+                  ),
               ),
             ),
           ProxiesIconStyle.none => Container(),
         };
       },
     );
-  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final colorScheme = context.colorScheme;
-    return Expansible(
+    return RepaintBoundary(
+      child: Expansible(
         controller: _expansibleController,
         headerBuilder: (context, animation) => GestureDetector(
-            onTap: () => _toggleExpansion(),
+            onTap: _toggleExpansion,
             child: Container(
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerLow.opacity80,
@@ -414,13 +392,11 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                               width: 6,
                             ),
                           ] else
-                            SizedBox(
+                            const SizedBox(
                               width: 4,
                             ),
                           IconButton.filledTonal(
-                            onPressed: () {
-                              _toggleExpansion();
-                            },
+                            onPressed: _toggleExpansion,
                             icon: CommonExpandIcon(
                               expand: isExpand,
                             ),
@@ -428,16 +404,21 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                         ],
                       )
                     ]))),
-        bodyBuilder: (context, animation) => SizeTransition(
+        bodyBuilder: (context, animation) => RepaintBoundary(
+          child: SizeTransition(
             sizeFactor: animation,
             axisAlignment: -1.0,
             child: FadeTransition(
                 opacity: animation,
                 child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Column(children: widget.proxies)))),
+                    child: Column(children: widget.proxies))),
+          ),
+        ),
         expansibleBuilder: (context, header, body, animation) =>
-            Column(children: [header, body]));
+            Column(children: [header, body]),
+      ),
+    );
   }
 
   @override

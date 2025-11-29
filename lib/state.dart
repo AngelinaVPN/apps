@@ -25,6 +25,13 @@ import 'models/models.dart';
 typedef UpdateTasks = List<FutureOr Function()>;
 
 class GlobalState {
+
+  factory GlobalState() {
+    _instance ??= GlobalState._internal();
+    return _instance!;
+  }
+
+  GlobalState._internal();
   static GlobalState? _instance;
   Map<CacheTag, double> cacheScrollPosition = {};
   Map<CacheTag, FixedMap<String, double>> cacheHeightMap = {};
@@ -58,14 +65,7 @@ class GlobalState {
     isInit = true;
   }
 
-  GlobalState._internal();
-
-  factory GlobalState() {
-    _instance ??= GlobalState._internal();
-    return _instance!;
-  }
-
-  initApp(int version) async {
+  Future<void> initApp(int version) async {
     coreSHA256 = const String.fromEnvironment("CORE_SHA256");
     coreVersion = const String.fromEnvironment("CORE_VERSION");
     isPre = const String.fromEnvironment("APP_ENV") != 'stable';
@@ -81,7 +81,7 @@ class GlobalState {
     await init();
   }
 
-  _initDynamicColor() async {
+  Future<void> _initDynamicColor() async {
     try {
       corePalette = await DynamicColorPlugin.getCorePalette();
       accentColor = await DynamicColorPlugin.getAccentColor() ??
@@ -89,7 +89,7 @@ class GlobalState {
     } catch (_) {}
   }
 
-  init() async {
+  Future<void> init() async {
     packageInfo = await PackageInfo.fromPlatform();
     config = await preferences.getConfig() ??
         const Config(
@@ -104,7 +104,7 @@ class GlobalState {
 
   String get ua => config.patchClashConfig.globalUa ?? packageInfo.ua;
 
-  startUpdateTasks([UpdateTasks? tasks]) async {
+  Future<void> startUpdateTasks([UpdateTasks? tasks]) async {
     if (timer != null && timer!.isActive == true) return;
     if (tasks != null) {
       this.tasks = tasks;
@@ -115,20 +115,20 @@ class GlobalState {
     });
   }
 
-  executorUpdateTask() async {
+  Future<void> executorUpdateTask() async {
     for (final task in tasks) {
       await task();
     }
     timer = null;
   }
 
-  stopUpdateTasks() {
+  void stopUpdateTasks() {
     if (timer == null || timer?.isActive == false) return;
     timer?.cancel();
     timer = null;
   }
 
-  handleStart([UpdateTasks? tasks]) async {
+  Future<void> handleStart([UpdateTasks? tasks]) async {
     startTime ??= DateTime.now();
     await clashCore.startListener();
     await service?.startVpn();
@@ -151,11 +151,9 @@ class GlobalState {
     required InlineSpan message,
     String? confirmText,
     bool cancelable = true,
-  }) async {
-    return await showCommonDialog<bool>(
+  }) async => showCommonDialog<bool>(
       child: Builder(
-        builder: (context) {
-          return CommonDialog(
+        builder: (context) => CommonDialog(
             title: title ?? appLocalizations.tip,
             actions: [
               if (cancelable)
@@ -187,11 +185,9 @@ class GlobalState {
                 ),
               ),
             ),
-          );
-        },
+          ),
       ),
     );
-  }
 
   // Future<Map<String, dynamic>> getProfileMap(String id) async {
   //   final profilePath = await appPath.getProfilePath(id);
@@ -217,8 +213,7 @@ class GlobalState {
   Future<T?> showCommonDialog<T>({
     required Widget child,
     bool dismissible = true,
-  }) async {
-    return await showModal<T>(
+  }) async => showModal<T>(
       context: navigatorKey.currentState!.context,
       configuration: FadeScaleTransitionConfiguration(
         barrierColor: Colors.black38,
@@ -227,7 +222,6 @@ class GlobalState {
       builder: (_) => child,
       filter: commonFilter,
     );
-  }
 
   Future<T?> safeRun<T>(
     FutureOr<T> Function() futureFunction, {
@@ -253,14 +247,14 @@ class GlobalState {
     }
   }
 
-  showNotifier(String text) {
+  void showNotifier(String text) {
     if (text.isEmpty) {
       return;
     }
     navigatorKey.currentContext?.showNotifier(text);
   }
 
-  openUrl(String url) async {
+  Future<void> openUrl(String url) async {
     final res = await showMessage(
       message: TextSpan(text: url),
       title: appLocalizations.externalLink,
@@ -483,7 +477,7 @@ class GlobalState {
 
     rawConfig["profile"]["store-selected"] = false;
     
-    final Map<String, dynamic> mergedGeoXUrl = {};
+    final mergedGeoXUrl = <String, dynamic>{};
     final patchGeoX = realPatchConfig.geoXUrl.toJson();
     final profileGeoX = rawConfig["geox-url"];
     
@@ -583,6 +577,13 @@ class GlobalState {
 final globalState = GlobalState();
 
 class DetectionState {
+
+  factory DetectionState() {
+    _instance ??= DetectionState._internal();
+    return _instance!;
+  }
+
+  DetectionState._internal();
   static DetectionState? _instance;
   bool? _preIsStart;
   Timer? _setTimeoutTimer;
@@ -596,14 +597,7 @@ class DetectionState {
     ),
   );
 
-  DetectionState._internal();
-
-  factory DetectionState() {
-    _instance ??= DetectionState._internal();
-    return _instance!;
-  }
-
-  startCheck() {
+  void startCheck() {
     debouncer.call(
       FunctionTag.checkIp,
       _checkIp,
@@ -613,7 +607,7 @@ class DetectionState {
     );
   }
 
-  _checkIp() async {
+  Future<void> _checkIp() async {
     final appState = globalState.appState;
     final isInit = appState.isInit;
     if (!isInit) return;
@@ -665,7 +659,7 @@ class DetectionState {
     });
   }
 
-  _clearSetTimeoutTimer() {
+  void _clearSetTimeoutTimer() {
     if (_setTimeoutTimer != null) {
       _setTimeoutTimer?.cancel();
       _setTimeoutTimer = null;

@@ -24,30 +24,28 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
   bool _isTab = false;
 
   @override
-  get actions => [
+  List<Widget> get actions => [
         if (_isTab)
           IconButton(
             onPressed: () {
               _proxiesTabKey.currentState?.scrollToGroupSelected();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.adjust,
               weight: 1,
             ),
           ),
         CommonPopupBox(
-          targetBuilder: (open) {
-            return IconButton(
+          targetBuilder: (open) => IconButton(
               onPressed: () {
                 open(
-                  offset: Offset(0, 20),
+                  offset: const Offset(0, 20),
                 );
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.more_vert,
               ),
-            );
-          },
+            ),
           popup: CommonPopupMenu(
             items: [
               PopupMenuItemData(
@@ -56,16 +54,14 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                 onPressed: () {
                   showSheet(
                     context: context,
-                    props: SheetProps(
+                    props: const SheetProps(
                       isScrollControlled: true,
                     ),
-                    builder: (_, type) {
-                      return AdaptiveSheetScaffold(
+                    builder: (_, type) => AdaptiveSheetScaffold(
                         type: type,
                         body: const ProxiesSetting(),
                         title: appLocalizations.settings,
-                      );
-                    },
+                      ),
                   );
                 },
               ),
@@ -76,11 +72,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                   onPressed: () {
                     showExtend(
                       context,
-                      builder: (_, type) {
-                        return ProvidersView(
+                      builder: (_, type) => ProvidersView(
                           type: type,
-                        );
-                      },
+                        ),
                     );
                   },
                 ),
@@ -91,13 +85,11 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                   onPressed: () {
                     showExtend(
                       context,
-                      builder: (_, type) {
-                        return AdaptiveSheetScaffold(
+                      builder: (_, type) => AdaptiveSheetScaffold(
                           type: type,
                           body: const _IconConfigView(),
                           title: appLocalizations.iconConfiguration,
-                        );
-                      },
+                        ),
                     );
                   },
                 ),
@@ -107,7 +99,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
       ];
 
   @override
-  get onSearch => (value) {
+  Null Function(String value) get onSearch => (value) {
         ref.read(proxiesQueryProvider.notifier).value = value;
       };
 
@@ -122,7 +114,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
   }
 
   @override
-  get floatingActionButton => _isTab
+  DelayTestButton? get floatingActionButton => _isTab
       ? DelayTestButton(
           onClick: () async {
             await _proxiesTabKey.currentState?.delayTestCurrentGroup();
@@ -138,11 +130,9 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
           onPressed: () {
             showExtend(
               context,
-              builder: (_, type) {
-                return ProvidersView(
+              builder: (_, type) => ProvidersView(
                   type: type,
-                );
-              },
+                ),
             );
           },
           icon: const Icon(
@@ -162,13 +152,11 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
               onPressed: () {
                 showExtend(
                   context,
-                  builder: (_, type) {
-                    return AdaptiveSheetScaffold(
+                  builder: (_, type) => AdaptiveSheetScaffold(
                       type: type,
                       body: const _IconConfigView(),
                       title: appLocalizations.iconConfiguration,
-                    );
-                  },
+                    ),
                 );
               },
               icon: const Icon(
@@ -179,16 +167,14 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
         onPressed: () {
           showSheet(
             context: context,
-            props: SheetProps(
+            props: const SheetProps(
               isScrollControlled: true,
             ),
-            builder: (_, type) {
-              return AdaptiveSheetScaffold(
+            builder: (_, type) => AdaptiveSheetScaffold(
                 type: type,
                 body: const ProxiesSetting(),
                 title: appLocalizations.settings,
-              );
-            },
+              ),
           );
         },
         icon: const Icon(

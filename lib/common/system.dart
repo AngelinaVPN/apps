@@ -9,15 +9,15 @@ import 'package:flclashx/widgets/input.dart';
 import 'package:flutter/services.dart';
 
 class System {
-  static System? _instance;
-  List<String>? originDns;
-
-  System._internal();
 
   factory System() {
     _instance ??= System._internal();
     return _instance!;
   }
+
+  System._internal();
+  static System? _instance;
+  List<String>? originDns;
 
   bool get isDesktop =>
       Platform.isWindows || Platform.isLinux || Platform.isMacOS;
@@ -41,7 +41,7 @@ class System {
   }
 
   Future<bool> checkIsAdmin() async {
-    final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
+    final corePath = appPath.corePath.replaceAll(' ', r'\\ ');
     if (Platform.isWindows) {
       final result = await windows?.checkService();
       return result == WindowsHelperServiceStatus.running;
@@ -72,7 +72,7 @@ class System {
       return AuthorizeCode.none;
     }
 
-    final corePath = appPath.corePath.replaceAll(' ', '\\\\ ');
+    final corePath = appPath.corePath.replaceAll(' ', r'\\ ');
     final isAdmin = await checkIsAdmin();
     if (isAdmin) {
       return AuthorizeCode.none;
@@ -163,7 +163,7 @@ class System {
     return originDns;
   }
 
-  setMacOSDns(bool restore) async {
+  Future<void> setMacOSDns(bool restore) async {
     if (!Platform.isMacOS) {
       return;
     }
@@ -199,12 +199,12 @@ class System {
     );
   }
 
-  back() async {
+  Future<void> back() async {
     await app?.moveTaskToBack();
     await window?.hide();
   }
 
-  exit() async {
+  Future<void> exit() async {
     if (Platform.isAndroid) {
       await SystemNavigator.pop();
     }

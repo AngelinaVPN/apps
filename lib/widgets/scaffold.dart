@@ -10,18 +10,6 @@ import 'package:flutter/services.dart';
 import 'chip.dart';
 
 class CommonScaffold extends StatefulWidget {
-  final AppBar? appBar;
-  final Widget body;
-  final Widget? bottomNavigationBar;
-  final Widget? sideNavigationBar;
-  final Color? backgroundColor;
-  final String? title;
-  final Widget? leading;
-  final List<Widget>? actions;
-  final bool automaticallyImplyLeading;
-  final bool? centerTitle;
-  final AppBarEditState? appBarEditState;
-  final FloatingActionButton? floatingActionButton;
 
   const CommonScaffold({
     super.key,
@@ -58,6 +46,18 @@ class CommonScaffold extends StatefulWidget {
             },
           ),
         );
+  final AppBar? appBar;
+  final Widget body;
+  final Widget? bottomNavigationBar;
+  final Widget? sideNavigationBar;
+  final Color? backgroundColor;
+  final String? title;
+  final Widget? leading;
+  final List<Widget>? actions;
+  final bool automaticallyImplyLeading;
+  final bool? centerTitle;
+  final AppBarEditState? appBarEditState;
+  final FloatingActionButton? floatingActionButton;
 
   @override
   State<CommonScaffold> createState() => CommonScaffoldState();
@@ -79,13 +79,9 @@ class CommonScaffoldState extends State<CommonScaffold> {
     _appBarState.value = _appBarState.value.copyWith(actions: actions);
   }
 
-  bool get _isSearch {
-    return _appBarState.value.searchState?.isSearch == true;
-  }
+  bool get _isSearch => _appBarState.value.searchState?.isSearch == true;
 
-  bool get _isEdit {
-    return _appBarState.value.editState?.isEdit == true;
-  }
+  bool get _isEdit => _appBarState.value.editState?.isEdit == true;
 
   set onKeywordsUpdate(Function(List<String>)? onKeywordsUpdate) {
     _onKeywordsUpdate = onKeywordsUpdate;
@@ -101,7 +97,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
   }
 
-  updateSearchState(
+  void updateSearchState(
     AppBarSearchState? Function(AppBarSearchState? state) builder,
   ) {
     _appBarState.value = _appBarState.value.copyWith(
@@ -111,7 +107,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
   }
 
-  updateEditState(
+  void updateEditState(
     AppBarEditState? Function(AppBarEditState? state) builder,
   ) {
     _appBarState.value = _appBarState.value.copyWith(
@@ -128,8 +124,8 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 
   Widget _buildSearchingAppBarTheme(Widget child) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Theme(
       data: theme.copyWith(
         appBarTheme: theme.appBarTheme.copyWith(
@@ -170,7 +166,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     }
   }
 
-  _handleClearInput() {
+  void _handleClearInput() {
     _textController.text = "";
 
     if (_appBarState.value.searchState != null) {
@@ -178,7 +174,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     }
   }
 
-  _handleClear() {
+  void _handleClear() {
     if (_textController.text.isNotEmpty) {
       _handleClearInput();
       return;
@@ -190,7 +186,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     );
   }
 
-  _handleExitSearching() {
+  void _handleExitSearching() {
     _handleClearInput();
     updateSearchState(
       (state) => state?.copyWith(
@@ -211,7 +207,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
   void didUpdateWidget(CommonScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.title != widget.title) {
-      _appBarState.value = AppBarState();
+      _appBarState.value = const AppBarState();
       _floatingActionButton.value = null;
       _textController.text = "";
       _keywordsNotifier.value = [];
@@ -223,14 +219,14 @@ class CommonScaffoldState extends State<CommonScaffold> {
     }
   }
 
-  addKeyword(String keyword) {
+  void addKeyword(String keyword) {
     final isContains = _keywordsNotifier.value.contains(keyword);
     if (isContains) return;
     final keywords = List<String>.from(_keywordsNotifier.value)..add(keyword);
     _keywordsNotifier.value = keywords;
   }
 
-  _deleteKeyword(String keyword) {
+  void _deleteKeyword(String keyword) {
     final isContains = _keywordsNotifier.value.contains(keyword);
     if (!isContains) return;
     final keywords = List<String>.from(_keywordsNotifier.value)
@@ -242,19 +238,18 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (_isEdit) {
       return IconButton(
         onPressed: _appBarState.value.editState?.onExit,
-        icon: Icon(Icons.close),
+        icon: const Icon(Icons.close),
       );
     }
     return _isSearch
         ? IconButton(
             onPressed: _handleExitSearching,
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
           )
         : widget.leading;
   }
 
-  Widget _buildTitle(AppBarSearchState? startState) {
-    return _isSearch
+  Widget _buildTitle(AppBarSearchState? startState) => _isSearch
         ? TextField(
             autofocus: true,
             controller: _textController,
@@ -275,7 +270,6 @@ class CommonScaffoldState extends State<CommonScaffold> {
                     "${_appBarState.value.editState?.editCount ?? 0}",
                   ),
           );
-  }
 
   List<Widget> _buildActions(
     bool hasSearch,
@@ -285,7 +279,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       return genActions([
         IconButton(
           onPressed: _handleClear,
-          icon: Icon(Icons.close),
+          icon: const Icon(Icons.close),
         ),
       ]);
     }
@@ -300,7 +294,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                 ),
               );
             },
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
           ),
         ...actions
       ],
@@ -327,8 +321,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     return appBar;
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return PreferredSize(
+  PreferredSizeWidget _buildAppBar() => PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -356,8 +349,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
             widget.appBar ??
                 ValueListenableBuilder<AppBarState>(
                   valueListenable: _appBarState,
-                  builder: (_, state, __) {
-                    return _buildAppBarWrap(
+                  builder: (_, state, __) => _buildAppBarWrap(
                       AppBar(
                         centerTitle: widget.centerTitle ?? false,
                         automaticallyImplyLeading:
@@ -371,22 +363,18 @@ class CommonScaffoldState extends State<CommonScaffold> {
                               : widget.actions ?? [],
                         ),
                       ),
-                    );
-                  },
+                    ),
                 ),
             ValueListenableBuilder(
               valueListenable: _loading,
-              builder: (_, value, __) {
-                return value == true
+              builder: (_, value, __) => value == true
                     ? const LinearProgressIndicator()
-                    : Container();
-              },
+                    : Container(),
             ),
           ],
         ),
       ),
     );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -404,7 +392,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                 }
               });
               if (keywords.isEmpty) {
-                return SizedBox();
+                return const SizedBox();
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(
@@ -442,15 +430,13 @@ class CommonScaffoldState extends State<CommonScaffold> {
       floatingActionButton: widget.floatingActionButton ??
           ValueListenableBuilder<Widget?>(
             valueListenable: _floatingActionButton,
-            builder: (_, value, __) {
-              return IntrinsicWidth(
+            builder: (_, value, __) => IntrinsicWidth(
                 child: IntrinsicHeight(
                   child: FadeScaleBox(
-                    child: value ?? SizedBox(),
+                    child: value ?? const SizedBox(),
                   ),
                 ),
-              );
-            },
+              ),
           ),
       bottomNavigationBar: widget.bottomNavigationBar,
     );
@@ -469,15 +455,13 @@ class CommonScaffoldState extends State<CommonScaffold> {
   }
 }
 
-List<Widget> genActions(List<Widget> actions, {double? space}) {
-  return <Widget>[
+List<Widget> genActions(List<Widget> actions, {double? space}) => <Widget>[
     ...actions.separated(
       SizedBox(
         width: space ?? 4,
       ),
     ),
-    SizedBox(
+    const SizedBox(
       width: 8,
     )
   ];
-}

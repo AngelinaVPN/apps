@@ -5,12 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CommonDialog extends ConsumerWidget {
-  final String title;
-  final Widget? child;
-  final List<Widget>? actions;
-  final EdgeInsets? padding;
-  final bool overrideScroll;
-  final Color? backgroundColor;
 
   const CommonDialog({
     super.key,
@@ -21,9 +15,15 @@ class CommonDialog extends ConsumerWidget {
     this.overrideScroll = false,
     this.backgroundColor,
   });
+  final String title;
+  final Widget? child;
+  final List<Widget>? actions;
+  final EdgeInsets? padding;
+  final bool overrideScroll;
+  final Color? backgroundColor;
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = ref.watch(viewSizeProvider);
     return AlertDialog(
       title: Text(title),
@@ -50,15 +50,15 @@ class CommonDialog extends ConsumerWidget {
 }
 
 class CommonModal extends ConsumerWidget {
-  final Widget? child;
 
   const CommonModal({
     super.key,
     this.child,
   });
+  final Widget? child;
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = ref.watch(viewSizeProvider);
     return Center(
       child: Container(

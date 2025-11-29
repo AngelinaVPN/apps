@@ -2,13 +2,13 @@
 
 import 'dart:io';
 
+import 'package:flclashx/views/dashboard/widgets/announce_widget.dart';
+import 'package:flclashx/views/dashboard/widgets/metainfo_widget.dart';
 import 'package:flclashx/views/dashboard/widgets/widgets.dart';
 import 'package:flclashx/widgets/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
-import 'package:flclashx/views/dashboard/widgets/announce_widget.dart';
-import 'package:flclashx/views/dashboard/widgets/metainfo_widget.dart';
 
 enum SupportPlatform {
   Windows,
@@ -43,8 +43,7 @@ enum GroupType {
   LoadBalance,
   Relay;
 
-  static GroupType parseProfileType(String type) {
-    return switch (type) {
+  static GroupType parseProfileType(String type) => switch (type) {
       "url-test" => URLTest,
       "select" => Selector,
       "fallback" => Fallback,
@@ -52,7 +51,6 @@ enum GroupType {
       "relay" => Relay,
       String() => throw UnimplementedError(),
     };
-  }
 }
 
 enum GroupName { GLOBAL, Proxy, Auto, Fallback }
@@ -64,9 +62,7 @@ extension GroupTypeExtension on GroupType {
       )
       .toList();
 
-  bool get isComputedSelected {
-    return [GroupType.URLTest, GroupType.Fallback].contains(this);
-  }
+  bool get isComputedSelected => [GroupType.URLTest, GroupType.Fallback].contains(this);
 
   static GroupType? getGroupType(String value) {
     final index = GroupTypeExtension.valueList.indexOf(value);
@@ -210,8 +206,7 @@ enum KeyboardModifier {
 }
 
 extension KeyboardModifierExt on KeyboardModifier {
-  HotKeyModifier toHotKeyModifier() {
-    return switch (this) {
+  HotKeyModifier toHotKeyModifier() => switch (this) {
       KeyboardModifier.alt => HotKeyModifier.alt,
       KeyboardModifier.capsLock => HotKeyModifier.capsLock,
       KeyboardModifier.control => HotKeyModifier.control,
@@ -219,7 +214,6 @@ extension KeyboardModifierExt on KeyboardModifier {
       KeyboardModifier.meta => HotKeyModifier.meta,
       KeyboardModifier.shift => HotKeyModifier.shift,
     };
-  }
 }
 
 enum HotAction {
@@ -439,7 +433,7 @@ extension DashboardWidgetParser on DashboardWidget {
 
     final widgetNames =
         layoutString.split(',').map((e) => e.trim().toLowerCase()).toList();
-    final List<DashboardWidget> result = [];
+    final result = <DashboardWidget>[];
 
     for (final name in widgetNames) {
       try {

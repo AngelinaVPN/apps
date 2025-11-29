@@ -11,9 +11,6 @@ import 'package:flclashx/state.dart';
 import 'package:flutter/cupertino.dart';
 
 class Request {
-  late final Dio _dio;
-  late final Dio _clashDio;
-  String? userAgent;
 
   Request() {
     _dio = Dio(
@@ -26,22 +23,25 @@ class Request {
     _clashDio = Dio();
     _clashDio.httpClientAdapter = IOHttpClientAdapter(createHttpClient: () {
       final client = HttpClient();
-      client.findProxy = (Uri uri) {
+      client.findProxy = (uri) {
         client.userAgent = globalState.ua;
         return FlClashHttpOverrides.handleFindProxy(uri);
       };
       return client;
     });
   }
+  late final Dio _dio;
+  late final Dio _clashDio;
+  String? userAgent;
 
   Future<Response<Uint8List>> getFileResponseForUrl(
     String url, {
     Map<String, dynamic>? headers,
   }) async {
-    final Map<String, dynamic> requestHeaders = headers ?? {};
+    final requestHeaders = headers ?? {};
     requestHeaders['User-Agent'] = globalState.ua;
 
-    var firstResponse = await _dio.get<Uint8List>(
+    final firstResponse = await _dio.get<Uint8List>(
       url,
       options: Options(
         responseType: ResponseType.bytes,
@@ -123,7 +123,7 @@ class Request {
   Future<Result<IpInfo?>> checkIp({CancelToken? cancelToken}) async {
     var failureCount = 0;
     final futures = _ipInfoSources.entries.map((source) async {
-      final Completer<Result<IpInfo?>> completer = Completer();
+      final completer = Completer<Result<IpInfo?>>();
       final future = Dio().get<Map<String, dynamic>>(
         source.key,
         cancelToken: cancelToken,

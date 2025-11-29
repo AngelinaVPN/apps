@@ -16,18 +16,18 @@ abstract mixin class TileListener {
 
 class Tile {
 
-  final MethodChannel _channel = const MethodChannel('tile');
-
   Tile._() {
     _channel.setMethodCallHandler(_methodCallHandler);
   }
+
+  final MethodChannel _channel = const MethodChannel('tile');
 
   static final Tile instance = Tile._();
 
   final ObserverList<TileListener> _listeners = ObserverList<TileListener>();
 
   Future<void> _methodCallHandler(MethodCall call) async {
-    for (final TileListener listener in _listeners) {
+    for (final listener in _listeners) {
       switch (call.method) {
         case "start":
           listener.onStart();
@@ -42,9 +42,7 @@ class Tile {
     }
   }
 
-  bool get hasListeners {
-    return _listeners.isNotEmpty;
-  }
+  bool get hasListeners => _listeners.isNotEmpty;
 
   void addListener(TileListener listener) {
     _listeners.add(listener);

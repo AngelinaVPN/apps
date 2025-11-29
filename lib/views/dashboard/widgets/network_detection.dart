@@ -14,19 +14,18 @@ class NetworkDetection extends ConsumerStatefulWidget {
 }
 
 class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
-  _countryCodeToEmoji(String countryCode) {
-    final String code = countryCode.toUpperCase();
+  String _countryCodeToEmoji(String countryCode) {
+    final code = countryCode.toUpperCase();
     if (code.length != 2) {
       return countryCode;
     }
-    final int firstLetter = code.codeUnitAt(0) - 0x41 + 0x1F1E6;
-    final int secondLetter = code.codeUnitAt(1) - 0x41 + 0x1F1E6;
+    final firstLetter = code.codeUnitAt(0) - 0x41 + 0x1F1E6;
+    final secondLetter = code.codeUnitAt(1) - 0x41 + 0x1F1E6;
     return String.fromCharCode(firstLetter) + String.fromCharCode(secondLetter);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
+  Widget build(BuildContext context) => SizedBox(
       height: getWidgetHeight(1),
       child: ValueListenableBuilder<NetworkDetectionState>(
         valueListenable: detectionState.state,
@@ -84,7 +83,7 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 2),
+                      const SizedBox(width: 2),
                       AspectRatio(
                         aspectRatio: 1,
                         child: IconButton(
@@ -156,5 +155,4 @@ class _NetworkDetectionState extends ConsumerState<NetworkDetection> {
         },
       ),
     );
-  }
 }

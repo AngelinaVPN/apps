@@ -84,9 +84,7 @@ const viewModeColumnsMap = {
 
 const defaultPrimaryColor = 0xFF03A9F4;
 
-double getWidgetHeight(num lines) {
-  return max(lines * 84 + (lines - 1) * 16, 0).ap;
-}
+double getWidgetHeight(num lines) => max(lines * 84 + (lines - 1) * 16, 0).ap;
 
 const maxLength = 150;
 

@@ -12,12 +12,12 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:win32/win32.dart';
 
 class TrayManager extends ConsumerStatefulWidget {
-  final Widget child;
 
   const TrayManager({
     super.key,
     required this.child,
   });
+  final Widget child;
 
   @override
   ConsumerState<TrayManager> createState() => _TrayContainerState();
@@ -47,8 +47,8 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
     if (!Platform.isWindows) return;
 
     _menuMonitor?.cancel();
-    bool themeApplied = false;
-    int waitCycles = 0;
+    var themeApplied = false;
+    var waitCycles = 0;
 
     _menuMonitor = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       try {
@@ -130,9 +130,7 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 
   @override
   void onTrayIconRightMouseDown() {
@@ -148,13 +146,13 @@ class _TrayContainerState extends ConsumerState<TrayManager> with TrayListener {
   }
 
   @override
-  onTrayIconMouseDown() {
+  void onTrayIconMouseDown() {
     _closeWindowsPopupMenu();
     window?.show();
   }
 
   @override
-  dispose() {
+  void dispose() {
     _stopMenuMonitor();
     trayManager.removeListener(this);
     super.dispose();

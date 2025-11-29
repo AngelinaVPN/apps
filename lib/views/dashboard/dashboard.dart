@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'widgets/start_button.dart';
 
-typedef _IsEditWidgetBuilder = Widget Function(bool isEdit);
 
 class DashboardView extends ConsumerStatefulWidget {
   const DashboardView({super.key});
@@ -25,7 +24,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
   final _addedWidgetsNotifier = ValueNotifier<List<GridItem>>([]);
 
   @override
-  initState() {
+  void initState() {
     ref.listenManual(
       isCurrentPageProvider(PageLabel.dashboard),
       (prev, next) {
@@ -39,7 +38,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
   }
 
   @override
-  dispose() {
+  void dispose() {
     _isEditNotifier.dispose();
     super.dispose();
   }
@@ -47,19 +46,14 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
   @override
   Widget? get floatingActionButton => null; // Moved to bottom of body
 
-  Widget _buildIsEdit(_IsEditWidgetBuilder builder) {
-    return ValueListenableBuilder(
+  Widget _buildIsEdit(Widget Function(bool) builder) => ValueListenableBuilder(
       valueListenable: _isEditNotifier,
-      builder: (_, isEdit, ___) {
-        return builder(isEdit);
-      },
+      builder: (_, isEdit, ___) => builder(isEdit),
     );
-  }
 
   @override
   List<Widget> get actions => [
-        _buildIsEdit((isEdit) {
-          return isEdit
+        _buildIsEdit((isEdit) => isEdit
               ? ValueListenableBuilder(
                   valueListenable: _addedWidgetsNotifier,
                   builder: (_, addedChildren, child) {
@@ -69,16 +63,13 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
                     return child!;
                   },
                   child: IconButton(
-                    onPressed: () {
-                      _showAddWidgetsModal();
-                    },
+                    onPressed: _showAddWidgetsModal,
                     icon: const Icon(
                       Icons.add_circle,
                     ),
                   ),
                 )
-              : const SizedBox();
-        }),
+              : const SizedBox()),
         Consumer(
           builder: (context, ref, child) {
             final denyEditing = ref.watch(currentProfileProvider
@@ -89,26 +80,22 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
             }
 
             return IconButton(
-              icon: _buildIsEdit((isEdit) {
-                return isEdit
+              icon: _buildIsEdit((isEdit) => isEdit
                     ? const Icon(Icons.save)
                     : const Icon(
                         Icons.edit,
-                      );
-              }),
+                      )),
               onPressed: _handleUpdateIsEdit,
             );
           },
         ),
       ];
 
-  _showAddWidgetsModal() {
+  void _showAddWidgetsModal() {
     showSheet(
-      builder: (_, type) {
-        return ValueListenableBuilder(
+      builder: (_, type) => ValueListenableBuilder(
           valueListenable: _addedWidgetsNotifier,
-          builder: (_, value, __) {
-            return AdaptiveSheetScaffold(
+          builder: (_, value, __) => AdaptiveSheetScaffold(
               type: type,
               body: _AddDashboardWidgetModal(
                 items: value,
@@ -117,22 +104,20 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
                 },
               ),
               title: appLocalizations.add,
-            );
-          },
-        );
-      },
+            ),
+        ),
       context: context,
     );
   }
 
-  _handleUpdateIsEdit() {
+  void _handleUpdateIsEdit() {
     if (_isEditNotifier.value == true) {
       _handleSave();
     }
     _isEditNotifier.value = !_isEditNotifier.value;
   }
 
-  _handleSave() {
+  void _handleSave() {
     final children = key.currentState?.children;
     if (children == null) {
       return;
@@ -140,7 +125,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final dashboardWidgets = children
           .map(
-            (item) => DashboardWidget.getDashboardWidget(item),
+            DashboardWidget.getDashboardWidget,
           )
           .toList();
       ref.read(appSettingProvider.notifier).updateState(
@@ -186,8 +171,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
               padding: const EdgeInsets.all(16).copyWith(
                 bottom: 16,
               ),
-              child: _buildIsEdit((isEdit) {
-                return isEdit
+              child: _buildIsEdit((isEdit) => isEdit
                     ? SystemBackBlock(
                         child: CommonPopScope(
                           child: SuperGrid(
@@ -195,6 +179,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
                             crossAxisCount: columns,
                             crossAxisSpacing: spacing,
                             mainAxisSpacing: spacing,
+                            onUpdate: _handleSave,
                             children: [
                               ...dashboardState.dashboardWidgets
                                   .where(
@@ -206,9 +191,6 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
                                     (item) => item.widget,
                                   ),
                             ],
-                            onUpdate: () {
-                              _handleSave();
-                            },
                           ),
                           onPop: () {
                             _handleUpdateIsEdit();
@@ -221,8 +203,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
                         crossAxisSpacing: spacing,
                         mainAxisSpacing: spacing,
                         children: children,
-                      );
-              }),
+                      )),
             ),
           ),
         ),
@@ -234,17 +215,16 @@ class _DashboardViewState extends ConsumerState<DashboardView> with PageMixin {
 }
 
 class _AddDashboardWidgetModal extends StatelessWidget {
-  final List<GridItem> items;
-  final Function(GridItem item) onAdd;
 
   const _AddDashboardWidgetModal({
     required this.items,
     required this.onAdd,
   });
+  final List<GridItem> items;
+  final Function(GridItem item) onAdd;
 
   @override
-  Widget build(BuildContext context) {
-    return DeferredPointerHandler(
+  Widget build(BuildContext context) => DeferredPointerHandler(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(
           16,
@@ -256,31 +236,28 @@ class _AddDashboardWidgetModal extends StatelessWidget {
           children: items
               .map(
                 (item) => item.wrap(
-                  builder: (child) {
-                    return _AddedContainer(
+                  builder: (child) => _AddedContainer(
                       onAdd: () {
                         onAdd(item);
                       },
                       child: child,
-                    );
-                  },
+                    ),
                 ),
               )
               .toList(),
         ),
       ),
     );
-  }
 }
 
 class _AddedContainer extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onAdd;
 
   const _AddedContainer({
     required this.child,
     required this.onAdd,
   });
+  final Widget child;
+  final VoidCallback onAdd;
 
   @override
   State<_AddedContainer> createState() => _AddedContainerState();
@@ -298,7 +275,7 @@ class _AddedContainerState extends State<_AddedContainer> {
     if (oldWidget.child != widget.child) {}
   }
 
-  _handleAdd() async {
+  Future<void> _handleAdd() async {
     widget.onAdd();
   }
 
@@ -308,8 +285,7 @@ class _AddedContainerState extends State<_AddedContainer> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
+  Widget build(BuildContext context) => Stack(
       clipBehavior: Clip.none,
       children: [
         ActivateBox(
@@ -335,5 +311,4 @@ class _AddedContainerState extends State<_AddedContainer> {
         )
       ],
     );
-  }
 }

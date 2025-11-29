@@ -9,11 +9,6 @@ import 'side_sheet.dart';
 
 @immutable
 class SheetProps {
-  final double? maxWidth;
-  final double? maxHeight;
-  final bool isScrollControlled;
-  final bool useSafeArea;
-  final bool blur;
 
   const SheetProps({
     this.maxWidth,
@@ -22,19 +17,24 @@ class SheetProps {
     this.isScrollControlled = false,
     this.blur = true,
   });
+  final double? maxWidth;
+  final double? maxHeight;
+  final bool isScrollControlled;
+  final bool useSafeArea;
+  final bool blur;
 }
 
 @immutable
 class ExtendProps {
-  final double? maxWidth;
-  final bool useSafeArea;
-  final bool blur;
 
   const ExtendProps({
     this.maxWidth,
     this.useSafeArea = true,
     this.blur = true,
   });
+  final double? maxWidth;
+  final bool useSafeArea;
+  final bool blur;
 }
 
 enum SheetType {
@@ -55,11 +55,9 @@ Future<T?> showSheet<T>({
     true => showModalBottomSheet<T>(
         context: context,
         isScrollControlled: props.isScrollControlled,
-        builder: (_) {
-          return SafeArea(
+        builder: (_) => SafeArea(
             child: builder(context, SheetType.bottomSheet),
-          );
-        },
+          ),
         showDragHandle: false,
         useSafeArea: props.useSafeArea,
       ),
@@ -71,9 +69,7 @@ Future<T?> showSheet<T>({
           maxWidth: props.maxWidth ?? 360,
         ),
         filter: props.blur ? commonFilter : null,
-        builder: (_) {
-          return builder(context, SheetType.sideSheet);
-        },
+        builder: (_) => builder(context, SheetType.sideSheet),
       ),
   };
 }
@@ -96,18 +92,12 @@ Future<T?> showExtend<T>(
           maxWidth: props.maxWidth ?? 360,
         ),
         filter: props.blur ? commonFilter : null,
-        builder: (context) {
-          return builder(context, SheetType.sideSheet);
-        },
+        builder: (context) => builder(context, SheetType.sideSheet),
       ),
   };
 }
 
 class AdaptiveSheetScaffold extends StatefulWidget {
-  final SheetType type;
-  final Widget body;
-  final String title;
-  final List<Widget> actions;
 
   const AdaptiveSheetScaffold({
     super.key,
@@ -116,6 +106,10 @@ class AdaptiveSheetScaffold extends StatefulWidget {
     required this.title,
     this.actions = const [],
   });
+  final SheetType type;
+  final Widget body;
+  final String title;
+  final List<Widget> actions;
 
   @override
   State<AdaptiveSheetScaffold> createState() => _AdaptiveSheetScaffoldState();
@@ -140,17 +134,17 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
         widget.title,
       ),
       actions: genActions([
-        if (widget.actions.isEmpty && sideSheet) CloseButton(),
+        if (widget.actions.isEmpty && sideSheet) const CloseButton(),
         ...widget.actions,
       ]),
     );
     if (bottomSheet) {
-      final handleSize = Size(32, 4);
+      const handleSize = Size(32, 4);
       return Container(
         clipBehavior: Clip.hardEdge,
         decoration: ShapeDecoration(
           color: backgroundColor,
-          shape: RoundedSuperellipseBorder(
+          shape: const RoundedSuperellipseBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
           ),
         ),
@@ -158,7 +152,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 16),
               child: Container(
                 alignment: Alignment.center,
                 height: handleSize.height,

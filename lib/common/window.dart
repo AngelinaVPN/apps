@@ -7,7 +7,7 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Window {
-  init(int version) async {
+  Future<void> init(int version) async {
     final props = globalState.config.windowProps;
     final acquire = await singleInstanceLock.acquire();
     if (!acquire) {
@@ -25,7 +25,7 @@ class Window {
     }
 
     await windowManager.ensureInitialized();
-    WindowOptions windowOptions = WindowOptions(
+    final windowOptions = WindowOptions(
       size: Size(props.width, props.height),
       minimumSize: const Size(380, 400),
     );
@@ -66,7 +66,7 @@ class Window {
     });
   }
 
-  show() async {
+  Future<void> show() async {
     if (Platform.isMacOS) return;
 
     render?.resume();
@@ -83,11 +83,11 @@ class Window {
     return value;
   }
 
-  close() async {
+  Future<void> close() async {
     exit(0);
   }
 
-  hide() async {
+  Future<void> hide() async {
     if (Platform.isMacOS) return;
 
     render?.pause();

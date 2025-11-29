@@ -7,10 +7,6 @@ import 'package:flutter/material.dart';
 
 @immutable
 class Contributor {
-  final String? avatar;
-  final String name;
-  final String link;
-  final bool clickable;
 
   const Contributor({
     this.avatar,
@@ -18,23 +14,27 @@ class Contributor {
     required this.link,
     this.clickable = true,
   });
+  final String? avatar;
+  final String name;
+  final String link;
+  final bool clickable;
 }
 
 @immutable
 class ThanksPerson {
-  final String? avatar;
-  final String name;
 
   const ThanksPerson({
     this.avatar,
     required this.name,
   });
+  final String? avatar;
+  final String name;
 }
 
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
 
-  _checkUpdate(BuildContext context) async {
+  Future<void> _checkUpdate(BuildContext context) async {
     final commonScaffoldState = context.commonScaffoldState;
     if (commonScaffoldState?.mounted != true) return;
     final data = await commonScaffoldState?.loadingRun<Map<String, dynamic>?>(
@@ -88,8 +88,7 @@ class AboutView extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildMoreSection(BuildContext context) {
-    return generateSection(
+  List<Widget> _buildMoreSection(BuildContext context) => generateSection(
       separated: false,
       title: appLocalizations.more,
       items: [
@@ -138,7 +137,6 @@ class AboutView extends StatelessWidget {
         ),
       ],
     );
-  }
 
   List<Widget> _buildContributorsSection() {
     const contributors = [
@@ -205,7 +203,7 @@ class AboutView extends StatelessWidget {
                         style: Theme.of(context).textTheme.labelLarge,
                       ),
                       const SizedBox(height: 4),
-                      _CoreVersionWidget(),
+                      const _CoreVersionWidget(),
                     ],
                   )
                 ],
@@ -289,12 +287,12 @@ class AboutView extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget {
-  final Contributor contributor;
 
   const Avatar({
     super.key,
     required this.contributor,
   });
+  final Contributor contributor;
 
   @override
   Widget build(BuildContext context) {
@@ -355,12 +353,12 @@ class Avatar extends StatelessWidget {
 }
 
 class ThanksAvatar extends StatelessWidget {
-  final ThanksPerson person;
 
   const ThanksAvatar({
     super.key,
     required this.person,
   });
+  final ThanksPerson person;
 
   @override
   Widget build(BuildContext context) {
@@ -432,13 +430,13 @@ class _CoreVersionWidget extends StatelessWidget {
 }
 
 class _EasterEggDetector extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onEasterEgg;
 
   const _EasterEggDetector({
     required this.child,
     required this.onEasterEgg,
   });
+  final Widget child;
+  final VoidCallback onEasterEgg;
 
   @override
   State<_EasterEggDetector> createState() => _EasterEggDetectorState();
@@ -472,10 +470,8 @@ class _EasterEggDetectorState extends State<_EasterEggDetector> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
+  Widget build(BuildContext context) => GestureDetector(
       onTap: _handleTap,
       child: widget.child,
     );
-  }
 }

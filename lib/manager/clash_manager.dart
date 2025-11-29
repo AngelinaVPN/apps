@@ -10,12 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ClashManager extends ConsumerStatefulWidget {
-  final Widget child;
 
   const ClashManager({
     super.key,
     required this.child,
   });
+  final Widget child;
 
   @override
   ConsumerState<ClashManager> createState() => _ClashContainerState();
@@ -24,9 +24,7 @@ class ClashManager extends ConsumerStatefulWidget {
 class _ClashContainerState extends ConsumerState<ClashManager>
     with AppMessageListener {
   @override
-  Widget build(BuildContext context) {
-    return widget.child;
-  }
+  Widget build(BuildContext context) => widget.child;
 
   @override
   void initState() {
@@ -74,7 +72,7 @@ class _ClashContainerState extends ConsumerState<ClashManager>
     debouncer.call(
       FunctionTag.updateDelay,
       () async {
-        await appController.updateGroupsDebounce();
+        appController.updateGroupsDebounce();
       },
       duration: const Duration(milliseconds: 5000),
     );
@@ -102,7 +100,7 @@ class _ClashContainerState extends ConsumerState<ClashManager>
             providerName,
           ),
         );
-    await globalState.appController.updateGroupsDebounce();
+    globalState.appController.updateGroupsDebounce();
     super.onLoaded(providerName);
   }
 }

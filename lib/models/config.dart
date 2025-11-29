@@ -88,11 +88,9 @@ class AppSettingProps with _$AppSettingProps {
   factory AppSettingProps.fromJson(Map<String, Object?> json) =>
       _$AppSettingPropsFromJson(json);
 
-  factory AppSettingProps.safeFromJson(Map<String, Object?>? json) {
-    return json == null
+  factory AppSettingProps.safeFromJson(Map<String, Object?>? json) => json == null
         ? defaultAppSettingProps
         : AppSettingProps.fromJson(json);
-  }
 }
 
 @freezed
@@ -268,7 +266,7 @@ class Config with _$Config {
       if (accessControlMap != null) {
         (accessControlMap as Map)["enable"] = isAccessControl;
         if (json["vpnProps"] != null) {
-          (json["vpnProps"] as Map)["accessControl"] = accessControlMap;
+          (json["vpnProps"]! as Map)["accessControl"] = accessControlMap;
         }
       }
     } catch (_) {}
@@ -277,7 +275,5 @@ class Config with _$Config {
 }
 
 extension ConfigExt on Config {
-  Profile? get currentProfile {
-    return profiles.getProfile(currentProfileId);
-  }
+  Profile? get currentProfile => profiles.getProfile(currentProfileId);
 }

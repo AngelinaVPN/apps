@@ -14,7 +14,7 @@ class OverrideNetworkSettingsItemNetwork extends ConsumerWidget {
   const OverrideNetworkSettingsItemNetwork({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final overrideNetworkSettings = ref.watch(
       appSettingProvider.select((state) => state.overrideNetworkSettings),
     );
@@ -69,7 +69,7 @@ class VPNItem extends ConsumerWidget {
   const VPNItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final enable =
         ref.watch(vpnSettingProvider.select((state) => state.enable));
     return ListItem.switchItem(
@@ -93,7 +93,7 @@ class TUNItem extends ConsumerWidget {
   const TUNItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final enable =
         ref.watch(patchClashConfigProvider.select((state) => state.tun.enable));
 
@@ -118,7 +118,7 @@ class AllowBypassItem extends ConsumerWidget {
   const AllowBypassItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final allowBypass =
         ref.watch(vpnSettingProvider.select((state) => state.allowBypass));
     return ListItem.switchItem(
@@ -126,7 +126,7 @@ class AllowBypassItem extends ConsumerWidget {
       subtitle: Text(appLocalizations.allowBypassDesc),
       delegate: SwitchDelegate(
         value: allowBypass,
-        onChanged: (bool value) async {
+        onChanged: (value) async {
           ref.read(vpnSettingProvider.notifier).updateState(
                 (state) => state.copyWith(
                   allowBypass: value,
@@ -142,7 +142,7 @@ class VpnSystemProxyItem extends ConsumerWidget {
   const VpnSystemProxyItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final systemProxy =
         ref.watch(vpnSettingProvider.select((state) => state.systemProxy));
     return ListItem.switchItem(
@@ -150,7 +150,7 @@ class VpnSystemProxyItem extends ConsumerWidget {
       subtitle: Text(appLocalizations.systemProxyDesc),
       delegate: SwitchDelegate(
         value: systemProxy,
-        onChanged: (bool value) async {
+        onChanged: (value) async {
           ref.read(vpnSettingProvider.notifier).updateState(
                 (state) => state.copyWith(
                   systemProxy: value,
@@ -166,7 +166,7 @@ class SystemProxyItem extends ConsumerWidget {
   const SystemProxyItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final systemProxy =
         ref.watch(networkSettingProvider.select((state) => state.systemProxy));
 
@@ -175,7 +175,7 @@ class SystemProxyItem extends ConsumerWidget {
       subtitle: Text(appLocalizations.systemProxyDesc),
       delegate: SwitchDelegate(
         value: systemProxy,
-        onChanged: (bool value) async {
+        onChanged: (value) async {
           ref.read(networkSettingProvider.notifier).updateState(
                 (state) => state.copyWith(
                   systemProxy: value,
@@ -191,14 +191,14 @@ class Ipv6Item extends ConsumerWidget {
   const Ipv6Item({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final ipv6 = ref.watch(vpnSettingProvider.select((state) => state.ipv6));
     return ListItem.switchItem(
       title: const Text("IPv6"),
       subtitle: Text(appLocalizations.ipv6InboundDesc),
       delegate: SwitchDelegate(
         value: ipv6,
-        onChanged: (bool value) async {
+        onChanged: (value) async {
           ref.read(vpnSettingProvider.notifier).updateState(
                 (state) => state.copyWith(
                   ipv6: value,
@@ -214,14 +214,14 @@ class AutoSetSystemDnsItem extends ConsumerWidget {
   const AutoSetSystemDnsItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final autoSetSystemDns = ref.watch(
         networkSettingProvider.select((state) => state.autoSetSystemDns));
     return ListItem.switchItem(
       title: Text(appLocalizations.autoSetSystemDns),
       delegate: SwitchDelegate(
         value: autoSetSystemDns,
-        onChanged: (bool value) async {
+        onChanged: (value) async {
           ref.read(networkSettingProvider.notifier).updateState(
                 (state) => state.copyWith(
                   autoSetSystemDns: value,
@@ -237,7 +237,7 @@ class TunStackItem extends ConsumerWidget {
   const TunStackItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final stack =
         ref.watch(patchClashConfigProvider.select((state) => state.tun.stack));
     final overrideNetworkSettings = ref.watch(
@@ -266,7 +266,7 @@ class TunStackItem extends ConsumerWidget {
                       stack: value,
                     ),
                   );
-              await globalState.appController.updateClashConfigDebounce();
+              globalState.appController.updateClashConfigDebounce();
             },
             title: appLocalizations.stackMode,
           ),
@@ -279,7 +279,7 @@ class TunStackItem extends ConsumerWidget {
 class BypassDomainItem extends StatelessWidget {
   const BypassDomainItem({super.key});
 
-  _initActions(BuildContext context, WidgetRef ref) {
+  void _initActions(BuildContext context, WidgetRef ref) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.commonScaffoldState?.actions = [
         IconButton(
@@ -309,8 +309,7 @@ class BypassDomainItem extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
+  Widget build(BuildContext context) => ListItem.open(
       title: Text(appLocalizations.bypassDomain),
       subtitle: Text(appLocalizations.bypassDomainDesc),
       delegate: OpenDelegate(
@@ -324,7 +323,7 @@ class BypassDomainItem extends StatelessWidget {
             return ListInputPage(
               title: appLocalizations.bypassDomain,
               items: bypassDomain,
-              titleBuilder: (item) => Text(item),
+              titleBuilder: Text.new,
               onChange: (items) {
                 ref.read(networkSettingProvider.notifier).updateState(
                       (state) => state.copyWith(
@@ -337,14 +336,13 @@ class BypassDomainItem extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class RouteModeItem extends ConsumerWidget {
   const RouteModeItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final routeMode =
         ref.watch(networkSettingProvider.select((state) => state.routeMode));
     return ListItem<RouteMode>.options(
@@ -353,7 +351,7 @@ class RouteModeItem extends ConsumerWidget {
       delegate: OptionsDelegate<RouteMode>(
         title: appLocalizations.routeMode,
         options: RouteMode.values,
-        onChanged: (RouteMode? value) {
+        onChanged: (value) {
           if (value == null) {
             return;
           }
@@ -376,7 +374,7 @@ class RouteAddressItem extends ConsumerWidget {
   const RouteAddressItem({super.key});
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final bypassPrivate = ref.watch(networkSettingProvider
         .select((state) => state.routeMode == RouteMode.bypassPrivate));
     if (bypassPrivate) {
@@ -399,7 +397,7 @@ class RouteAddressItem extends ConsumerWidget {
             return ListInputPage(
               title: appLocalizations.routeAddress,
               items: routeAddress,
-              titleBuilder: (item) => Text(item),
+              titleBuilder: Text.new,
               onChange: (items) {
                 ref.read(patchClashConfigProvider.notifier).updateState(
                       (state) => state.copyWith.tun(
@@ -431,8 +429,8 @@ final networkItems = [
     ...generateSection(
       title: appLocalizations.system,
       items: [
-        SystemProxyItem(),
-        BypassDomainItem(),
+        const SystemProxyItem(),
+        const BypassDomainItem(),
       ],
     ),
   ...generateSection(
@@ -453,7 +451,7 @@ final networkItems = [
 class NetworkListView extends ConsumerWidget {
   const NetworkListView({super.key});
 
-  _initActions(BuildContext context, WidgetRef ref) {
+  void _initActions(BuildContext context, WidgetRef ref) {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.commonScaffoldState?.actions = [
         IconButton(
@@ -488,7 +486,7 @@ class NetworkListView extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     _initActions(context, ref);
     return generateListView(
       networkItems,

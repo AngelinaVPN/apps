@@ -12,9 +12,11 @@ abstract mixin class VpnListener {
 }
 
 class Vpn {
-  static Vpn? _instance;
-  late MethodChannel methodChannel;
-  FutureOr<String> Function()? handleGetStartForegroundParams;
+
+  factory Vpn() {
+    _instance ??= Vpn._internal();
+    return _instance!;
+  }
 
   Vpn._internal() {
     methodChannel = const MethodChannel("vpn");
@@ -30,7 +32,7 @@ class Vpn {
         case "status":
           return clashLibHandler?.getRunTime() != null;
         default:
-          for (final VpnListener listener in _listeners) {
+          for (final listener in _listeners) {
             switch (call.method) {
               case "dnsChanged":
                 final dns = call.arguments as String;
@@ -40,23 +42,17 @@ class Vpn {
       }
     });
   }
-
-  factory Vpn() {
-    _instance ??= Vpn._internal();
-    return _instance!;
-  }
+  static Vpn? _instance;
+  late MethodChannel methodChannel;
+  FutureOr<String> Function()? handleGetStartForegroundParams;
 
   final ObserverList<VpnListener> _listeners = ObserverList<VpnListener>();
 
-  Future<bool?> start(AndroidVpnOptions options) async {
-    return await methodChannel.invokeMethod<bool>("start", {
+  Future<bool?> start(AndroidVpnOptions options) async => methodChannel.invokeMethod<bool>("start", {
       'data': json.encode(options),
     });
-  }
 
-  Future<bool?> stop() async {
-    return await methodChannel.invokeMethod<bool>("stop");
-  }
+  Future<bool?> stop() async => methodChannel.invokeMethod<bool>("stop");
 
   void addListener(VpnListener listener) {
     _listeners.add(listener);

@@ -9,8 +9,7 @@ class ChangeServerButton extends ConsumerWidget {
   const ChangeServerButton({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
+  Widget build(BuildContext context, WidgetRef ref) => SizedBox(
       height: getWidgetHeight(1),
       child: CommonCard(
         onPressed: () {
@@ -61,5 +60,4 @@ class ChangeServerButton extends ConsumerWidget {
         ),
       ),
     );
-  }
 }

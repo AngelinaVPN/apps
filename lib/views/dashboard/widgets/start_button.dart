@@ -64,7 +64,7 @@ class _StartButtonState extends ConsumerState<StartButton>
     super.dispose();
   }
 
-  handleSwitchStart() {
+  void handleSwitchStart() {
     isStart = !isStart;
     updateController();
     debouncer.call(
@@ -76,7 +76,7 @@ class _StartButtonState extends ConsumerState<StartButton>
     );
   }
 
-  updateController() {
+  void updateController() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (isStart) {
         _controller.forward();
@@ -113,8 +113,7 @@ class _StartButtonState extends ConsumerState<StartButton>
       padding: const EdgeInsets.all(16.0),
       child: AnimatedBuilder(
         animation: Listenable.merge([_controller, _pressController]),
-        builder: (_, child) {
-          return Transform.scale(
+        builder: (_, child) => Transform.scale(
             scale: _scaleAnimation.value,
             child: SizedBox(
               width: double.infinity,
@@ -124,9 +123,7 @@ class _StartButtonState extends ConsumerState<StartButton>
                 onTapUp: _onTapUp,
                 onTapCancel: _onTapCancel,
                 child: FilledButton(
-                  onPressed: () {
-                    handleSwitchStart();
-                  },
+                  onPressed: handleSwitchStart,
                   style: FilledButton.styleFrom(
                     backgroundColor: isStart ? activeColor : inactiveColor,
                     foregroundColor: isStart
@@ -175,15 +172,13 @@ class _StartButtonState extends ConsumerState<StartButton>
                                   ),
                                 );
                               },
-                              layoutBuilder: (currentChild, previousChildren) {
-                                return Stack(
+                              layoutBuilder: (currentChild, previousChildren) => Stack(
                                   alignment: Alignment.center,
                                   children: [
                                     ...previousChildren,
                                     if (currentChild != null) currentChild,
                                   ],
-                                );
-                              },
+                                ),
                               child: child,
                             ),
                           ],
@@ -194,8 +189,7 @@ class _StartButtonState extends ConsumerState<StartButton>
                 ),
               ),
             ),
-          );
-        },
+          ),
         child: Consumer(
           builder: (_, ref, __) {
             final runTime = ref.watch(runTimeProvider);

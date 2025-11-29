@@ -4,21 +4,19 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/svg.dart';
 
 class CommonTargetIcon extends StatelessWidget {
-  final String src;
-  final double size;
 
   const CommonTargetIcon({
     super.key,
     required this.src,
     required this.size,
   });
+  final String src;
+  final double size;
 
-  Widget _defaultIcon() {
-    return Icon(
+  Widget _defaultIcon() => Icon(
       IconsExt.target,
       size: size,
     );
-  }
 
   Widget _buildIcon() {
     if (src.isEmpty) {
@@ -29,9 +27,7 @@ class CommonTargetIcon extends StatelessWidget {
       return Image.memory(
         base64,
         gaplessPlayback: true,
-        errorBuilder: (_, error, ___) {
-          return _defaultIcon();
-        },
+        errorBuilder: (_, error, ___) => _defaultIcon(),
       );
     }
     return FutureBuilder(
@@ -39,7 +35,7 @@ class CommonTargetIcon extends StatelessWidget {
       builder: (_, snapshot) {
         final data = snapshot.data;
         if (data == null) {
-          return SizedBox();
+          return const SizedBox();
         }
         return src.isSvg
             ? SvgPicture.file(
@@ -55,11 +51,9 @@ class CommonTargetIcon extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
+  Widget build(BuildContext context) => SizedBox(
       width: size,
       height: size,
       child: _buildIcon(),
     );
-  }
 }

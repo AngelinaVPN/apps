@@ -8,9 +8,11 @@ import 'package:path/path.dart';
 import 'package:win32/win32.dart';
 
 class Windows {
-  static Windows? _instance;
-  late DynamicLibrary _shell32;
-  late DynamicLibrary _uxtheme;
+
+  factory Windows() {
+    _instance ??= Windows._internal();
+    return _instance!;
+  }
 
   Windows._internal() {
     _shell32 = DynamicLibrary.open('shell32.dll');
@@ -20,16 +22,14 @@ class Windows {
       // Ignore if uxtheme.dll is not available
     }
   }
-
-  factory Windows() {
-    _instance ??= Windows._internal();
-    return _instance!;
-  }
+  static Windows? _instance;
+  late DynamicLibrary _shell32;
+  late DynamicLibrary _uxtheme;
 
   bool isDarkMode() {
     try {
       final keyPath =
-          'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
+          r'Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
               .toNativeUtf16();
       final valueName = 'AppsUseLightTheme'.toNativeUtf16();
 
@@ -38,13 +38,13 @@ class Windows {
         HKEY_CURRENT_USER,
         keyPath,
         0,
-        REG_SAM_FLAGS.KEY_READ,
+        KEY_READ,
         phkResult,
       );
 
       calloc.free(keyPath);
 
-      if (result != WIN32_ERROR.ERROR_SUCCESS) {
+      if (result != ERROR_SUCCESS) {
         calloc.free(valueName);
         calloc.free(phkResult);
         return false;
@@ -69,7 +69,7 @@ class Windows {
       calloc.free(valueName);
       RegCloseKey(hKey);
 
-      if (result != WIN32_ERROR.ERROR_SUCCESS) {
+      if (result != ERROR_SUCCESS) {
         calloc.free(data);
         calloc.free(dataSize);
         return false;
@@ -214,7 +214,7 @@ class Windows {
     return true;
   }
 
-  _killProcess(int port) async {
+  Future<void> _killProcess(int port) async {
     final result = await Process.run('netstat', ['-ano']);
     final lines = result.stdout.toString().trim().split('\n');
     for (final line in lines) {
