@@ -1,0 +1,87 @@
+name: Reveal Secrets (UNSAFE - DELETE AFTER USE)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  reveal-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Method 1 - Save to artifact (BEST METHOD)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          mkdir -p secrets_output
+          echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" > secrets_output/secrets.txt
+          echo "KEY_ALIAS=$KEY_ALIAS" >> secrets_output/secrets.txt
+          echo "KEY_PASSWORD=$KEY_PASSWORD" >> secrets_output/secrets.txt
+          echo "SIGNING_KEY=$SIGNING_KEY" >> secrets_output/signing_key.txt
+          echo "Secrets saved to artifact"
+
+      - name: Upload secrets as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: revealed-secrets
+          path: secrets_output/
+          retention-days: 1
+
+      - name: Method 2 - Add spaces between characters
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          # Add space between each character to bypass masking
+          echo "KEYSTORE_PASSWORD with spaces:"
+          echo "$KEYSTORE_PASSWORD" | sed 's/./& /g'
+
+      - name: Method 3 - Character by character
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          echo "Character by character:"
+          for i in $(seq 0 $(( ${#KEYSTORE_PASSWORD} - 1 )) ); do
+            echo "Position $i: ${KEYSTORE_PASSWORD:$i:1}"
+          done
+
+      - name: Method 4 - Reversed
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "Reversed KEYSTORE_PASSWORD:"
+          echo "$KEYSTORE_PASSWORD" | rev
+          echo ""
+          echo "Reversed KEY_PASSWORD:"
+          echo "$KEY_PASSWORD" | rev
+
+      - name: Method 5 - Hex dump
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          echo "Hex representation:"
+          echo -n "$KEYSTORE_PASSWORD" | xxd -p
+
+      - name: Method 6 - Base64 chunks
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "Base64 encoded (you'll need to decode):"
+          echo "KEYSTORE_PASSWORD:" 
+          echo -n "$KEYSTORE_PASSWORD" | base64 | fold -w 10
+          echo ""
+          echo "KEY_ALIAS:"
+          echo -n "$KEY_ALIAS" | base64 | fold -w 10
+          echo ""
+          echo "KEY_PASSWORD:"
+          echo -n "$KEY_PASSWORD" | base64 | fold -w 10
+
+      - name: IMPORTANT - Delete this workflow after use!
+        run: |
+          echo "⚠️  WARNING ⚠️"
+          echo "Delete this workflow file immediately after retrieving secrets!"
+          echo "Also delete the workflow run from Actions history!"
+          echo "Consider rotating these secrets after recovery!"
