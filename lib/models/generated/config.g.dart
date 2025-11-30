@@ -196,9 +196,10 @@ _$ProxiesStyleImpl _$$ProxiesStyleImplFromJson(Map<String, dynamic> json) =>
               ProxiesSortType.none,
       layout: $enumDecodeNullable(_$ProxiesLayoutEnumMap, json['layout']) ??
           ProxiesLayout.standard,
-      iconStyle:
-          $enumDecodeNullable(_$ProxiesIconStyleEnumMap, json['iconStyle']) ??
-              ProxiesIconStyle.icon,
+      iconStyle: $enumDecodeNullable(
+              _$ProxiesIconStyleEnumMap, json['iconStyle'],
+              unknownValue: ProxiesIconStyle.icon) ??
+          ProxiesIconStyle.icon,
       cardType: $enumDecodeNullable(_$ProxyCardTypeEnumMap, json['cardType']) ??
           ProxyCardType.expand,
       iconMap: (json['iconMap'] as Map<String, dynamic>?)?.map(

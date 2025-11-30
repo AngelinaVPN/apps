@@ -162,7 +162,9 @@ class ProxiesStyle with _$ProxiesStyle {
     @Default(ProxiesType.list) ProxiesType type,
     @Default(ProxiesSortType.none) ProxiesSortType sortType,
     @Default(ProxiesLayout.standard) ProxiesLayout layout,
-    @Default(ProxiesIconStyle.icon) ProxiesIconStyle iconStyle,
+    @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
+    @Default(ProxiesIconStyle.icon)
+    ProxiesIconStyle iconStyle,
     @Default(ProxyCardType.expand) ProxyCardType cardType,
     @Default({}) Map<String, String> iconMap,
   }) = _ProxiesStyle;
@@ -267,6 +269,14 @@ class Config with _$Config {
         (accessControlMap as Map)["enable"] = isAccessControl;
         if (json["vpnProps"] != null) {
           (json["vpnProps"]! as Map)["accessControl"] = accessControlMap;
+        }
+      }
+      
+      // Migration: Replace deprecated "standard" iconStyle with "icon"
+      final proxiesStyle = json["proxiesStyle"];
+      if (proxiesStyle is Map) {
+        if (proxiesStyle["iconStyle"] == "standard") {
+          proxiesStyle["iconStyle"] = "icon";
         }
       }
     } catch (_) {}

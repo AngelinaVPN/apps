@@ -1540,6 +1540,7 @@ mixin _$ProxiesStyle {
   ProxiesType get type => throw _privateConstructorUsedError;
   ProxiesSortType get sortType => throw _privateConstructorUsedError;
   ProxiesLayout get layout => throw _privateConstructorUsedError;
+  @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
   ProxiesIconStyle get iconStyle => throw _privateConstructorUsedError;
   ProxyCardType get cardType => throw _privateConstructorUsedError;
   Map<String, String> get iconMap => throw _privateConstructorUsedError;
@@ -1560,6 +1561,7 @@ abstract class $ProxiesStyleCopyWith<$Res> {
       {ProxiesType type,
       ProxiesSortType sortType,
       ProxiesLayout layout,
+      @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
       ProxiesIconStyle iconStyle,
       ProxyCardType cardType,
       Map<String, String> iconMap});
@@ -1626,6 +1628,7 @@ abstract class _$$ProxiesStyleImplCopyWith<$Res>
       {ProxiesType type,
       ProxiesSortType sortType,
       ProxiesLayout layout,
+      @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
       ProxiesIconStyle iconStyle,
       ProxyCardType cardType,
       Map<String, String> iconMap});
@@ -1685,6 +1688,7 @@ class _$ProxiesStyleImpl implements _ProxiesStyle {
       {this.type = ProxiesType.list,
       this.sortType = ProxiesSortType.none,
       this.layout = ProxiesLayout.standard,
+      @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
       this.iconStyle = ProxiesIconStyle.icon,
       this.cardType = ProxyCardType.expand,
       final Map<String, String> iconMap = const {}})
@@ -1703,7 +1707,7 @@ class _$ProxiesStyleImpl implements _ProxiesStyle {
   @JsonKey()
   final ProxiesLayout layout;
   @override
-  @JsonKey()
+  @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
   final ProxiesIconStyle iconStyle;
   @override
   @JsonKey()
@@ -1762,6 +1766,7 @@ abstract class _ProxiesStyle implements ProxiesStyle {
       {final ProxiesType type,
       final ProxiesSortType sortType,
       final ProxiesLayout layout,
+      @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
       final ProxiesIconStyle iconStyle,
       final ProxyCardType cardType,
       final Map<String, String> iconMap}) = _$ProxiesStyleImpl;
@@ -1776,6 +1781,7 @@ abstract class _ProxiesStyle implements ProxiesStyle {
   @override
   ProxiesLayout get layout;
   @override
+  @JsonKey(unknownEnumValue: ProxiesIconStyle.icon)
   ProxiesIconStyle get iconStyle;
   @override
   ProxyCardType get cardType;
