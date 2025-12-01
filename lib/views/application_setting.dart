@@ -449,11 +449,16 @@ class ApplicationSettingView extends StatelessWidget {
       CloseConnectionsItem(),
       UsageItem(),
       AutoCheckUpdateItem(),
+      if (system.isDesktop) ...[
+        Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: OpenLogsFolderItem(),
+        ),
+      ],
       Padding(
-        padding: const EdgeInsets.only(top: 16),
-        child: OpenLogsFolderItem(),
+        padding: EdgeInsets.only(top: system.isDesktop ? 0 : 16),
+        child: ResetAppItem(),
       ),
-      ResetAppItem(),
     ];
     return ListView.separated(
       itemBuilder: (_, index) {
