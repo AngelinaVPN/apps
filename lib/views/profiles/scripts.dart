@@ -229,6 +229,7 @@ class _ScriptsViewState extends ConsumerState<ScriptsView> {
 
   @override
   Widget build(BuildContext context) => CommonScaffold(
+      disableBackground: true,
       floatingActionButton: FloatingActionButton(
         onPressed: _handleToEditor,
         child: const Icon(Icons.add),

@@ -48,10 +48,10 @@ class ProxiesSetting extends StatelessWidget {
               final proxiesType = ref.watch(proxiesStyleSettingProvider.select(
                 (state) => state.type,
               ));
-              return Wrap(
-                spacing: 16,
+              return Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final item in ProxiesType.values)
+                  for (final item in ProxiesType.values) ...[
                     SettingInfoCard(
                       Info(
                         label: Intl.message(item.name),
@@ -65,7 +65,9 @@ class ProxiesSetting extends StatelessWidget {
                             type: item,
                           ));
                       },
-                    )
+                    ),
+                    if (item != ProxiesType.values.last) const SizedBox(width: 16),
+                  ]
                 ],
               );
             },
@@ -85,10 +87,10 @@ class ProxiesSetting extends StatelessWidget {
               final sortType = ref.watch(proxiesStyleSettingProvider.select(
                 (state) => state.sortType,
               ));
-              return Wrap(
-                spacing: 16,
+              return Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final item in ProxiesSortType.values)
+                  for (final item in ProxiesSortType.values) ...[
                     SettingInfoCard(
                       Info(
                         label: _getStringProxiesSortType(item),
@@ -103,6 +105,8 @@ class ProxiesSetting extends StatelessWidget {
                           ));
                       },
                     ),
+                    if (item != ProxiesSortType.values.last) const SizedBox(width: 16),
+                  ]
                 ],
               );
             },
@@ -122,10 +126,10 @@ class ProxiesSetting extends StatelessWidget {
               final cardType = ref.watch(proxiesStyleSettingProvider.select(
                 (state) => state.cardType,
               ));
-              return Wrap(
-                spacing: 16,
+              return Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final item in ProxyCardType.values)
+                  for (final item in ProxyCardType.values) ...[
                     SettingTextCard(
                       Intl.message(item.name),
                       isSelected: item == cardType,
@@ -136,7 +140,9 @@ class ProxiesSetting extends StatelessWidget {
                             cardType: item,
                           ));
                       },
-                    )
+                    ),
+                    if (item != ProxyCardType.values.last) const SizedBox(width: 16),
+                  ]
                 ],
               );
             },
@@ -158,10 +164,10 @@ class ProxiesSetting extends StatelessWidget {
               final layout = ref.watch(proxiesStyleSettingProvider.select(
                 (state) => state.layout,
               ));
-              return Wrap(
-                spacing: 16,
+              return Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final item in ProxiesLayout.values)
+                  for (final item in ProxiesLayout.values) ...[
                     SettingTextCard(
                       getTextForProxiesLayout(item),
                       isSelected: item == layout,
@@ -172,7 +178,9 @@ class ProxiesSetting extends StatelessWidget {
                             layout: item,
                           ));
                       },
-                    )
+                    ),
+                    if (item != ProxiesLayout.values.last) const SizedBox(width: 16),
+                  ]
                 ],
               );
             },
@@ -192,10 +200,10 @@ class ProxiesSetting extends StatelessWidget {
               final iconStyle = ref.watch(proxiesStyleSettingProvider.select(
                 (state) => state.iconStyle,
               ));
-              return Wrap(
-                spacing: 16,
+              return Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final item in ProxiesIconStyle.values)
+                  for (final item in ProxiesIconStyle.values) ...[
                     SettingTextCard(
                       _getTextWithProxiesIconStyle(item),
                       isSelected: iconStyle == item,
@@ -207,6 +215,8 @@ class ProxiesSetting extends StatelessWidget {
                           ));
                       },
                     ),
+                    if (item != ProxiesIconStyle.values.last) const SizedBox(width: 16),
+                  ]
                 ],
               );
             },

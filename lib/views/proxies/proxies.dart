@@ -113,6 +113,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                     showExtend(
                       context,
                       builder: (_, type) => AdaptiveSheetScaffold(
+                          disableBackground: false,
                           type: type,
                           body: const _IconConfigView(),
                           title: appLocalizations.iconConfiguration,
@@ -180,6 +181,7 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
                 showExtend(
                   context,
                   builder: (_, type) => AdaptiveSheetScaffold(
+                      disableBackground: false,
                       type: type,
                       body: const _IconConfigView(),
                       title: appLocalizations.iconConfiguration,

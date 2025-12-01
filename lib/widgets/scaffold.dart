@@ -28,6 +28,7 @@ class CommonScaffold extends ConsumerStatefulWidget {
     this.centerTitle,
     this.appBarEditState,
     this.floatingActionButton,
+    this.disableBackground = false,
   });
 
   CommonScaffold.open({
@@ -36,12 +37,14 @@ class CommonScaffold extends ConsumerStatefulWidget {
     required String title,
     required Function onBack,
     required List<Widget> actions,
+    bool disableBackground = false,
   }) : this(
           key: key,
           body: body,
           title: title,
           automaticallyImplyLeading: false,
           actions: actions,
+          disableBackground: disableBackground,
           leading: IconButton(
             icon: const BackButtonIcon(),
             onPressed: () {
@@ -61,6 +64,7 @@ class CommonScaffold extends ConsumerStatefulWidget {
   final bool? centerTitle;
   final AppBarEditState? appBarEditState;
   final FloatingActionButton? floatingActionButton;
+  final bool disableBackground;
 
   @override
   ConsumerState<CommonScaffold> createState() => CommonScaffoldState();
@@ -325,7 +329,7 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    final backgroundUrl = ref.watch(backgroundUrlProvider);
+    final backgroundUrl = widget.disableBackground ? null : ref.watch(backgroundUrlProvider);
     final isTransparent = backgroundUrl != null;
     
     return PreferredSize(
@@ -423,7 +427,7 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
   @override
   Widget build(BuildContext context) {
     assert(widget.appBar != null || widget.title != null);
-    final backgroundUrl = ref.watch(backgroundUrlProvider);
+    final backgroundUrl = widget.disableBackground ? null : ref.watch(backgroundUrlProvider);
     
     final body = SafeArea(
       child: Column(

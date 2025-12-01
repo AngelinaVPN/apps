@@ -171,48 +171,6 @@ class Build {
 
   static get tags => "with_gvisor";
 
-  static Future<String> getLatestVersion() async {
-    final result = await Process.run(
-      'git',
-      [
-        'ls-remote',
-        '--tags',
-        '--refs',
-        '--sort=v:refname',
-        'https://github.com/MetaCubeX/mihomo.git'
-      ],
-    );
-    if (result.exitCode != 0) {
-      throw "Failed to get latest version from mihomo repository";
-    }
-    final output = result.stdout.toString().trim();
-    final lines = output.split('\n');
-    if (lines.isEmpty) {
-      throw "No tags found in mihomo repository";
-    }
-    final lastTag = lines.last.split('\t').last.replaceAll('refs/tags/', '');
-    return lastTag.startsWith('v') ? lastTag.substring(1) : lastTag;
-  }
-
-  static Future<void> updateVersionFile(
-      String version, String buildTime) async {
-    final versionFilePath =
-        join(_coreDir, "Clash.Meta", "constant", "version.go");
-    final versionFile = File(versionFilePath);
-
-    final content = '''package constant
-
-var (
-	Meta       = true
-	Version    = "$version"
-	BuildTime  = "$buildTime"
-	MihomoName = "mihomo"
-)
-''';
-
-    await versionFile.writeAsString(content);
-  }
-
   static Future<void> exec(
     List<String> executable, {
     String? name,
@@ -252,10 +210,6 @@ var (
     required Target target,
     Arch? arch,
   }) async {
-    final version = await getLatestVersion();
-    final buildTime = DateTime.now().toUtc().toIso8601String();
-    await updateVersionFile(version, buildTime);
-
     final isLib = mode == Mode.lib;
 
     final items = buildItems.where(
@@ -529,7 +483,6 @@ class BuildCommand extends Command {
   _buildMacosApp({
     required Arch arch,
     required String env,
-    required String coreVersion,
   }) async {
     await Build.exec(
       name: "flutter build macos",
@@ -539,7 +492,6 @@ class BuildCommand extends Command {
         "macos",
         "--release",
         "--dart-define=APP_ENV=$env",
-        "--dart-define=CORE_VERSION=$coreVersion",
       ],
     );
 
@@ -595,13 +547,12 @@ class BuildCommand extends Command {
     required String targets,
     String args = '',
     required String env,
-    required String coreVersion,
   }) async {
     await Build.getDistributor();
     await Build.exec(
       name: name,
       Build.getExecutable(
-        "flutter_distributor package --skip-clean --platform ${target.name} --targets $targets --flutter-build-args=verbose$args --build-dart-define=APP_ENV=$env,CORE_VERSION=$coreVersion",
+        "flutter_distributor package --skip-clean --platform ${target.name} --targets $targets --flutter-build-args=verbose$args --build-dart-define=APP_ENV=$env",
       ),
     );
   }
@@ -630,8 +581,6 @@ class BuildCommand extends Command {
       throw "Invalid arch parameter";
     }
 
-    final coreVersion = await Build.getLatestVersion();
-
     final corePaths = await Build.buildCore(
       target: target,
       arch: arch,
@@ -654,7 +603,6 @@ class BuildCommand extends Command {
           args:
               " --description $archName --build-dart-define=CORE_SHA256=$token",
           env: env,
-          coreVersion: coreVersion,
         );
         return;
       case Target.linux:
@@ -675,7 +623,6 @@ class BuildCommand extends Command {
           args:
               " --description $archName --build-target-platform $defaultTarget",
           env: env,
-          coreVersion: coreVersion,
         );
         return;
       case Target.android:
@@ -688,7 +635,6 @@ class BuildCommand extends Command {
           targets: "apk",
           args: ",split-per-abi --build-target-platform $allTargets",
           env: env,
-          coreVersion: coreVersion,
         );
 
         // Build universal APK (all architectures in one file)
@@ -697,7 +643,6 @@ class BuildCommand extends Command {
           targets: "apk",
           args: " --build-target-platform $allTargets",
           env: env,
-          coreVersion: coreVersion,
         );
 
         return;
@@ -706,7 +651,6 @@ class BuildCommand extends Command {
         await _buildMacosApp(
           arch: arch!,
           env: env,
-          coreVersion: coreVersion,
         );
         return;
     }

@@ -55,6 +55,7 @@ Future<T?> showSheet<T>({
     true => showModalBottomSheet<T>(
         context: context,
         isScrollControlled: props.isScrollControlled,
+        backgroundColor: Colors.transparent,
         builder: (_) => SafeArea(
             child: builder(context, SheetType.bottomSheet),
           ),
@@ -105,11 +106,13 @@ class AdaptiveSheetScaffold extends StatefulWidget {
     required this.body,
     required this.title,
     this.actions = const [],
+    this.disableBackground = true,
   });
   final SheetType type;
   final Widget body;
   final String title;
   final List<Widget> actions;
+  final bool disableBackground;
 
   @override
   State<AdaptiveSheetScaffold> createState() => _AdaptiveSheetScaffoldState();
@@ -118,7 +121,8 @@ class AdaptiveSheetScaffold extends StatefulWidget {
 class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = context.colorScheme.surface;
+    final colorScheme = context.colorScheme;
+    final backgroundColor = colorScheme.surface.withOpacity(0.75);
     final bottomSheet = widget.type == SheetType.bottomSheet;
     final sideSheet = widget.type == SheetType.sideSheet;
     final appBar = AppBar(
@@ -178,6 +182,7 @@ class _AdaptiveSheetScaffoldState extends State<AdaptiveSheetScaffold> {
       appBar: appBar,
       backgroundColor: backgroundColor,
       body: widget.body,
+      disableBackground: widget.disableBackground,
     );
   }
 }

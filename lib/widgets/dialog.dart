@@ -25,11 +25,13 @@ class CommonDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = ref.watch(viewSizeProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return AlertDialog(
       title: Text(title),
       actions: actions,
       contentPadding: padding,
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? colorScheme.surface.withOpacity(0.65),
       content: Container(
         constraints: BoxConstraints(
           maxHeight: min(
@@ -60,11 +62,13 @@ class CommonModal extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = ref.watch(viewSizeProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Container(
         width: size.width * 0.85,
         height: size.height * 0.85,
         decoration: BoxDecoration(
+          color: colorScheme.surface.withOpacity(0.65),
           borderRadius: BorderRadius.circular(12),
         ),
         clipBehavior: Clip.antiAlias,

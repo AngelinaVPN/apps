@@ -208,6 +208,7 @@ class _OverrideProfileViewState extends State<OverrideProfileView> {
             );
             final isEdit = editCount != 0;
             return CommonScaffold(
+              disableBackground: true,
               title: appLocalizations.override,
               body: _buildContent(),
               actions: [

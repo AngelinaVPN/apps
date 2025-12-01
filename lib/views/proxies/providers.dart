@@ -87,6 +87,7 @@ class _ProvidersViewState extends ConsumerState<ProvidersView> {
       items: ruleProviders,
     );
     return AdaptiveSheetScaffold(
+      disableBackground: false,
       actions: [
         IconButton(
           onPressed: _updateProviders,

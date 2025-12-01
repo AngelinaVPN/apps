@@ -128,15 +128,6 @@ class AboutView extends StatelessWidget {
             trailing: const Icon(Icons.update),
           ),
           ListItem(
-            title: const Text("Telegram"),
-            onTap: () {
-              globalState.openUrl(
-                "https://t.me/FlClashx",
-              );
-            },
-            trailing: const Icon(Icons.insert_link),
-          ),
-          ListItem(
             title: Text(appLocalizations.project),
             onTap: () {
               globalState.openUrl(
@@ -158,7 +149,7 @@ class AboutView extends StatelessWidget {
             title: Text(appLocalizations.core),
             onTap: () {
               globalState.openUrl(
-                "https://github.com/chen08209/Clash.Meta/tree/FlClash",
+                "https://github.com/pluralplay/xHomo",
               );
             },
             trailing: const Icon(Icons.insert_link),

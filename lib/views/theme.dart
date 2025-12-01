@@ -111,7 +111,7 @@ class _ThemeModeItem extends ConsumerWidget {
       ),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        height: 56,
+        height: 44,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: themeModeItems.length,
@@ -127,20 +127,24 @@ class _ThemeModeItem extends ConsumerWidget {
                     );
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Flexible(
-                      child: Icon(themeModeItem.iconData),
+                      child: Icon(
+                        themeModeItem.iconData,
+                        size: 18,
+                      ),
                     ),
                     const SizedBox(
-                      width: 8,
+                      width: 6,
                     ),
                     Flexible(
                       child: Text(
                         themeModeItem.label,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   ],
@@ -149,7 +153,7 @@ class _ThemeModeItem extends ConsumerWidget {
             );
           },
           separatorBuilder: (_, __) => const SizedBox(
-              width: 16,
+              width: 12,
             ),
         ),
       ),
