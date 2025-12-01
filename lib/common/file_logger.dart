@@ -16,7 +16,7 @@ class FileLogger {
 
   static const int maxFileSizeBytes = 10 * 1024 * 1024; // 10 MB
   static const int maxLogFiles = 7; // Keep 7 days of logs
-  
+
   IOSink? _currentSink;
   String? _currentLogFilePath;
   String? _currentDate;
@@ -39,16 +39,16 @@ class FileLogger {
 
   String _getLogFileName(String date, {int index = 0}) {
     if (index == 0) {
-      return 'app_$date.log';
+      return 'FlClashX_$date.log';
     }
-    return 'app_$date\_$index.log';
+    return 'FlClashX_$date\_$index.log';
   }
 
   Future<void> _rotateLogs() async {
     try {
       final logsDir = await _getLogsDir();
       final dir = Directory(logsDir);
-      
+
       // Get all log files
       final files = await dir
           .list()
@@ -57,7 +57,8 @@ class FileLogger {
           .toList();
 
       // Sort by modification time (oldest first)
-      files.sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
+      files
+          .sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
 
       // Remove old files if we exceed max count
       while (files.length > maxLogFiles) {
@@ -85,7 +86,7 @@ class FileLogger {
     // Find appropriate log file for today
     int index = 0;
     File logFile;
-    
+
     while (true) {
       final fileName = _getLogFileName(today, index: index);
       final filePath = join(logsDir, fileName);
@@ -150,7 +151,8 @@ class FileLogger {
 
       while (_writeQueue.isNotEmpty) {
         final message = _writeQueue.removeAt(0);
-        final timestamp = DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(DateTime.now());
+        final timestamp =
+            DateFormat('yyyy-MM-dd HH:mm:ss.SSS').format(DateTime.now());
         _currentSink?.writeln('[$timestamp] $message');
       }
 

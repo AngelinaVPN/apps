@@ -185,19 +185,8 @@ class AppController {
           autoRun: effectiveSettings.contains('autostart'),
           autoCheckUpdate: effectiveSettings.contains('autoupdate'),
         ));
-
-      if (settings == null) {
-        commonPrint.log(
-            "Subscription settings header not present - all controlled settings reset to defaults (disabled)");
-      } else if (effectiveSettings.isEmpty) {
-        commonPrint.log(
-            "Subscription settings header empty - all controlled settings disabled");
-      } else {
-        commonPrint
-            .log("Applied subscription settings: ${effectiveSettings.join(', ')}");
-      }
     } catch (e) {
-      commonPrint.log("Failed to apply subscription settings: $e");
+      // Silently ignore subscription settings errors
     }
   }
 
@@ -274,11 +263,8 @@ class AppController {
         // If header is missing, reset settings to defaults
         applySubscriptionSettings(null);
       }
-
-      commonPrint.log(
-          "Applied provider headers from profile: ${headers.keys.join(', ')}");
     } catch (e) {
-      commonPrint.log("Failed to apply provider headers: $e");
+      // Silently ignore provider headers errors
     }
   }
 
@@ -457,9 +443,6 @@ class AppController {
           commonPrint.log("Failed to update $fileName: $e");
         }
       }
-
-      commonPrint.log(
-          "Geo files update completed: $updatedCount updated, $skippedCount skipped");
     } catch (e) {
       commonPrint.log("Failed to update geo files after profile update: $e");
     }
@@ -583,21 +566,14 @@ class AppController {
   Future<void> _setupClashConfig() async {
     await _ref.read(currentProfileProvider)?.checkAndUpdate();
     var patchConfig = _ref.read(patchClashConfigProvider);
-    commonPrint.log("_setupClashConfig BEFORE sync: patchConfig.tun.stack=${patchConfig.tun.stack.name}");
     
     // Sync network settings from provider config if not overriding
     final appSetting = _ref.read(appSettingProvider);
     if (!appSetting.overrideNetworkSettings) {
       final syncedConfig = await globalState.syncNetworkSettingsFromProvider(patchConfig);
-      commonPrint.log("_setupClashConfig AFTER syncNetworkSettingsFromProvider: syncedConfig.tun.stack=${syncedConfig.tun.stack.name}");
       // Always update provider when using provider settings to ensure UI reflects config
       _ref.read(patchClashConfigProvider.notifier).updateState((state) => syncedConfig);
       patchConfig = syncedConfig;
-      commonPrint.log("Synced network settings from provider: ipv6=${syncedConfig.ipv6}, allowLan=${syncedConfig.allowLan}, findProcessMode=${syncedConfig.findProcessMode.name}, tunStack=${syncedConfig.tun.stack.name}");
-      
-      // Verify that provider was actually updated
-      final verifyConfig = _ref.read(patchClashConfigProvider);
-      commonPrint.log("_setupClashConfig VERIFY after updateState: verifyConfig.tun.stack=${verifyConfig.tun.stack.name}");
     }
     
     final res = await _requestAdmin(patchConfig.tun.enable);
@@ -793,48 +769,42 @@ class AppController {
       // Wait a bit for all file handles to close
       await Future.delayed(const Duration(milliseconds: 500));
       
-      // Get home directory path BEFORE clearing preferences
-      final homePath = await appPath.homeDirPath;
-      commonPrint.log("home directory path: $homePath");
-      
       // Clear preferences
       await preferences.clearPreferences();
       commonPrint.log("cleared preferences");
       
-      // Delete entire home directory
-      final homeDir = Directory(homePath);
-      final exists = await homeDir.exists();
-      commonPrint.log("home directory exists: $exists");
+      // Get paths
+      final homePath = await appPath.homeDirPath;
+      final profilesPath = await appPath.profilesPath;
       
-      if (exists) {
-        // List contents before deletion (for debugging)
+      // Delete profiles directory
+      final profilesDir = Directory(profilesPath);
+      if (await profilesDir.exists()) {
         try {
-          final contents = await homeDir.list(recursive: false).toList();
-          commonPrint.log("home directory contents (${contents.length} items):");
-          for (var item in contents) {
-            commonPrint.log("  - ${item.path}");
-          }
+          await profilesDir.delete(recursive: true);
+          commonPrint.log("deleted profiles directory");
         } catch (e) {
-          commonPrint.log("failed to list directory: $e");
+          commonPrint.log("failed to delete profiles directory: $e");
         }
-        
-        // Delete recursively
-        try {
-          await homeDir.delete(recursive: true);
-          commonPrint.log("deleted home directory: $homePath");
-        } catch (e) {
-          commonPrint.log("failed to delete home directory: $e");
-          // Try to recreate empty directory
+      }
+      
+      // Delete cache and temporary files
+      final filesToDelete = [
+        'cache.db',
+        'libCachedImageData.json',
+        'FlClashX.lock',
+      ];
+      
+      for (final fileName in filesToDelete) {
+        final file = File(join(homePath, fileName));
+        if (await file.exists()) {
           try {
-            await homeDir.create(recursive: true);
-            commonPrint.log("recreated empty home directory");
-          } catch (e2) {
-            commonPrint.log("failed to recreate directory: $e2");
+            await file.delete();
+            commonPrint.log("deleted $fileName");
+          } catch (e) {
+            commonPrint.log("failed to delete $fileName: $e");
           }
         }
-      } else {
-        commonPrint.log("home directory does not exist, creating empty one");
-        await homeDir.create(recursive: true);
       }
       
       // Reset config
@@ -843,8 +813,12 @@ class AppController {
       );
       
       commonPrint.log("handleClear completed");
+      
+      // Close file logger to release file handles (MUST be last step)
+      await fileLogger.dispose();
     } catch (e) {
       commonPrint.log("handleClear error: $e");
+      await fileLogger.dispose();
       rethrow;
     }
   }

@@ -202,16 +202,10 @@ extension ProfileExtension on Profile {
       final deviceInfoService = DeviceInfoService();
       final details = await deviceInfoService.getDeviceDetails();
 
-      commonPrint.log("Device Details - HWID: ${details.hwid}, OS: ${details.os}, Version: ${details.osVersion}, Model: ${details.model}");
-
       if (details.hwid != null) headers['x-hwid'] = details.hwid;
       if (details.os != null) headers['x-device-os'] = details.os;
       if (details.osVersion != null) headers['x-ver-os'] = details.osVersion;
       if (details.model != null) headers['x-device-model'] = details.model;
-      
-      commonPrint.log("Sending headers to server: $headers");
-    } else {
-      commonPrint.log("shouldSendHeaders is false, not sending device headers");
     }
 
     final response = await request.getFileResponseForUrl(
