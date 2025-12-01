@@ -790,16 +790,51 @@ class AppController {
       await clashCore.shutdown();
       commonPrint.log("shutdown core");
       
+      // Wait a bit for all file handles to close
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Get home directory path BEFORE clearing preferences
+      final homePath = await appPath.homeDirPath;
+      commonPrint.log("home directory path: $homePath");
+      
       // Clear preferences
       await preferences.clearPreferences();
-      commonPrint.log("clear preferences");
+      commonPrint.log("cleared preferences");
       
-      // Delete home directory
-      final homePath = await appPath.homeDirPath;
+      // Delete entire home directory
       final homeDir = Directory(homePath);
-      if (await homeDir.exists()) {
-        await homeDir.delete(recursive: true);
-        commonPrint.log("deleted home directory: $homePath");
+      final exists = await homeDir.exists();
+      commonPrint.log("home directory exists: $exists");
+      
+      if (exists) {
+        // List contents before deletion (for debugging)
+        try {
+          final contents = await homeDir.list(recursive: false).toList();
+          commonPrint.log("home directory contents (${contents.length} items):");
+          for (var item in contents) {
+            commonPrint.log("  - ${item.path}");
+          }
+        } catch (e) {
+          commonPrint.log("failed to list directory: $e");
+        }
+        
+        // Delete recursively
+        try {
+          await homeDir.delete(recursive: true);
+          commonPrint.log("deleted home directory: $homePath");
+        } catch (e) {
+          commonPrint.log("failed to delete home directory: $e");
+          // Try to recreate empty directory
+          try {
+            await homeDir.create(recursive: true);
+            commonPrint.log("recreated empty home directory");
+          } catch (e2) {
+            commonPrint.log("failed to recreate directory: $e2");
+          }
+        }
+      } else {
+        commonPrint.log("home directory does not exist, creating empty one");
+        await homeDir.create(recursive: true);
       }
       
       // Reset config
@@ -810,6 +845,7 @@ class AppController {
       commonPrint.log("handleClear completed");
     } catch (e) {
       commonPrint.log("handleClear error: $e");
+      rethrow;
     }
   }
 

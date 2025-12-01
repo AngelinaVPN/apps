@@ -1,5 +1,6 @@
 import 'package:flclashx/clash/clash.dart';
 import 'package:flclashx/common/common.dart';
+import 'package:flclashx/common/file_logger.dart';
 import 'package:flclashx/enum/enum.dart';
 import 'package:flclashx/models/models.dart';
 import 'package:flclashx/providers/app.dart';
@@ -81,6 +82,10 @@ class _ClashContainerState extends ConsumerState<ClashManager>
   @override
   void onLog(Log log) {
     ref.read(logsProvider.notifier).addLog(log);
+    
+    // Write core logs to file
+    fileLogger.log("[${log.logLevel.name.toUpperCase()}] ${log.payload}");
+    
     if (log.logLevel == LogLevel.error) {
       globalState.showNotifier(log.payload);
     }
