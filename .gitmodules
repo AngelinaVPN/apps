@@ -4,3 +4,7 @@
 	branch = FlClash
 
 
+[submodule "core/Clash.Meta"]
+	path = core/Clash.Meta
+	url = git@github.com:pluralplay/xHomo.git
+	branch = FlClashX
