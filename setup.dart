@@ -320,25 +320,39 @@ class Build {
     }
   }
 
-  static buildHelper(Target target, String token) async {
+  static buildHelper(Target target, String token, {Arch? arch}) async {
+    final List<String> buildArgs = [
+      "cargo",
+      "build",
+      "--release",
+      "--features",
+      "windows-service",
+    ];
+    
+    // Add target for cross-compilation
+    if (arch == Arch.arm64 && target == Target.windows) {
+      buildArgs.addAll(["--target", "aarch64-pc-windows-msvc"]);
+    }
+    
     await exec(
-      [
-        "cargo",
-        "build",
-        "--release",
-        "--features",
-        "windows-service",
-      ],
+      buildArgs,
       environment: {
         "TOKEN": token,
       },
       name: "build helper",
       workingDirectory: _servicesDir,
     );
+    
+    // Determine output path based on architecture
+    final String releasePath;
+    if (arch == Arch.arm64 && target == Target.windows) {
+      releasePath = join(_servicesDir, "target", "aarch64-pc-windows-msvc", "release");
+    } else {
+      releasePath = join(_servicesDir, "target", "release");
+    }
+    
     final outPath = join(
-      _servicesDir,
-      "target",
-      "release",
+      releasePath,
       "helper${target.executableExtensionName}",
     );
     final targetPath = join(
@@ -615,7 +629,7 @@ class BuildCommand extends Command {
         final token = target != Target.android
             ? await Build.calcSha256(corePaths.first)
             : null;
-        Build.buildHelper(target, token!);
+        Build.buildHelper(target, token!, arch: arch);
         _buildDistributor(
           target: target,
           targets: "exe,zip",

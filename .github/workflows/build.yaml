@@ -28,21 +28,25 @@ jobs:
           - platform: macos
             os: macos-latest
             arch: arm64
-          # - platform: windows
-          #   os: windows-11-arm
-          #   arch: arm64
+          - platform: windows
+            os: windows-11-arm
+            arch: arm64
           - platform: linux
             os: ubuntu-24.04-arm
             arch: arm64
 
     steps:
-      - name: Setup rust
+      - name: Setup Rust for Windows ARM64
         if: startsWith(matrix.os, 'windows-11-arm')
         run: |
           Invoke-WebRequest -Uri "https://win.rustup.rs/aarch64" -OutFile rustup-init.exe
           .\rustup-init.exe -y --default-toolchain stable
           $cargoPath = "$env:USERPROFILE\.cargo\bin"
           Add-Content $env:GITHUB_PATH $cargoPath
+      
+      - name: Setup Rust ARM64 target for cross-compilation
+        if: matrix.platform == 'windows' && matrix.arch == 'arm64' && !startsWith(matrix.os, 'windows-11-arm')
+        run: rustup target add aarch64-pc-windows-msvc
 
       - name: Checkout
         uses: actions/checkout@v4
