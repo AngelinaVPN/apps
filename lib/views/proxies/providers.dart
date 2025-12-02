@@ -85,7 +85,6 @@ class _ProvidersViewState extends ConsumerState<ProvidersView> {
       items: ruleProviders,
     );
     return CommonScaffold(
-      disableBackground: true,
       actions: [
         IconButton(
           onPressed: _updateProviders,

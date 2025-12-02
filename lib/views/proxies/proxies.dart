@@ -246,7 +246,6 @@ class _IconConfigView extends ConsumerWidget {
       (state) => state.iconMap,
     ));
     return CommonScaffold(
-      disableBackground: true,
       title: appLocalizations.iconConfiguration,
       body: MapInputPage(
         title: appLocalizations.iconConfiguration,

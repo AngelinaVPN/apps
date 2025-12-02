@@ -265,6 +265,7 @@ class _ProfileItemState extends State<ProfileItem> {
       context,
       builder: (_, type) => AdaptiveSheetScaffold(
           type: type,
+          disableBackground: false,
           body: EditProfileView(
             profile: widget.profile,
             context: context,
