@@ -101,7 +101,7 @@ class _StartButtonState extends ConsumerState<StartButton>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(startButtonSelectorStateProvider);
-    if (!state.isInit || !state.hasProfile || !state.hasProxiesInit) {
+    if (!state.isInit || !state.hasProfile) {
       return Container();
     }
 
