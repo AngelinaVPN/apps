@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
 import 'package:flclashx/providers/providers.dart';
 import 'package:flclashx/state.dart';
 import 'package:flclashx/widgets/widgets.dart';
@@ -14,7 +13,7 @@ class ServiceInfoWidget extends ConsumerWidget {
 
   String? _decodeBase64IfNeeded(String? value) {
     if (value == null || value.isEmpty) return value;
-    
+
     try {
       final decoded = utf8.decode(base64.decode(value));
       return decoded;
@@ -26,7 +25,7 @@ class ServiceInfoWidget extends ConsumerWidget {
   Widget _buildLogo(BuildContext context, String? logoUrl) {
     const logoSize = 44.0;
     const borderRadius = 8.0;
-    
+
     if (logoUrl == null || logoUrl.isEmpty) {
       return Icon(
         Icons.contact_mail,
@@ -84,7 +83,8 @@ class ServiceInfoWidget extends ConsumerWidget {
 
     final serviceName = _decodeBase64IfNeeded(profile.serviceName);
     final supportUrl = profile.supportUrl;
-    final logoUrl = _decodeBase64IfNeeded(profile.providerHeaders['flclashx-servicelogo']);
+    final logoUrl =
+        _decodeBase64IfNeeded(profile.providerHeaders['flclashx-servicelogo']);
 
     if (serviceName == null || serviceName.isEmpty) {
       return const SizedBox.shrink();
@@ -114,13 +114,12 @@ class ServiceInfoWidget extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildLogo(context, logoUrl),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Flexible(
-                      child: Text(
+                      child: EmojiText(
                         serviceName,
                         style: context.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: FontFamily.twEmoji.value,
+                          fontWeight: FontWeight.w400,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
