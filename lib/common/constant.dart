@@ -51,8 +51,8 @@ const maxMobileWidth = 600;
 const maxLaptopWidth = 840;
 const defaultTestUrl = "https://www.gstatic.com/generate_204";
 final commonFilter = ImageFilter.blur(
-  sigmaX: 5,
-  sigmaY: 5,
+  sigmaX: 2.5,
+  sigmaY: 2.5,
   tileMode: TileMode.mirror,
 );
 

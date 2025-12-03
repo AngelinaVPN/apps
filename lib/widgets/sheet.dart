@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flclashx/common/common.dart';
 import 'package:flclashx/enum/enum.dart';
@@ -56,8 +57,11 @@ Future<T?> showSheet<T>({
         context: context,
         isScrollControlled: props.isScrollControlled,
         backgroundColor: Colors.transparent,
-        builder: (_) => SafeArea(
-          child: builder(context, SheetType.bottomSheet),
+        builder: (_) => BackdropFilter(
+          filter: props.blur ? commonFilter : ImageFilter.blur(),
+          child: SafeArea(
+            child: builder(context, SheetType.bottomSheet),
+          ),
         ),
         showDragHandle: false,
         useSafeArea: props.useSafeArea,
@@ -69,7 +73,7 @@ Future<T?> showSheet<T>({
         constraints: BoxConstraints(
           maxWidth: props.maxWidth ?? 360,
         ),
-        filter: (props.blur && !Platform.isAndroid) ? commonFilter : null,
+        filter: props.blur ? commonFilter : null,
         builder: (_) => builder(context, SheetType.sideSheet),
       ),
   };
@@ -92,7 +96,7 @@ Future<T?> showExtend<T>(
         constraints: BoxConstraints(
           maxWidth: props.maxWidth ?? 360,
         ),
-        filter: (props.blur && !Platform.isAndroid) ? commonFilter : null,
+        filter: props.blur ? commonFilter : null,
         builder: (context) => builder(context, SheetType.sideSheet),
       ),
   };
