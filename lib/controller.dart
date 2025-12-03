@@ -1521,6 +1521,7 @@ class AppController {
       ),
     );
     for (final profile in profiles) {
+      if (!profile.isFile) continue;
       final filePath = join(homeDirPath, profile.name);
       final file = File(filePath);
       await file.create(recursive: true);
@@ -1582,5 +1583,6 @@ class AppController {
     if (currentProfile == null) {
       _ref.read(currentProfileIdProvider.notifier).value = profiles.first.id;
     }
+    savePreferencesDebounce();
   }
 }

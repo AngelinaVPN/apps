@@ -20,7 +20,8 @@ extension ArchiveExt on Archive {
   }
 
   void add<T>(String name, T raw) {
-    final data = json.encode(raw);
+    final jsonString = json.encode(raw);
+    final data = utf8.encode(jsonString);
     addFile(
       ArchiveFile(name, data.length, data),
     );
