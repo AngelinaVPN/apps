@@ -815,15 +815,21 @@ class AppController {
 
   Future<void> updateGroups() async {
     try {
-      _ref.read(groupsProvider.notifier).value = await retry(
+      final newGroups = await retry(
         task: () async => clashCore.getProxiesGroups(),
         retryIf: (res) => res.isEmpty,
       );
 
-      _ref.read(versionProvider.notifier).value =
-          _ref.read(versionProvider) + 1;
-    } catch (_) {
-      _ref.read(groupsProvider.notifier).value = [];
+      if (newGroups.isNotEmpty) {
+        _ref.read(groupsProvider.notifier).value = newGroups;
+        _ref.read(versionProvider.notifier).value =
+            _ref.read(versionProvider) + 1;
+      } else {
+        commonPrint
+            .log("updateGroups: received empty groups, keeping old state");
+      }
+    } catch (e) {
+      commonPrint.log("updateGroups error: $e, keeping old groups");
     }
   }
 
