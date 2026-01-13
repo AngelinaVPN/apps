@@ -24,6 +24,7 @@ export 'palette.dart';
 export 'pop_scope.dart';
 export 'popup.dart';
 export 'scaffold.dart';
+export 'search_order_marker.dart';
 export 'scroll.dart';
 export 'setting.dart';
 export 'sheet.dart';

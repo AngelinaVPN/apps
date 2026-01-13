@@ -1,4 +1,5 @@
 import 'package:flclashx/common/common.dart';
+import 'package:flclashx/plugins/tile.dart';
 import 'package:flclashx/models/models.dart';
 import 'package:flclashx/state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -154,6 +155,8 @@ class CurrentProfileId extends _$CurrentProfileId
     globalState.config = globalState.config.copyWith(
       currentProfileId: value,
     );
+    // Notify tile service about profile change
+    tile?.updateTile();
   }
 }
 

@@ -47,6 +47,8 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
 
   @override
   List<Widget> get actions => [
+        const _ModeSelectorAction(),
+        const SearchOrderMarker(),
         if (_isTab)
           IconButton(
             onPressed: () {
@@ -198,6 +200,23 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
   }
 
   @override
+  void initPageState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final commonScaffoldState = context.commonScaffoldState;
+      commonScaffoldState?.actions = actions;
+      commonScaffoldState?.floatingActionButton = floatingActionButton;
+      commonScaffoldState?.onKeywordsUpdate = onKeywordsUpdate;
+      commonScaffoldState?.updateSearchState(
+        (_) => onSearch != null
+            ? AppBarSearchState(
+                onSearch: onSearch!,
+              )
+            : null,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final proxiesType = ref.watch(
       proxiesStyleSettingProvider.select(
@@ -210,6 +229,49 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> with PageMixin {
         ),
       ProxiesType.list => const ProxiesListView(),
     };
+  }
+}
+
+class _ModeSelectorAction extends ConsumerWidget {
+  const _ModeSelectorAction({super.key});
+
+  String _modeLabel(BuildContext context, Mode mode) => switch (mode) {
+        Mode.rule => appLocalizations.rule,
+        Mode.global => appLocalizations.global,
+        Mode.direct => appLocalizations.direct,
+      };
+
+  IconData _modeIcon(Mode mode) => switch (mode) {
+        Mode.rule => Icons.rule,
+        Mode.global => Icons.public,
+        Mode.direct => Icons.flash_on,
+      };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mode = ref.watch(
+      patchClashConfigProvider.select((state) => state.mode),
+    );
+
+    return CommonPopupBox(
+      targetBuilder: (open) => IconButton(
+        tooltip: _modeLabel(context, mode),
+        onPressed: () => open(offset: const Offset(0, 20)),
+        icon: Icon(_modeIcon(mode)),
+      ),
+      popup: CommonPopupMenu(
+        items: [
+          for (final item in Mode.values.where((m) => m != Mode.direct))
+            PopupMenuItemData(
+              icon: _modeIcon(item),
+              label: _modeLabel(context, item),
+              onPressed: () {
+                globalState.appController.changeMode(item);
+              },
+            ),
+        ],
+      ),
+    );
   }
 }
 

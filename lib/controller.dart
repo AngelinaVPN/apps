@@ -513,6 +513,14 @@ class AppController {
 
       final profileConfig =
           await globalState.getProfileConfig(currentProfileId);
+
+      final geodataMode = profileConfig["geodata-mode"];
+      if (geodataMode != true) {
+        commonPrint.log(
+            "Geodata updates are disabled by profile (geodata-mode != true)");
+        return;
+      }
+
       final geoXUrl = profileConfig["geox-url"];
 
       if (geoXUrl == null || geoXUrl is! Map) {

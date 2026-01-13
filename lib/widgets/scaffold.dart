@@ -8,6 +8,7 @@ import 'package:flclashx/providers/providers.dart';
 import 'package:flclashx/state.dart';
 import 'package:flclashx/widgets/fade_box.dart';
 import 'package:flclashx/widgets/pop_scope.dart';
+import 'package:flclashx/widgets/search_order_marker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -281,7 +282,7 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
           );
 
   List<Widget> _buildActions(
-    bool hasSearch,
+    AppBarSearchState? searchState,
     List<Widget> actions,
   ) {
     if (_isSearch) {
@@ -292,22 +293,41 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
         ),
       ]);
     }
-    return genActions(
-      [
-        if (hasSearch)
-          IconButton(
-            onPressed: () {
-              updateSearchState(
-                (state) => state?.copyWith(
-                  isSearch: true,
-                ),
-              );
-            },
-            icon: const Icon(Icons.search),
+
+    final hasSearch = searchState != null;
+    final searchButton = IconButton(
+      onPressed: () {
+        updateSearchState(
+          (state) => state?.copyWith(
+            isSearch: true,
           ),
-        ...actions
-      ],
+        );
+      },
+      icon: const Icon(Icons.search),
     );
+
+    if (!hasSearch) {
+      return genActions([
+        ...actions,
+      ]);
+    }
+
+    // For Proxies page we want search at the end; for others keep default
+    // Check for explicit marker widget in actions to control search placement
+    final shouldPutSearchAtEnd = actions.any((w) => w is SearchOrderMarker);
+
+    if (shouldPutSearchAtEnd) {
+      return genActions([
+        ...actions,
+        searchButton,
+      ]);
+    }
+
+    return genActions([
+      searchButton,
+      ...actions,
+    ]);
+  
   }
 
   Widget _buildAppBarWrap(Widget child) {
@@ -372,7 +392,7 @@ class CommonScaffoldState extends ConsumerState<CommonScaffold> {
                         leading: _buildLeading(),
                         title: _buildTitle(state.searchState),
                         actions: _buildActions(
-                          state.searchState != null,
+                          state.searchState,
                           state.actions.isNotEmpty
                               ? state.actions
                               : widget.actions ?? [],

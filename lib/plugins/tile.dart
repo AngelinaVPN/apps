@@ -51,6 +51,24 @@ class Tile {
   void removeListener(TileListener listener) {
     _listeners.remove(listener);
   }
+  
+  Future<void> updateTile() async {
+    try {
+      await _channel.invokeMethod('updateTile');
+    } catch (e) {
+      // Ignore errors if tile service not available
+    }
+  }
+  
+  /// Signal to native side that Dart service is ready to receive commands.
+  /// This should be called after _service entrypoint has finished initialization.
+  Future<void> signalServiceReady() async {
+    try {
+      await _channel.invokeMethod('serviceReady');
+    } catch (e) {
+      // Ignore errors if tile service not available
+    }
+  }
 }
 
 final tile =  Platform.isAndroid ? Tile.instance : null;

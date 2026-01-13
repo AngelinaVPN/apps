@@ -67,11 +67,16 @@ class MainActivity : FlutterActivity() {
         flutterEngine.plugins.add(ServicePlugin)
         flutterEngine.plugins.add(TilePlugin())
         GlobalState.flutterEngine = flutterEngine
+        
+        // Sync VPN status when app opens - this ensures UI reflects actual VPN state
+        // especially important when VPN was started via Tile while app was not in memory
+        GlobalState.syncStatus()
     }
 
     override fun onDestroy() {
         GlobalState.flutterEngine = null
-        GlobalState.runState.value = RunState.STOP
+        // Don't reset runState here - VPN might still be running via serviceEngine
+        // The runState is managed by VpnPlugin.handleStart/handleStop
         super.onDestroy()
     }
 

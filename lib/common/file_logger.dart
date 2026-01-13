@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flclashx/common/path.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 
@@ -22,6 +23,21 @@ class FileLogger {
   String? _currentDate;
   final _writeQueue = <String>[];
   bool _isWriting = false;
+  bool _isBindingInitialized = false;
+
+  /// Check if Flutter bindings are initialized
+  bool _checkBindingInitialized() {
+    if (_isBindingInitialized) return true;
+    
+    try {
+      // Try to access WidgetsBinding - this will throw if not initialized
+      WidgetsBinding.instance;
+      _isBindingInitialized = true;
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<String> _getLogsDir() async {
     final homeDir = await appPath.homeDirPath;
@@ -144,6 +160,12 @@ class FileLogger {
       return;
     }
 
+    // Don't try to write to file if bindings aren't initialized yet
+    // Messages stay in queue and will be written when bindings are ready
+    if (!_checkBindingInitialized()) {
+      return;
+    }
+
     _isWriting = true;
 
     try {
@@ -172,6 +194,14 @@ class FileLogger {
   void log(String message) {
     _writeQueue.add(message);
     unawaited(_processQueue());
+  }
+
+  /// Call this method after WidgetsFlutterBinding.ensureInitialized()
+  /// to flush any queued messages that were logged before bindings were ready
+  void flushPendingLogs() {
+    if (_writeQueue.isNotEmpty && _checkBindingInitialized()) {
+      unawaited(_processQueue());
+    }
   }
 
   Future<void> dispose() async {
