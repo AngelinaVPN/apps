@@ -189,11 +189,14 @@ class _ProxiesListViewState extends State<ProxiesListView> {
               Positioned.fill(
                 child: ScrollConfiguration(
                   behavior: HiddenBarScrollBehavior(),
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    controller: _controller,
-                    itemCount: items.length,
-                    itemBuilder: (_, index) => items[index],
+                  child: FocusTraversalGroup(
+                    policy: WidgetOrderTraversalPolicy(),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      controller: _controller,
+                      itemCount: items.length,
+                      itemBuilder: (_, index) => items[index],
+                    ),
                   ),
                 ),
               ),
@@ -318,104 +321,101 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
         });
         
         return RepaintBoundary(
-          child: Expansible(
-            controller: _expansibleController,
-            headerBuilder: (context, animation) => GestureDetector(
-            onTap: () => _toggleExpansion(unfoldSet),
-            child: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow.opacity80,
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                margin: const EdgeInsets.symmetric(vertical: 4.0),
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 16.0),
-                child: Row(
+          child: FocusTraversalGroup(
+            policy: OrderedTraversalPolicy(),
+            child: Expansible(
+              controller: _expansibleController,
+              headerBuilder: (context, animation) => GestureDetector(
+                onTap: () => _toggleExpansion(unfoldSet),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow.opacity80,
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  margin: const EdgeInsets.symmetric(vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 16.0,
+                  ),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
-                          child: Row(children: [
-                        _buildIcon(),
-                        Flexible(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                groupName,
-                                style: context.textTheme.titleMedium,
+                        child: Row(
+                          children: [
+                            _buildIcon(),
+                            Flexible(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    groupName,
+                                    style: context.textTheme.titleMedium,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Consumer(
+                                      builder: (_, ref, __) {
+                                        final proxyName = ref
+                                            .watch(getSelectedProxyNameProvider(groupName))
+                                            .getSafeValue("");
+                                        if (proxyName.isEmpty) {
+                                          return const SizedBox.shrink();
+                                        }
+                                        return EmojiText(
+                                          overflow: TextOverflow.ellipsis,
+                                          proxyName,
+                                          style: context.textTheme.labelMedium?.toLight,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                ],
                               ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: Consumer(
-                                  builder: (_, ref, __) {
-                                    final proxyName = ref
-                                        .watch(
-                                            getSelectedProxyNameProvider(
-                                          groupName,
-                                        ))
-                                        .getSafeValue("");
-                                    if (proxyName.isEmpty) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    return EmojiText(
-                                      overflow: TextOverflow.ellipsis,
-                                      proxyName,
-                                      style: context.textTheme
-                                          .labelMedium?.toLight,
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ])),
+                      ),
                       Row(
                         children: [
                           if (isExpand) ...[
                             IconButton(
                               onPressed: _delayTest,
                               visualDensity: VisualDensity.standard,
-                              icon: const Icon(
-                                Icons.network_ping,
-                              ),
+                              icon: const Icon(Icons.network_ping),
                             ),
-                            const SizedBox(
-                              width: 6,
-                            ),
+                            const SizedBox(width: 6),
                           ] else
-                            const SizedBox(
-                              width: 4,
-                            ),
+                            const SizedBox(width: 4),
                           IconButton.filledTonal(
                             onPressed: () => _toggleExpansion(unfoldSet),
-                            icon: CommonExpandIcon(
-                              expand: isExpand,
-                            ),
-                          )
+                            icon: CommonExpandIcon(expand: isExpand),
+                          ),
                         ],
-                      )
-                    ]))),
-        bodyBuilder: (context, animation) => RepaintBoundary(
-          child: SizeTransition(
-            sizeFactor: animation,
-            axisAlignment: -1.0,
-            child: FadeTransition(
-                opacity: animation,
-                child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Column(children: widget.proxies))),
-          ),
-        ),
-        expansibleBuilder: (context, header, body, animation) =>
-            Column(children: [header, body]),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              bodyBuilder: (context, animation) => RepaintBoundary(
+                child: SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: FadeTransition(
+                    opacity: animation,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Column(children: widget.proxies),
+                    ),
+                  ),
+                ),
+              ),
+              expansibleBuilder: (context, header, body, animation) =>
+                  Column(children: [header, body]),
+            ),
           ),
         );
       },
