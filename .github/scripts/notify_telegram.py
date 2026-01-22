@@ -65,7 +65,7 @@ def main():
     
     # Simple notification message for channel 3
     version_clean = version.lstrip('v')
-    simple_message = f"Новый релиз!\nFlClashX {version_clean}\nПосмотреть: https://t.me/flclashx❤️ "
+    simple_message = f"Новый релиз!❤️\nFlClashX {version_clean}\nПосмотреть: https://t.me/flclashx"
     
     # Log notification details (without secrets)
     print(f"Sending notification for version {version}...")
