@@ -8,7 +8,6 @@ import 'package:path/path.dart';
 import 'package:win32/win32.dart';
 
 class Windows {
-
   factory Windows() {
     _instance ??= Windows._internal();
     return _instance!;
@@ -246,16 +245,6 @@ class Windows {
     return WindowsHelperServiceStatus.presence;
   }
 
-  // SDDL string that grants Interactive Users (IU) the following rights:
-  // RP = SERVICE_START (start the service)
-  // WP = SERVICE_STOP (stop the service)
-  // LC = SERVICE_QUERY_STATUS (query service status)
-  // LO = SERVICE_INTERROGATE (interrogate the service)
-  // RC = READ_CONTROL (read security descriptor)
-  // This allows non-admin users to start/stop/query the service without UAC
-  static const String _serviceSecurityDescriptor =
-      'D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;RPWPLCLORC;;;IU)';
-
   /// Install the helper service (requires UAC elevation).
   /// This should only be called when the service is not installed.
   /// After installation, sets security descriptor to allow non-admin users
@@ -313,7 +302,7 @@ class Windows {
 
     // Service exists but not running - try to start it without elevation
     final result = await Process.run('sc', ['start', appHelperService]);
-    
+
     if (result.exitCode == 0) {
       // Wait for service to fully start
       await Future.delayed(const Duration(milliseconds: 500));

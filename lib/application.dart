@@ -42,7 +42,8 @@ class ApplicationState extends ConsumerState<Application> {
   ColorScheme _getAppColorScheme({
     required Brightness brightness,
     int? primaryColor,
-  }) => ref.read(genColorSchemeProvider(brightness));
+  }) =>
+      ref.read(genColorSchemeProvider(brightness));
 
   @override
   void initState() {
@@ -135,85 +136,83 @@ class ApplicationState extends ConsumerState<Application> {
 
   @override
   Widget build(BuildContext context) => _buildPlatformState(
-      _buildState(
-        Consumer(
-          builder: (_, ref, child) {
-            final locale =
-                ref.watch(appSettingProvider.select((state) => state.locale));
-            final themeProps = ref.watch(themeSettingProvider);
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              navigatorKey: globalState.navigatorKey,
-              checkerboardRasterCacheImages: false,
-              checkerboardOffscreenLayers: false,
-              showPerformanceOverlay: false,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate
-              ],
-              builder: (_, child) {
-                final Widget app = AppEnvManager(
-                  child: _buildPlatformApp(
-                    _buildApp(child!),
-                  ),
-                );
-
-                if (Platform.isMacOS) {
-                  return FittedBox(
-                    fit: BoxFit.contain,
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      width: 500,
-                      height: 800,
-                      child: app,
+        _buildState(
+          Consumer(
+            builder: (_, ref, child) {
+              final locale =
+                  ref.watch(appSettingProvider.select((state) => state.locale));
+              final themeProps = ref.watch(themeSettingProvider);
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                navigatorKey: globalState.navigatorKey,
+                checkerboardRasterCacheImages: false,
+                checkerboardOffscreenLayers: false,
+                showPerformanceOverlay: false,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate
+                ],
+                builder: (_, child) {
+                  final Widget app = AppEnvManager(
+                    child: _buildPlatformApp(
+                      _buildApp(child!),
                     ),
                   );
-                }
 
-                return app;
-              },
-              scrollBehavior: BaseScrollBehavior(),
-              title: appName,
-              locale: utils.getLocaleForString(locale),
-              supportedLocales: AppLocalizations.delegate.supportedLocales,
-              themeMode: themeProps.themeMode,
-              theme: ThemeData(
-                useMaterial3: true,
-                pageTransitionsTheme: _pageTransitionsTheme,
-                colorScheme: _getAppColorScheme(
-                  brightness: Brightness.light,
-                  primaryColor: themeProps.primaryColor,
+                  if (Platform.isMacOS) {
+                    return FittedBox(
+                      fit: BoxFit.contain,
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: 500,
+                        height: 800,
+                        child: app,
+                      ),
+                    );
+                  }
+
+                  return app;
+                },
+                scrollBehavior: BaseScrollBehavior(),
+                title: appName,
+                locale: utils.getLocaleForString(locale),
+                supportedLocales: AppLocalizations.delegate.supportedLocales,
+                themeMode: themeProps.themeMode,
+                theme: ThemeData(
+                  useMaterial3: true,
+                  pageTransitionsTheme: _pageTransitionsTheme,
+                  colorScheme: _getAppColorScheme(
+                    brightness: Brightness.light,
+                    primaryColor: themeProps.primaryColor,
+                  ),
+                  // Reduce animation duration for snappier feel
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
                 ),
-                // Reduce animation duration for snappier feel
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-              ),
-              darkTheme: ThemeData(
-                useMaterial3: true,
-                pageTransitionsTheme: _pageTransitionsTheme,
-                colorScheme: _getAppColorScheme(
-                  brightness: Brightness.dark,
-                  primaryColor: themeProps.primaryColor,
-                ).toPureBlack(themeProps.pureBlack),
-                // Reduce animation duration for snappier feel
-                visualDensity: VisualDensity.adaptivePlatformDensity,
-              ),
-              home: child,
-            );
-          },
-          child: const HomePage(),
+                darkTheme: ThemeData(
+                  useMaterial3: true,
+                  pageTransitionsTheme: _pageTransitionsTheme,
+                  colorScheme: _getAppColorScheme(
+                    brightness: Brightness.dark,
+                    primaryColor: themeProps.primaryColor,
+                  ).toPureBlack(themeProps.pureBlack),
+                  // Reduce animation duration for snappier feel
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                ),
+                home: child,
+              );
+            },
+            child: const HomePage(),
+          ),
         ),
-      ),
-    );
+      );
 
   @override
   Future<void> dispose() async {
     linkManager.destroy();
     _autoUpdateGroupTaskTimer?.cancel();
     _autoUpdateProfilesTaskTimer?.cancel();
-    // Do not stop Windows helper service on app exit; it should run independently
-    // await windows?.stopService();
     await clashCore.destroy();
     await globalState.appController.savePreferences();
     await globalState.appController.handleExit();
