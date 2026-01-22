@@ -149,11 +149,19 @@ begin
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
 begin
   if CurStep = ssPostInstall then
   begin
+    // Refresh icon cache/associations
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
-    Sleep(1000); // Give Windows time to process the changes
+    Sleep(500);
+    // Ensure helper service is started after install/upgrade, independent of app
+    try
+      Exec('sc.exe', 'start "FlClashHelperService"', '', SW_HIDE, ewNoWait, ResultCode);
+    except
+    end;
   end;
 end;
 

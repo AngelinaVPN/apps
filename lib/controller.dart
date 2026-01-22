@@ -78,7 +78,7 @@ class AppController {
       _updateForegroundServerName(groupName, proxyName);
     }, args: [groupName, proxyName]);
   }
-  
+
   /// Update cached server name in VPN plugin for foreground notification
   /// Also sends IPC message to service isolate to update selectedMap
   void _updateForegroundServerName(String groupName, String serverName) {
@@ -90,14 +90,14 @@ class AppController {
       'serverName': serverName,
     });
   }
-  
+
   /// Initialize foreground notification cache with current profile and server
   void initForegroundCache() {
     final profile = globalState.config.currentProfile;
     if (profile == null) return;
-    
+
     final profileName = profile.label ?? profile.id;
-    
+
     // Decode service name from header
     String serviceName = "";
     final svc = profile.providerHeaders['flclashx-servicename'];
@@ -109,12 +109,12 @@ class AppController {
         serviceName = svc.trim();
       }
     }
-    
+
     vpn?.updateProfileInfo(
       profileName: profileName,
       serviceName: serviceName,
     );
-    
+
     // Get current server name from selectedMap
     String? groupName = profile.providerHeaders['flclashx-serverinfo'];
     if (groupName != null && groupName.isNotEmpty) {
@@ -251,22 +251,22 @@ class AppController {
   void _applyAllHeaderSettings(Profile profile, {required bool isNewProfile}) {
     final headers = profile.providerHeaders;
     if (headers.isEmpty) return;
-    
+
     final customBehavior = headers['flclashx-custom'];
-    
+
     final shouldApply = switch (customBehavior) {
       'add' => isNewProfile,
       'update' => true,
       _ => false,
     };
-    
+
     if (!shouldApply) return;
-    
+
     _applyProviderSettings(headers);
     _applyThemeColor(headers);
     _applyCustomViewSettings(profile);
   }
-  
+
   void _applyProviderSettings(Map<String, String> headers) {
     try {
       final currentSettings = _ref.read(appSettingProvider);
@@ -289,7 +289,7 @@ class AppController {
       commonPrint.log("Failed to apply provider settings: $e");
     }
   }
-  
+
   void _applyThemeColor(Map<String, String> headers) {
     try {
       final hexHeader = headers['flclashx-hex'];
@@ -306,7 +306,7 @@ class AppController {
       final parts = hexHeader.split(':');
       final hexString = parts[0].trim().replaceAll('#', '');
       final variantName = parts.length > 1 ? parts[1].trim() : null;
-      
+
       // Check for pureblack flag in any position after color
       bool enablePureBlack = false;
       for (int i = 1; i < parts.length; i++) {
@@ -371,7 +371,6 @@ class AppController {
     }
   }
 
-
   Future<void> updateProfile(Profile profile) async {
     final prefs = await SharedPreferences.getInstance();
     final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
@@ -390,8 +389,9 @@ class AppController {
       _showHwidLimitNotice(announceText, headers['support-url']);
     }
 
-    _ref.read(profilesProvider.notifier).setProfile(
-        newProfile.copyWith(isUpdating: false));
+    _ref
+        .read(profilesProvider.notifier)
+        .setProfile(newProfile.copyWith(isUpdating: false));
 
     if (profile.id == _ref.read(currentProfileIdProvider)) {
       applyProfileDebounce(silence: true);
@@ -401,7 +401,8 @@ class AppController {
     }
 
     // Check subscription expiration and show notification if needed
-    unawaited(SubscriptionNotificationService.checkAndNotify(newProfile).catchError((e) {
+    unawaited(SubscriptionNotificationService.checkAndNotify(newProfile)
+        .catchError((e) {
       commonPrint.log("Error checking subscription: $e");
     }));
   }
@@ -867,27 +868,34 @@ class AppController {
   Future<void> _updateCurrentProfileSubscription() async {
     try {
       final currentProfileId = _ref.read(currentProfileIdProvider);
-      commonPrint.log("_updateCurrentProfileSubscription: currentProfileId = $currentProfileId");
+      commonPrint.log(
+          "_updateCurrentProfileSubscription: currentProfileId = $currentProfileId");
       if (currentProfileId == null) {
-        commonPrint.log("_updateCurrentProfileSubscription: No current profile selected, skipping");
+        commonPrint.log(
+            "_updateCurrentProfileSubscription: No current profile selected, skipping");
         return;
       }
-      
+
       final profiles = _ref.read(profilesProvider);
-      commonPrint.log("_updateCurrentProfileSubscription: profiles count = ${profiles.length}");
-      
-      final currentProfile = profiles.where((p) => p.id == currentProfileId).firstOrNull;
+      commonPrint.log(
+          "_updateCurrentProfileSubscription: profiles count = ${profiles.length}");
+
+      final currentProfile =
+          profiles.where((p) => p.id == currentProfileId).firstOrNull;
       if (currentProfile == null) {
-        commonPrint.log("_updateCurrentProfileSubscription: Profile not found in list, skipping");
+        commonPrint.log(
+            "_updateCurrentProfileSubscription: Profile not found in list, skipping");
         return;
       }
-      
+
       if (currentProfile.type == ProfileType.file) {
-        commonPrint.log("_updateCurrentProfileSubscription: Profile is file type, skipping");
+        commonPrint.log(
+            "_updateCurrentProfileSubscription: Profile is file type, skipping");
         return;
       }
-      
-      commonPrint.log("Updating subscription info for current profile '${currentProfile.label}' on startup...");
+
+      commonPrint.log(
+          "Updating subscription info for current profile '${currentProfile.label}' on startup...");
       await updateProfile(currentProfile);
       commonPrint.log("Subscription info updated successfully");
     } catch (e, stackTrace) {
@@ -977,10 +985,6 @@ class AppController {
       await proxy?.stopProxy();
       await clashCore.shutdown();
       await clashService?.destroy();
-      try {
-        final url = Uri.parse('http://127.0.0.1:47890/shutdown');
-        await http.post(url).timeout(const Duration(seconds: 1));
-      } catch (e) {}
     } finally {
       system.exit();
     }
@@ -1169,7 +1173,8 @@ class AppController {
       _ref.read(appSettingProvider).autoLaunch,
     );
     // Delay subscription update to ensure network is ready after app initialization
-    Future.delayed(const Duration(seconds: 1), _updateCurrentProfileSubscription);
+    Future.delayed(
+        const Duration(seconds: 1), _updateCurrentProfileSubscription);
     autoUpdateProfiles();
     autoCheckUpdate();
     if (!Platform.isMacOS) {
@@ -1298,14 +1303,14 @@ class AppController {
 
       if (profile != null) {
         _applyAllHeaderSettings(profile, isNewProfile: true);
-        
+
         final headers = profile.providerHeaders;
         final showHwidLimit = headers['x-hwid-limit']?.toLowerCase() == 'true';
         final announceText = headers['announce'];
         if (showHwidLimit && announceText != null && announceText.isNotEmpty) {
           _showHwidLimitNotice(announceText, headers['support-url']);
         }
-        
+
         await addProfile(profile);
       }
     } catch (err) {
@@ -1435,7 +1440,7 @@ class AppController {
 
   void _applyCustomViewSettings(Profile profile) {
     final headers = profile.providerHeaders;
-    
+
     final dashboardLayout = headers['flclashx-widgets'];
     if (dashboardLayout != null && dashboardLayout.isNotEmpty) {
       final newLayout = DashboardWidgetParser.parseLayout(dashboardLayout);

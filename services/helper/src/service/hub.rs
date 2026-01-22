@@ -94,8 +94,9 @@ fn stop() -> impl Reply {
 }
 
 fn shutdown_service() -> impl Reply {
-    std::process::exit(0);
-    "Service is shutting down".to_string()
+    // Do not allow shutting down the Windows service via HTTP in production
+    log_message("Received shutdown request - ignored".to_string());
+    "Shutdown endpoint is disabled".to_string()
 }
 
 fn log_message(message: String) {
@@ -128,9 +129,8 @@ pub async fn run_service() -> anyhow::Result<()> {
 
     let api_logs = warp::get().and(warp::path("logs")).map(|| get_logs());
 
-    let api_shutdown = warp::post().and(warp::path("shutdown")).map(|| shutdown_service());
 
-    warp::serve(api_ping.or(api_start).or(api_stop).or(api_logs).or(api_shutdown))
+    warp::serve(api_ping.or(api_start).or(api_stop).or(api_logs))
         .run(([127, 0, 0, 1], LISTEN_PORT))
         .await;
 

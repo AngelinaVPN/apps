@@ -212,7 +212,8 @@ class ApplicationState extends ConsumerState<Application> {
     linkManager.destroy();
     _autoUpdateGroupTaskTimer?.cancel();
     _autoUpdateProfilesTaskTimer?.cancel();
-    await windows?.stopService();
+    // Do not stop Windows helper service on app exit; it should run independently
+    // await windows?.stopService();
     await clashCore.destroy();
     await globalState.appController.savePreferences();
     await globalState.appController.handleExit();
