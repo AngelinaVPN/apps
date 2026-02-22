@@ -9,6 +9,7 @@ import android.provider.DocumentsContract.Root
 import android.provider.DocumentsProvider
 import java.io.File
 import java.io.FileNotFoundException
+import ru.angelinavpn.client.R
 
 
 class FilesProvider : DocumentsProvider() {

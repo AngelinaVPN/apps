@@ -3,18 +3,18 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
 import 'package:flutter/material.dart';
 
-const appName = "FlClashX";
-const appHelperService = "FlClashHelperService";
+const appName = "AngelinaVPN";
+const appHelperService = "AngelinaVPNHelperService";
 const coreName = "clashx.meta";
 const browserUa =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-const packageName = "com.follow.clashx";
-final unixSocketPath = "/tmp/FlClashXSocket_${Random().nextInt(10000)}.sock";
+const packageName = "ru.angelinavpn.client";
+final unixSocketPath = "/tmp/AngelinaVPNSocket_${Random().nextInt(10000)}.sock";
 const helperPort = 47890;
 const maxTextScale = 1.4;
 const minTextScale = 0.8;
@@ -45,7 +45,7 @@ const localhost = "127.0.0.1";
 const clashConfigKey = "clash_config";
 const configKey = "config";
 const double dialogCommonWidth = 300;
-const repository = "pluralplay/FlClashX";
+const repository = "angelinavpn/AngelinaVPN";
 const defaultExternalController = "127.0.0.1:9090";
 const maxMobileWidth = 600;
 const maxLaptopWidth = 840;
@@ -82,24 +82,22 @@ const viewModeColumnsMap = {
 // const toolsStoreKey = PageStorageKey<String>('tools');
 // const profilesStoreKey = PageStorageKey<String>('profiles');
 
-const defaultPrimaryColor = 0xFF03A9F4;
+const defaultPrimaryColor = 0xFF00E676;
 
 double getWidgetHeight(num lines) => max(lines * 84 + (lines - 1) * 16, 0).ap;
 
 const maxLength = 150;
 
-const mainIsolate = "FlClashXMainIsolate";
+const mainIsolate = "AngelinaVPNMainIsolate";
 
-const serviceIsolate = "FlClashXServiceIsolate";
+const serviceIsolate = "AngelinaVPNServiceIsolate";
 
 const defaultPrimaryColors = [
-  0xFF795548,
   defaultPrimaryColor,
-  0xFFFFFF00,
-  0XFFBBC9CC,
-  0XFFABD397,
-  0XFFD8C0C3,
-  0XFF665390,
+  0xFF00BFA5,
+  0xFF69F0AE,
+  0xFF1DE9B6,
+  0xFF76FF03,
 ];
 
 const scriptTemplate = """

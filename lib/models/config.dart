@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -38,6 +38,9 @@ const defaultWindowProps = WindowProps();
 const defaultAccessControl = AccessControl();
 const defaultThemeProps = ThemeProps(
   primaryColor: defaultPrimaryColor,
+  themeMode: ThemeMode.dark,
+  pureBlack: true,
+  schemeVariant: DynamicSchemeVariant.content,
 );
 
 const List<DashboardWidget> defaultDashboardWidgets = [

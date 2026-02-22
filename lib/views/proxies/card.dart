@@ -1,10 +1,10 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/proxies/common.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/providers/providers.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/views/proxies/common.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -280,19 +280,19 @@ class _ProxyComputedMark extends ConsumerWidget {
     }
 
     final margin = cardType == ProxyCardType.oneline
-        ? const EdgeInsets.fromLTRB(8, 4, 8, 8)
+        ? const EdgeInsets.fromLTRB(8, 6, 8, 8)
         : const EdgeInsets.all(8);
 
     return Container(
       alignment: Alignment.topRight,
       margin: margin,
       child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
+        width: 7,
+        height: 7,
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: Theme.of(context).colorScheme.secondaryContainer,
+          color: Color(0xFF00E675),
         ),
-        child: const SelectIcon(),
       ),
     );
   }

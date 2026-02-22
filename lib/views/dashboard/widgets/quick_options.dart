@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/views/config/network.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/providers/config.dart';
+import 'package:angelinavpn/views/config/network.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

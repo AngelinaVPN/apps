@@ -1,6 +1,6 @@
-import 'package:flclashx/common/proxy.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/state.dart';
+import 'package:angelinavpn/common/proxy.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/providers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

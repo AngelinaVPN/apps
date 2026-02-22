@@ -1,8 +1,8 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/dialog.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/dialog.dart';
 import 'package:flutter/material.dart';
 
 class BaseNavigator {

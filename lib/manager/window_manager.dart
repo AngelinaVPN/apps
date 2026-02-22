@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/providers/config.dart';
+import 'package:angelinavpn/providers/app.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_ext/window_ext.dart';

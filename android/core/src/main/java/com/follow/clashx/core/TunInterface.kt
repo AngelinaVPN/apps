@@ -1,4 +1,4 @@
-package com.follow.clashx.core
+package ru.angelinavpn.core
 
 import androidx.annotation.Keep
 

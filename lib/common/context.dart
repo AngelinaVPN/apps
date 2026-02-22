@@ -1,5 +1,5 @@
-import 'package:flclashx/manager/message_manager.dart';
-import 'package:flclashx/widgets/scaffold.dart';
+import 'package:angelinavpn/manager/message_manager.dart';
+import 'package:angelinavpn/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 
 extension BuildContextExtension on BuildContext {

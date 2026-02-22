@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 
-import 'package:flclashx/clash/message.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
+import 'package:angelinavpn/clash/message.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
 
 mixin ClashInterface {
   Future<bool> init(InitParams params);
@@ -226,7 +226,11 @@ abstract class ClashHandlerInterface with ClashInterface {
   @override
   Future<Map> getProxies() => invoke<Map>(
       method: ActionMethod.getProxies,
-      timeout: const Duration(seconds: 5),
+      timeout: const Duration(seconds: 30),
+      onTimeout: () {
+        commonPrint.log("getProxies TIMED OUT after 30s - core not responding");
+        return {};
+      },
     );
 
   @override

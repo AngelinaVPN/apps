@@ -41,7 +41,7 @@ var
   i: Integer;
   ResultCode: Integer;
 begin
-  Processes := ['FlClashX.exe', 'FlClashCore.exe', 'FlClashHelperService.exe'];
+  Processes := ['AngelinaVPN.exe', 'AngelinaCore.exe', 'AngelinaVPNHelperService.exe'];
 
   // First try graceful shutdown
   for i := 0 to GetArrayLength(Processes)-1 do
@@ -186,11 +186,11 @@ begin
     
     usPostUninstall:
     begin
-      if DirExists(ExpandConstant('{userappdata}\com.follow\clashx')) then
+      if DirExists(ExpandConstant('{userappdata}\ru.angelinavpn\client')) then
       begin
         if MsgBox('Удалить пользовательские данные программы?', mbConfirmation, MB_YESNO) = IDYES then
         begin
-          DelTree(ExpandConstant('{userappdata}\com.follow\clashx'), True, True, True);
+          DelTree(ExpandConstant('{userappdata}\ru.angelinavpn\client'), True, True, True);
         end;
       end;
     end;

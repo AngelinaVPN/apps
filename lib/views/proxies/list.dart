@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/providers/state.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/providers/app.dart';
+import 'package:angelinavpn/providers/config.dart';
+import 'package:angelinavpn/providers/state.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -329,13 +329,14 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                 onTap: () => _toggleExpansion(unfoldSet),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerLow.opacity80,
-                    borderRadius: BorderRadius.circular(16.0),
+                    color: const Color(0xFF0D0D0D),
+                    border: Border.all(color: const Color(0xFF1A1A1A)),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   margin: const EdgeInsets.symmetric(vertical: 4.0),
                   padding: const EdgeInsets.symmetric(
                     vertical: 10.0,
-                    horizontal: 16.0,
+                    horizontal: 14.0,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -349,11 +350,34 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    groupName,
-                                    style: context.textTheme.titleMedium,
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '// ',
+                                        style: TextStyle(
+                                          fontFamily: 'JetBrainsMono',
+                                          fontSize: 10,
+                                          color: Color(0xFF00E675),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          groupName.toUpperCase(),
+                                          style: const TextStyle(
+                                            fontFamily: 'JetBrainsMono',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white70,
+                                            letterSpacing: 1.2,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 3),
                                   Flexible(
                                     flex: 1,
                                     child: Consumer(
@@ -367,12 +391,16 @@ class _ProxyGroupCardState extends State<ProxyGroupCard>
                                         return EmojiText(
                                           overflow: TextOverflow.ellipsis,
                                           proxyName,
-                                          style: context.textTheme.labelMedium?.toLight,
+                                          style: const TextStyle(
+                                            fontFamily: 'JetBrainsMono',
+                                            fontSize: 10,
+                                            color: Color(0x9900E675),
+                                            letterSpacing: 0.5,
+                                          ),
                                         );
                                       },
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
                                 ],
                               ),
                             ),

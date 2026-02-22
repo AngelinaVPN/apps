@@ -1,6 +1,6 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/widgets/fade_box.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/widgets/fade_box.dart';
 import 'package:flutter/material.dart';
 
 import 'text.dart';
@@ -39,41 +39,43 @@ class InfoHeader extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                if (info.iconData != null) ...[
-                  Icon(
-                    info.iconData,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                const Text(
+                  '// ',
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMono',
+                    fontSize: 10,
+                    color: Color(0xFF00E675),
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                ],
+                ),
                 Flexible(
                   flex: 1,
-                  child: TooltipText(
-                    text: Text(
-                      info.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
+                  child: Text(
+                    info.label.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrainsMono',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white38,
+                      letterSpacing: 1.5,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(
-            width: 8,
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ...actions,
-            ],
-          ),
+          if (actions.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ...actions,
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -86,7 +88,7 @@ class CommonCard extends StatelessWidget {
     this.type = CommonCardType.plain,
     this.onPressed,
     this.selectWidget,
-    this.radius = 12,
+    this.radius = 6,
     required this.child,
     this.padding,
     this.enterAnimated = false,
@@ -132,12 +134,12 @@ class CommonCard extends StatelessWidget {
     final colorScheme = context.colorScheme;
     if (type == CommonCardType.filled) {
       if (isSelected) {
-        return colorScheme.secondaryContainer.opacity80;
+        return const Color(0x1A00E675);
       }
       return colorScheme.surfaceContainer.withValues(alpha: 0.85);
     }
     if (isSelected) {
-      return colorScheme.secondaryContainer.withValues(alpha: 0.85);
+      return const Color(0x1200E675);
     }
     return colorScheme.surfaceContainerLow.withValues(alpha: 0.85);
   }
@@ -213,15 +215,12 @@ class SelectIcon extends StatelessWidget {
   const SelectIcon({super.key});
 
   @override
-  Widget build(BuildContext context) => Material(
-      color: Theme.of(context).colorScheme.inversePrimary,
-      shape: const CircleBorder(),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        child: const Icon(
-          Icons.check,
-          size: 16,
-        ),
+  Widget build(BuildContext context) => Container(
+      width: 8,
+      height: 8,
+      decoration: const BoxDecoration(
+        color: Color(0xFF00E675),
+        shape: BoxShape.circle,
       ),
     );
 }

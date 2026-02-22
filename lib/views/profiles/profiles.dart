@@ -1,15 +1,15 @@
 import 'dart:ui';
 
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart' hide Action;
-import 'package:flclashx/pages/pages.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/profiles/edit_profile.dart';
-import 'package:flclashx/views/profiles/override_profile.dart';
-import 'package:flclashx/views/profiles/scripts.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart' hide Action;
+import 'package:angelinavpn/pages/pages.dart';
+import 'package:angelinavpn/providers/providers.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/views/profiles/edit_profile.dart';
+import 'package:angelinavpn/views/profiles/override_profile.dart';
+import 'package:angelinavpn/views/profiles/scripts.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -275,24 +275,31 @@ class _ProfileItemState extends State<ProfileItem> {
     );
   }
 
+  static const _monoStyle = TextStyle(
+    fontFamily: 'JetBrainsMono',
+    fontSize: 10,
+    color: Colors.white38,
+    letterSpacing: 0.5,
+  );
+
   List<Widget> _buildUrlProfileInfo(BuildContext context) {
     final subscriptionInfo = widget.profile.subscriptionInfo;
 
     if (subscriptionInfo == null) {
       return [
+        const SizedBox(height: 3),
         Text(
           widget.profile.lastUpdateDate?.lastUpdateTimeDesc ?? "",
-          style: context.textTheme.labelMedium?.toLight,
+          style: _monoStyle,
         ),
       ];
     }
 
     final isUnlimited = subscriptionInfo.total == 0;
-
     final expireDate = subscriptionInfo.expire > 0
         ? DateFormat('dd.MM.yyyy').format(
             DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000))
-        : "N/A";
+        : null;
 
     return [
       const SizedBox(height: 4),
@@ -309,45 +316,44 @@ class _ProfileItemState extends State<ProfileItem> {
           }
           progress = progress.clamp(0.0, 1.0);
 
-          Color progressColor = Colors.green;
+          Color progressColor = const Color(0xFF00E675);
           if (progress > 0.9) {
-            progressColor = Colors.red;
+            progressColor = Colors.red.shade400;
           } else if (progress > 0.7) {
-            progressColor = Colors.orange;
+            progressColor = Colors.orange.shade400;
           }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${appLocalizations.traffic} ${usedTraffic.showValue} ${usedTraffic.showUnit} / ${totalTraffic.showValue} ${totalTraffic.showUnit}',
-                style: context.textTheme.bodySmall,
+                'traffic: ${usedTraffic.showValue} ${usedTraffic.showUnit} / ${totalTraffic.showValue} ${totalTraffic.showUnit}',
+                style: _monoStyle,
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(2),
                 child: LinearProgressIndicator(
                   value: progress,
-                  minHeight: 6,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  minHeight: 3,
+                  backgroundColor: const Color(0xFF1A1A1A),
                   valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                 ),
               ),
+              const SizedBox(height: 4),
             ],
           );
         }),
-      const SizedBox(height: 6),
-      Text(
-      expireDate != "N/A"
-          ? '${appLocalizations.expiresOn} $expireDate'
-          : appLocalizations.subscriptionUnlimited,
-      style: context.textTheme.bodySmall,
-      ),
-      const SizedBox(height: 4),
-      Text(
-        '${appLocalizations.updated} ${widget.profile.lastUpdateDate?.lastUpdateTimeDesc ?? ""}',
-        style: context.textTheme.labelMedium?.toLight,
-      ),
+      if (expireDate != null)
+        Text(
+          'expires: $expireDate',
+          style: _monoStyle,
+        )
+      else if (isUnlimited)
+        Text(
+          'expires: unlimited',
+          style: _monoStyle.copyWith(color: const Color(0xFF00E675).withValues(alpha: 0.5)),
+        ),
     ];
   }
 
@@ -382,134 +388,206 @@ class _ProfileItemState extends State<ProfileItem> {
     );
   }
 
+  static const _cGreen = Color(0xFF00E675);
+  static const _cGreenDim = Color(0x1200E675);
+  static const _cGreenBorder = Color(0x4000E675);
+  static const _cInk = Color(0xFF111111);
+  static const _cLine = Color(0xFF1A1A1A);
+
   @override
-  Widget build(BuildContext context) => CommonCard(
-      isSelected: widget.profile.id == widget.groupValue,
-      onPressed: _isTV
+  Widget build(BuildContext context) {
+    final isSelected = widget.profile.id == widget.groupValue;
+    return GestureDetector(
+      onTap: _isTV
           ? null
-          : () {
-              widget.onChanged(widget.profile.id);
-            },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: _isTV ? () => widget.onChanged(widget.profile.id) : null,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.profile.label ?? widget.profile.id,
-                      style: context.textTheme.titleMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    ..._buildUrlProfileInfo(context)
-                  ],
+          : () => widget.onChanged(widget.profile.id),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: isSelected ? _cGreenDim : _cInk,
+          border: Border.all(
+            color: isSelected ? _cGreenBorder : _cLine,
+            width: isSelected ? 1.5 : 1.0,
+          ),
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: _cGreen.withValues(alpha: 0.08),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                  ),
+                ]
+              : null,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
+          child: Row(
+            children: [
+              // Selection indicator dot
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: 6,
+                height: 6,
+                margin: const EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected ? _cGreen : const Color(0xFF333333),
+                  boxShadow: isSelected
+                      ? [BoxShadow(color: _cGreen.withValues(alpha: 0.5), blurRadius: 6)]
+                      : null,
                 ),
               ),
-            ),
-            SizedBox(
-              height: 40,
-              width: 40,
-              child: FadeThroughBox(
-                child: widget.profile.isUpdating
-                    ? const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: CircularProgressIndicator(),
-                      )
-                    : CommonPopupBox(
-                        popup: CommonPopupMenu(
-                          items: [
-                            if (_isTV)
-                              PopupMenuItemData(
-                                icon: Icons.check_circle_outline,
-                                label: appLocalizations.selectProfile,
-                                onPressed: () {
-                                  widget.onChanged(widget.profile.id);
-                                },
-                              ),
-                            PopupMenuItemData(
-                              icon: Icons.edit_outlined,
-                              label: appLocalizations.edit,
-                              onPressed: () {
-                                _handleShowEditExtendPage(context);
-                              },
-                            ),
-                            if (widget.profile.type == ProfileType.url) ...[
-                              PopupMenuItemData(
-                                icon: Icons.sync_alt_sharp,
-                                label: appLocalizations.sync,
-                                onPressed: updateProfile,
-                              ),
-                            ],
-                            if (system.isMobile && !_isTV)
-                              PopupMenuItemData(
-                                icon: Icons.tv_outlined,
-                                label: appLocalizations.sendToTv,
-                                onPressed: () {
-                                  BaseNavigator.push(context,
-                                      SendToTvPage(profileUrl: widget.profile.url));
-                                },
-                              ),
-                              if (widget.profile.providerHeaders['support-url'] != null && widget.profile.providerHeaders['support-url']!.isNotEmpty && !_isTV )
-                            PopupMenuItemData(
-                              icon: widget.profile.providerHeaders['support-url']!.toLowerCase().contains('t.me')
-                              ? Icons.telegram
-                              : Icons.insert_link,
-                              label: appLocalizations.support,
-                              onPressed: () {
-                                globalState.openUrl(widget.profile.providerHeaders['support-url']!);
-                              },
-                            ),
-                            PopupMenuItemData(
-                              icon: Icons.extension_outlined,
-                              label: appLocalizations.override,
-                              onPressed: () {
-                                _handlePushGenProfilePage(
-                                    context, widget.profile.id);
-                              },
-                            ),
-                            PopupMenuItemData(
-                              icon: Icons.file_copy_outlined,
-                              label: appLocalizations.exportFile,
-                              onPressed: () {
-                                _handleExportFile(context);
-                              },
-                            ),
-                            PopupMenuItemData(
-                              icon: Icons.delete_outlined,
-                              label: appLocalizations.delete,
-                              onPressed: () {
-                                _handleDeleteProfile(context);
-                              },
-                            ),
-                          ],
-                        ),
-                        targetBuilder: (open) => Focus(
-                            focusNode: _menuFocusNode,
-                            canRequestFocus: true,
-                            child: Material(
-                              color: _isMenuFocused
-                                  ? Theme.of(context).focusColor
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
-                              child: IconButton(
-                                onPressed: open,
-                                icon: const Icon(Icons.more_vert),
-                              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: _isTV ? () => widget.onChanged(widget.profile.id) : null,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Section tag style label
+                      Row(
+                        children: [
+                          Text(
+                            '// ',
+                            style: TextStyle(
+                              fontFamily: 'JetBrainsMono',
+                              fontSize: 10,
+                              color: isSelected ? _cGreen : const Color(0xFF444444),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
+                          Expanded(
+                            child: Text(
+                              (widget.profile.label ?? widget.profile.id).toUpperCase(),
+                              style: TextStyle(
+                                fontFamily: 'JetBrainsMono',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isSelected ? _cGreen : Colors.white70,
+                                letterSpacing: 1.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
+                      ..._buildUrlProfileInfo(context),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 36,
+                width: 36,
+                child: FadeThroughBox(
+                  child: widget.profile.isUpdating
+                      ? const Padding(
+                          padding: EdgeInsets.all(8),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: _cGreen,
+                          ),
+                        )
+                      : CommonPopupBox(
+                          popup: CommonPopupMenu(
+                            items: [
+                              if (_isTV)
+                                PopupMenuItemData(
+                                  icon: Icons.check_circle_outline,
+                                  label: appLocalizations.selectProfile,
+                                  onPressed: () {
+                                    widget.onChanged(widget.profile.id);
+                                  },
+                                ),
+                              PopupMenuItemData(
+                                icon: Icons.edit_outlined,
+                                label: appLocalizations.edit,
+                                onPressed: () {
+                                  _handleShowEditExtendPage(context);
+                                },
+                              ),
+                              if (widget.profile.type == ProfileType.url) ...[
+                                PopupMenuItemData(
+                                  icon: Icons.sync_alt_sharp,
+                                  label: appLocalizations.sync,
+                                  onPressed: updateProfile,
+                                ),
+                              ],
+                              if (system.isMobile && !_isTV)
+                                PopupMenuItemData(
+                                  icon: Icons.tv_outlined,
+                                  label: appLocalizations.sendToTv,
+                                  onPressed: () {
+                                    BaseNavigator.push(context,
+                                        SendToTvPage(profileUrl: widget.profile.url));
+                                  },
+                                ),
+                              if (widget.profile.providerHeaders['support-url'] != null &&
+                                  widget.profile.providerHeaders['support-url']!.isNotEmpty &&
+                                  !_isTV)
+                                PopupMenuItemData(
+                                  icon: widget.profile.providerHeaders['support-url']!
+                                          .toLowerCase()
+                                          .contains('t.me')
+                                      ? Icons.telegram
+                                      : Icons.insert_link,
+                                  label: appLocalizations.support,
+                                  onPressed: () {
+                                    globalState.openUrl(
+                                        widget.profile.providerHeaders['support-url']!);
+                                  },
+                                ),
+                              PopupMenuItemData(
+                                icon: Icons.extension_outlined,
+                                label: appLocalizations.override,
+                                onPressed: () {
+                                  _handlePushGenProfilePage(context, widget.profile.id);
+                                },
+                              ),
+                              PopupMenuItemData(
+                                icon: Icons.file_copy_outlined,
+                                label: appLocalizations.exportFile,
+                                onPressed: () {
+                                  _handleExportFile(context);
+                                },
+                              ),
+                              PopupMenuItemData(
+                                icon: Icons.delete_outlined,
+                                label: appLocalizations.delete,
+                                onPressed: () {
+                                  _handleDeleteProfile(context);
+                                },
+                              ),
+                            ],
+                          ),
+                          targetBuilder: (open) => Focus(
+                              focusNode: _menuFocusNode,
+                              canRequestFocus: true,
+                              child: Material(
+                                color: _isMenuFocused
+                                    ? const Color(0xFF1A1A1A)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(4),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: open,
+                                  icon: const Icon(Icons.more_vert, size: 18),
+                                  color: Colors.white38,
+                                ),
+                              ),
+                            ),
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
 }
 
 class ReorderableProfilesSheet extends StatefulWidget {

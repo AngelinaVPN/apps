@@ -1,9 +1,9 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/views/profiles/add_profile.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/providers/providers.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/views/profiles/add_profile.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -125,10 +125,18 @@ class MetainfoWidget extends ConsumerWidget {
       }
     }
 
+    const cGreen = Color(0xFF00E675);
+    const monoSmall = TextStyle(
+      fontFamily: 'JetBrainsMono',
+      fontSize: 10,
+      color: Colors.white38,
+      letterSpacing: 0.5,
+    );
+
     return CommonCard(
       onPressed: null,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(14.0),
         child: IntrinsicHeight(
           child: Row(
             children: [
@@ -136,42 +144,64 @@ class MetainfoWidget extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Terminal section tag + actions row
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        const Text(
+                          '// ',
+                          style: TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 10,
+                            color: cGreen,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         Expanded(
                           child: Text(
-                            currentProfile.label ?? appLocalizations.profile,
-                            style: theme.textTheme.headlineSmall,
+                            (currentProfile.label ?? appLocalizations.profile).toUpperCase(),
+                            style: const TextStyle(
+                              fontFamily: 'JetBrainsMono',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              letterSpacing: 1.5,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (supportUrl != null && supportUrl.isNotEmpty)
-                          IconButton(
-                            icon: Icon(
-                              supportUrl.toLowerCase().contains('t.me')
-                                  ? Icons.telegram
-                                  : Icons.launch,
+                          SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: Icon(
+                                supportUrl.toLowerCase().contains('t.me')
+                                    ? Icons.telegram
+                                    : Icons.launch,
+                                size: 16,
+                              ),
+                              color: cGreen,
+                              onPressed: () => globalState.openUrl(supportUrl),
                             ),
-                            iconSize: 34,
-                            color: theme.colorScheme.primary,
-                            onPressed: () {
-                              globalState.openUrl(supportUrl);
-                            },
                           ),
-                        IconButton(
-                          icon: const Icon(Icons.sync),
-                          iconSize: 34,
-                          color: theme.colorScheme.primary,
-                          onPressed: () {
-                            globalState.appController
-                                .updateProfile(currentProfile);
-                          },
+                        SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(Icons.sync, size: 16),
+                            color: cGreen,
+                            onPressed: () =>
+                                globalState.appController.updateProfile(currentProfile),
+                          ),
                         ),
                       ],
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 10),
+                    // Traffic info
                     if (!isUnlimitedTraffic)
                       Builder(builder: (context) {
                         final totalTraffic =
@@ -187,29 +217,27 @@ class MetainfoWidget extends ConsumerWidget {
                         }
                         progress = progress.clamp(0.0, 1.0);
 
-                        Color progressColor = Colors.green;
+                        Color progressColor = cGreen;
                         if (progress > 0.9) {
-                          progressColor = Colors.red;
+                          progressColor = Colors.red.shade400;
                         } else if (progress > 0.7) {
-                          progressColor = Colors.orange;
+                          progressColor = Colors.orange.shade400;
                         }
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${appLocalizations.traffic} ${usedTraffic.showValue} ${usedTraffic.showUnit} / ${totalTraffic.showValue} ${totalTraffic.showUnit}',
-                              style: theme.textTheme.bodyMedium,
+                              'traffic: ${usedTraffic.showValue} ${usedTraffic.showUnit} / ${totalTraffic.showValue} ${totalTraffic.showUnit}',
+                              style: monoSmall,
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 5),
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(2),
                               child: LinearProgressIndicator(
                                 value: progress,
-                                minHeight: 6,
-                                backgroundColor:
-                                    theme.colorScheme.surfaceContainerHighest,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    progressColor),
+                                minHeight: 3,
+                                backgroundColor: const Color(0xFF1A1A1A),
+                                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                               ),
                             ),
                           ],
@@ -217,41 +245,49 @@ class MetainfoWidget extends ConsumerWidget {
                       })
                     else
                       Text(
-                        appLocalizations.trafficUnlimited,
-                        style: theme.textTheme.bodyMedium,
+                        'traffic: unlimited',
+                        style: monoSmall.copyWith(
+                          color: cGreen.withValues(alpha: 0.5),
+                        ),
                       ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 6),
                     Text(
                       isPerpetual
-                          ? appLocalizations.subscriptionEternal
-                          : '${appLocalizations.expiresOn} ${DateFormat('dd.MM.yyyy').format(DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000))}',
-                      style: theme.textTheme.bodyMedium,
+                          ? 'expires: unlimited'
+                          : 'expires: ${DateFormat('dd.MM.yyyy').format(DateTime.fromMillisecondsSinceEpoch(subscriptionInfo.expire * 1000))}',
+                      style: monoSmall,
                     ),
                   ],
                 ),
               ),
               if (showTimeLeft) ...[
-                const VerticalDivider(width: 32),
+                Container(
+                  width: 1,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  color: const Color(0xFF1A1A1A),
+                ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       remainingText,
-                      style: theme.textTheme.bodySmall,
+                      style: monoSmall,
                     ),
                     FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
                         timeLeftValue,
-                        style: theme.textTheme.displaySmall?.copyWith(
+                        style: const TextStyle(
+                          fontFamily: 'JetBrainsMono',
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
+                          fontSize: 36,
+                          color: cGreen,
                         ),
                       ),
                     ),
                     Text(
                       timeLeftUnit,
-                      style: theme.textTheme.bodyMedium,
+                      style: monoSmall,
                     ),
                   ],
                 ),

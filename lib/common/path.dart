@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/common/common.dart';
+import 'package:angelinavpn/common/common.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -39,10 +39,8 @@ class AppPath {
 
   String get corePath {
     if (Platform.isMacOS) {
-      // Core is stored in Application Support/com.follow.clash/cores/ (copied by Swift code on launch)
-      // Permissions are set automatically in Swift
       final home = Platform.environment['HOME'] ?? '';
-      return '$home/Library/Application Support/com.follow.clash/cores/FlClashCore';
+      return '$home/Library/Application Support/ru.angelinavpn.client/cores/AngelinaCore';
     }
     return join(executableDirPath, "FlClashCore$executableExtension");
   }

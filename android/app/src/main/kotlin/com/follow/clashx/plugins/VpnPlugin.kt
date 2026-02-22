@@ -19,7 +19,6 @@ import androidx.core.content.getSystemService
 import com.follow.clashx.FlClashXApplication
 import com.follow.clashx.GlobalState
 import com.follow.clashx.RunState
-import com.follow.clashx.core.Core
 import com.follow.clashx.extensions.awaitResult
 import com.follow.clashx.extensions.resolveDns
 import com.follow.clashx.models.StartForegroundParams
@@ -40,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.InetSocketAddress
 import kotlin.concurrent.withLock
+import ru.angelinavpn.core.Core
 
 data object VpnPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private lateinit var flutterMethodChannel: MethodChannel

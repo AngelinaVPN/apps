@@ -1,6 +1,6 @@
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/views/views.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/views/views.dart';
 import 'package:flutter/material.dart';
 
 class Navigation {

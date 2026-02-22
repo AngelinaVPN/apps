@@ -1,5 +1,5 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/models.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/models/models.dart';
 import 'package:flutter/material.dart';
 
 class SubscriptionInfoView extends StatelessWidget {

@@ -15,4 +15,26 @@ class StatusBarManager {
       // silent
     }
   }
+
+  static Future<bool> getTrayMode() async {
+    if (!Platform.isMacOS) return false;
+    try {
+      final value = await _channel.invokeMethod<bool>('getTrayMode');
+      return value ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<bool> setTrayMode(bool enabled) async {
+    if (!Platform.isMacOS) return false;
+    try {
+      final value = await _channel.invokeMethod<bool>('setTrayMode', {
+        'enabled': enabled,
+      });
+      return value ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
 }

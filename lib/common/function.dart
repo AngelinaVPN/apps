@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flclashx/enum/enum.dart';
+import 'package:angelinavpn/enum/enum.dart';
 
 class Debouncer {
   final Map<FunctionTag, Timer?> _operations = {};
@@ -75,6 +75,9 @@ Future<T> retry<T>({
 }) async {
   var attempts = 0;
   while (attempts < maxAttempts) {
+    if (attempts > 0 && delay != Duration.zero) {
+      await Future.delayed(delay);
+    }
     final res = await task();
     if (!retryIf(res) || attempts >= maxAttempts) {
       return res;

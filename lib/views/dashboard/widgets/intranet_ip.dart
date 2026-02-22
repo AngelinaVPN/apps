@@ -1,7 +1,7 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/providers/app.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,8 +37,14 @@ class IntranetIP extends StatelessWidget {
                                 localIp.isNotEmpty
                                     ? localIp
                                     : appLocalizations.noNetwork,
-                                style: context.textTheme.bodyMedium?.toLight
-                                    .adjustSize(1),
+                                style: TextStyle(
+                                  fontFamily: 'JetBrainsMono',
+                                  fontSize: 12,
+                                  color: localIp.isNotEmpty
+                                      ? const Color(0xFF00E675)
+                                      : Colors.white38,
+                                  letterSpacing: 0.5,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/providers/providers.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

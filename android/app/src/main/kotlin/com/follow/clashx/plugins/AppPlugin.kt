@@ -20,7 +20,6 @@ import androidx.core.graphics.drawable.IconCompat
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import com.follow.clashx.FlClashXApplication
 import com.follow.clashx.GlobalState
-import com.follow.clashx.R
 import com.follow.clashx.extensions.awaitResult
 import com.follow.clashx.extensions.getActionIntent
 import com.follow.clashx.extensions.getBase64
@@ -41,6 +40,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.zip.ZipFile
+import ru.angelinavpn.client.R
 
 class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
 

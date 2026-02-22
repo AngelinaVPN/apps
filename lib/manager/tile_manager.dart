@@ -1,5 +1,5 @@
-import 'package:flclashx/plugins/tile.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/plugins/tile.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/material.dart';
 
 class TileManager extends StatefulWidget {

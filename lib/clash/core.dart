@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/clash/interface.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/clash/clash.dart';
+import 'package:angelinavpn/clash/interface.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 
@@ -94,6 +94,7 @@ class ClashCore {
 
   Future<List<Group>> getProxiesGroups() async {
     final proxies = await clashInterface.getProxies();
+    commonPrint.log("getProxies returned ${proxies.length} entries, keys: ${proxies.keys.take(10).toList()}");
     if (proxies.isEmpty) return [];
     final groupNames = [
       UsedProxy.GLOBAL.name,
@@ -201,10 +202,22 @@ class ClashCore {
     final profilePath = await appPath.getProfilePath(id);
     final res = await clashInterface.getConfig(profilePath);
     if (res.isSuccess) {
-      return res.data as Map<String, dynamic>;
+      final data = res.data;
+      if (data is Map<String, dynamic>) return data;
+      if (data is Map) return _deepCastMap(data);
+      throw "getConfig returned unexpected type: ${data.runtimeType}";
     } else {
       throw res.message;
     }
+  }
+
+  /// Recursively converts Map<dynamic, dynamic> to Map<String, dynamic>
+  Map<String, dynamic> _deepCastMap(Map source) {
+    return source.map((key, value) {
+      final k = key.toString();
+      final v = value is Map ? _deepCastMap(value) : value;
+      return MapEntry(k, v);
+    });
   }
 
   Future<Traffic> getTraffic() async {

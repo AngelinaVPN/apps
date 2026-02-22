@@ -1,9 +1,9 @@
-import 'package:flclashx/common/app_localizations.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/common.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/dialog.dart';
-import 'package:flclashx/widgets/null_status.dart';
+import 'package:angelinavpn/common/app_localizations.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/models/common.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/dialog.dart';
+import 'package:angelinavpn/widgets/null_status.dart';
 import 'package:flutter/material.dart';
 
 import 'card.dart';

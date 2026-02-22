@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:defer_pointer/defer_pointer.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/widgets/activate_box.dart';
-import 'package:flclashx/widgets/card.dart';
-import 'package:flclashx/widgets/grid.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/widgets/activate_box.dart';
+import 'package:angelinavpn/widgets/card.dart';
+import 'package:angelinavpn/widgets/grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 

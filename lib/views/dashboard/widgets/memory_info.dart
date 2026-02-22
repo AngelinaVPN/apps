@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/common.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/clash/clash.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/models/common.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 final _memoryInfoStateNotifier = ValueNotifier<TrafficValue>(
@@ -73,16 +73,22 @@ class _MemoryInfoState extends State<MemoryInfo> {
                       children: [
                         Text(
                           trafficValue.showValue,
-                          style: context.textTheme.bodyMedium?.toLight
-                              .adjustSize(1),
+                          style: const TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 13,
+                            color: Color(0xFF00E675),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                        const SizedBox(
-                          width: 8,
-                        ),
+                        const SizedBox(width: 6),
                         Text(
                           trafficValue.showUnit,
-                          style: context.textTheme.bodyMedium?.toLight
-                              .adjustSize(1),
+                          style: const TextStyle(
+                            fontFamily: 'JetBrainsMono',
+                            fontSize: 10,
+                            color: Colors.white38,
+                            letterSpacing: 0.5,
+                          ),
                         )
                       ],
                     ),

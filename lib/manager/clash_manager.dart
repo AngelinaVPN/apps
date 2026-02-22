@@ -1,12 +1,12 @@
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/common/file_logger.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/providers/config.dart';
-import 'package:flclashx/providers/state.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/clash/clash.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/common/file_logger.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/providers/app.dart';
+import 'package:angelinavpn/providers/config.dart';
+import 'package:angelinavpn/providers/state.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

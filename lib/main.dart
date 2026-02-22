@@ -5,10 +5,10 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:flclashx/plugins/app.dart';
-import 'package:flclashx/plugins/tile.dart';
-import 'package:flclashx/plugins/vpn.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/plugins/app.dart';
+import 'package:angelinavpn/plugins/tile.dart';
+import 'package:angelinavpn/plugins/vpn.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

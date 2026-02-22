@@ -4,14 +4,14 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:archive/archive.dart';
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/common/archive.dart';
-import 'package:flclashx/services/subscription_notification_service.dart';
-import 'package:flclashx/enum/enum.dart';
-import 'package:flclashx/plugins/app.dart';
-import 'package:flclashx/providers/providers.dart';
-import 'package:flclashx/state.dart';
-import 'package:flclashx/widgets/dialog.dart';
+import 'package:angelinavpn/clash/clash.dart';
+import 'package:angelinavpn/common/archive.dart';
+import 'package:angelinavpn/services/subscription_notification_service.dart';
+import 'package:angelinavpn/enum/enum.dart';
+import 'package:angelinavpn/plugins/app.dart';
+import 'package:angelinavpn/providers/providers.dart';
+import 'package:angelinavpn/state.dart';
+import 'package:angelinavpn/widgets/dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -204,9 +204,11 @@ class AppController {
       if (profiles.isNotEmpty) {
         final updateId = profiles.first.id;
         currentProfileId.value = updateId;
+        applyProfileDebounce(silence: true);
       } else {
         currentProfileId.value = null;
-        updateStatus(false);
+        _ref.read(groupsProvider.notifier).value = [];
+        await updateStatus(false);
       }
     }
   }
@@ -707,10 +709,17 @@ class AppController {
 
   Future<void> updateClashConfig() async {
     final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-    if (commonScaffoldState?.mounted != true) return;
-    await commonScaffoldState?.loadingRun(() async {
-      await _updateClashConfig();
-    });
+    if (commonScaffoldState?.mounted == true) {
+      await commonScaffoldState!.loadingRun(() async {
+        await _updateClashConfig();
+      });
+    } else {
+      try {
+        await _updateClashConfig();
+      } catch (e) {
+        commonPrint.log("updateClashConfig error: $e");
+      }
+    }
   }
 
   Future<void> _updateClashConfig() async {
@@ -749,10 +758,21 @@ class AppController {
 
   Future<void> setupClashConfig() async {
     final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-    if (commonScaffoldState?.mounted != true) return;
-    await commonScaffoldState?.loadingRun(() async {
-      await _setupClashConfig();
-    });
+    if (commonScaffoldState?.mounted == true) {
+      await commonScaffoldState!.loadingRun(() async {
+        await _setupClashConfig();
+      });
+    } else {
+      try {
+        await _setupClashConfig();
+      } catch (e) {
+        commonPrint.log("setupClashConfig error: $e");
+        final msg = e.toString();
+        if (msg.isNotEmpty) {
+          globalState.showNotifier(msg);
+        }
+      }
+    }
   }
 
   Future<void> _setupClashConfig() async {
@@ -780,7 +800,11 @@ class AppController {
     final params = await globalState.getSetupParams(
       pathConfig: realPatchConfig,
     );
+    final proxyCount = (params.config["proxies"] as List?)?.length ?? 0;
+    final proxyGroupCount = (params.config["proxy-groups"] as List?)?.length ?? 0;
+    commonPrint.log("setupConfig: proxies=$proxyCount, proxy-groups=$proxyGroupCount, config keys=${params.config.keys.take(10).toList()}");
     final message = await clashCore.setupConfig(params);
+    commonPrint.log("setupConfig returned: '${message.isEmpty ? 'success(empty)' : message}'");
     lastProfileModified = await _ref.read(
       currentProfileProvider.select(
         (state) => state?.profileLastModified,
@@ -789,6 +813,12 @@ class AppController {
     if (message.isNotEmpty) {
       throw message;
     }
+    // Start listener so onLoaded events fire when proxy-providers finish loading.
+    // This triggers updateGroupsDebounce() and ensures servers appear for
+    // proxy-provider based subscriptions (not just inline proxies).
+    unawaited(clashCore.startListener().catchError(
+      (e) => commonPrint.log("startListener error: $e"),
+    ));
   }
 
   Future _applyProfile() async {
@@ -803,10 +833,13 @@ class AppController {
       await _applyProfile();
     } else {
       final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-      if (commonScaffoldState?.mounted != true) return;
-      await commonScaffoldState?.loadingRun(() async {
+      if (commonScaffoldState?.mounted == true) {
+        await commonScaffoldState!.loadingRun(() async {
+          await _applyProfile();
+        });
+      } else {
         await _applyProfile();
-      });
+      }
     }
     addCheckIpNumDebounce();
   }
@@ -909,6 +942,7 @@ class AppController {
       final newGroups = await retry(
         task: () async => clashCore.getProxiesGroups(),
         retryIf: (res) => res.isEmpty,
+        delay: const Duration(milliseconds: 500),
       );
 
       if (newGroups.isNotEmpty) {
@@ -1152,14 +1186,21 @@ class AppController {
   }
 
   Future<void> _initCore() async {
+    commonPrint.log("_initCore: checking isInit...");
     final isInit = await clashCore.isInit;
+    commonPrint.log("_initCore: isInit=$isInit");
     if (!isInit) {
-      await clashCore.init();
+      commonPrint.log("_initCore: calling clashCore.init()...");
+      final initResult = await clashCore.init();
+      commonPrint.log("_initCore: init result=$initResult");
       await clashCore.setState(
         globalState.getCoreState(),
       );
+      commonPrint.log("_initCore: setState done");
     }
+    commonPrint.log("_initCore: calling applyProfile...");
     await applyProfile();
+    commonPrint.log("_initCore: applyProfile done");
   }
 
   Future<void> init() async {
@@ -1289,17 +1330,23 @@ class AppController {
     }
     toPage(PageLabel.dashboard);
     final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-    if (commonScaffoldState?.mounted != true) return;
 
     try {
-      final profile = await commonScaffoldState?.loadingRun<Profile>(
-        () async {
-          final prefs = await SharedPreferences.getInstance();
-          final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
-          return Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
-        },
-        title: "${appLocalizations.add}${appLocalizations.profile}",
-      );
+      Profile? profile;
+      if (commonScaffoldState?.mounted == true) {
+        profile = await commonScaffoldState!.loadingRun<Profile>(
+          () async {
+            final prefs = await SharedPreferences.getInstance();
+            final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
+            return Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
+          },
+          title: "${appLocalizations.add}${appLocalizations.profile}",
+        );
+      } else {
+        final prefs = await SharedPreferences.getInstance();
+        final shouldSend = prefs.getBool('sendDeviceHeaders') ?? true;
+        profile = await Profile.normal(url: url).update(shouldSendHeaders: shouldSend);
+      }
 
       if (profile != null) {
         _applyAllHeaderSettings(profile, isNewProfile: true);
@@ -1330,14 +1377,19 @@ class AppController {
     globalState.navigatorKey.currentState?.popUntil((route) => route.isFirst);
     toPage(PageLabel.dashboard);
     final commonScaffoldState = globalState.homeScaffoldKey.currentState;
-    if (commonScaffoldState?.mounted != true) return;
-    final profile = await commonScaffoldState?.loadingRun<Profile?>(
-      () async {
-        await Future.delayed(const Duration(milliseconds: 300));
-        return Profile.normal(label: platformFile?.name).saveFile(bytes);
-      },
-      title: "${appLocalizations.add}${appLocalizations.profile}",
-    );
+    Profile? profile;
+    if (commonScaffoldState?.mounted == true) {
+      profile = await commonScaffoldState!.loadingRun<Profile?>(
+        () async {
+          await Future.delayed(const Duration(milliseconds: 300));
+          return Profile.normal(label: platformFile?.name).saveFile(bytes);
+        },
+        title: "${appLocalizations.add}${appLocalizations.profile}",
+      );
+    } else {
+      await Future.delayed(const Duration(milliseconds: 300));
+      profile = await Profile.normal(label: platformFile?.name).saveFile(bytes);
+    }
     if (profile != null) {
       await addProfile(profile);
     }

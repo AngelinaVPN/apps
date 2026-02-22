@@ -23,7 +23,7 @@ val isRelease = mStoreFile.exists()
         && mKeyPassword != null
 
 android {
-    namespace = "com.follow.clashx"
+    namespace = "ru.angelinavpn.client"
     compileSdk = 36
     ndkVersion = "28.0.13004108"
 
@@ -38,8 +38,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.follow.clashx"
-        minSdk = 23
+        applicationId = "ru.angelinavpn.client"
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

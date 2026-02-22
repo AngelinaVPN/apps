@@ -1,5 +1,5 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/enum/enum.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/enum/enum.dart';
 import 'package:flutter/scheduler.dart';
 
 class Render {

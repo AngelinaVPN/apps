@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flclashx/clash/clash.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/clash/clash.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 

@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flclashx/clash/interface.dart';
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/core.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/clash/interface.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/models/core.dart';
+import 'package:angelinavpn/state.dart';
 
 class ClashService extends ClashHandlerInterface {
 
@@ -27,6 +27,7 @@ class ClashService extends ClashHandlerInterface {
   bool isStarting = false;
 
   Process? process;
+  bool _incompatibleCoreNotified = false;
 
   Future<void> _initServer() async {
     runZonedGuarded(() async {
@@ -113,6 +114,23 @@ class ClashService extends ClashHandlerInterface {
         commonPrint.log(error);
       }
     });
+
+    // Validate IPC handshake early. If core doesn't connect to our socket,
+    // it's usually an incompatible binary (e.g. plain mihomo executable).
+    try {
+      await socketCompleter.future.timeout(const Duration(seconds: 5));
+      _incompatibleCoreNotified = false;
+    } on TimeoutException {
+      process?.kill();
+      process = null;
+      const message =
+          "Core IPC handshake failed. Please rebuild without --no-core (use bundled Angelina core).";
+      commonPrint.log(message);
+      if (!_incompatibleCoreNotified) {
+        _incompatibleCoreNotified = true;
+        globalState.showNotifier(message);
+      }
+    }
     isStarting = false;
   }
 

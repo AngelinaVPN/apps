@@ -1,6 +1,6 @@
-import 'package:flclashx/common/file_logger.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/state.dart';
+import 'package:angelinavpn/common/file_logger.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/state.dart';
 import 'package:flutter/cupertino.dart';
 
 class CommonPrint {

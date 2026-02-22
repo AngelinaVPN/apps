@@ -1,7 +1,7 @@
-import 'package:flclashx/common/common.dart';
-import 'package:flclashx/models/models.dart';
-import 'package:flclashx/providers/app.dart';
-import 'package:flclashx/widgets/widgets.dart';
+import 'package:angelinavpn/common/common.dart';
+import 'package:angelinavpn/models/models.dart';
+import 'package:angelinavpn/providers/app.dart';
+import 'package:angelinavpn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -79,8 +79,11 @@ class _NetworkSpeedState extends State<NetworkSpeed> {
                     ),
                     child: Text(
                       "${_getLastTraffic(traffics).up}↑   ${_getLastTraffic(traffics).down}↓",
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: color,
+                      style: const TextStyle(
+                        fontFamily: 'JetBrainsMono',
+                        fontSize: 10,
+                        color: Color(0xFF00E675),
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),

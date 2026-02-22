@@ -15,7 +15,7 @@ class PopoverContainerViewController: NSViewController {
     }
     
     override func loadView() {
-        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 375, height: 600))
+        self.view = NSView(frame: NSRect(x: 0, y: 0, width: 620, height: 860))
                 
         addChild(flutterViewController)
         flutterViewController.view.frame = self.view.bounds
@@ -34,33 +34,39 @@ class StatusBarController {
         self.popover = popover
         statusBar = NSStatusBar.system
         statusItem = statusBar.statusItem(withLength: NSStatusItem.squareLength)
-        
-        
-        if let statusBarButton = statusItem.button {
-            
-            if let icon = NSImage(systemSymbolName: "xmark.rectangle", accessibilityDescription: "FlClashX") {
-                let config = NSImage.SymbolConfiguration(scale: .large)
-                let configuredIcon = icon.withSymbolConfiguration(config)
-                statusBarButton.image = configuredIcon
-                statusBarButton.image?.isTemplate = true
-            }
-            
-            statusBarButton.action = #selector(togglePopover(sender:))
-            statusBarButton.target = self
-            
-            statusBarButton.sendAction(on: [.leftMouseUp, .rightMouseUp])
-        } else {
-            NSLog("StatusBarController: ERROR - Could not get status bar button!")
-        }
-        
+        configureStatusItemButton()
         setupContextMenu()
+    }
+
+    private func configureStatusItemButton() {
+        statusItem.isVisible = true
+        guard let statusBarButton = statusItem.button else {
+            NSLog("StatusBarController: ERROR - Could not get status bar button!")
+            return
+        }
+
+        statusBarButton.imagePosition = .imageOnly
+        statusBarButton.title = ""
+        statusBarButton.image = nil
+
+        if let icon = statusIconImage() {
+            statusBarButton.image = icon
+            statusBarButton.image?.isTemplate = false
+        } else {
+            // Final fallback so item is still visible.
+            statusBarButton.title = "A"
+        }
+
+        statusBarButton.action = #selector(togglePopover(sender:))
+        statusBarButton.target = self
+        statusBarButton.sendAction(on: [.leftMouseUp, .rightMouseUp])
     }
     
     private func setupContextMenu() {
         let menu = NSMenu()
         
         let quitItem = NSMenuItem(
-            title: "Quit FlClashX",
+            title: "Quit AngelinaVPN",
             action: #selector(quitApp),
             keyEquivalent: "q"
         )
@@ -115,15 +121,38 @@ class StatusBarController {
     
     func updateIcon(isVpnConnected: Bool) {
         if let button = statusItem.button {
-            let imageName = isVpnConnected ? "checkmark.rectangle.fill" : "xmark.rectangle"
-            if let icon = NSImage(systemSymbolName: imageName, accessibilityDescription: "FlClashX") {
-                let config = NSImage.SymbolConfiguration(scale: .large)
-                let configuredIcon = icon.withSymbolConfiguration(config)
-                button.image = configuredIcon
-                button.image?.isTemplate = true
+            button.toolTip = isVpnConnected ? "AngelinaVPN: connected" : "AngelinaVPN: disconnected"
+            if let icon = statusIconImage() {
+                button.image = icon
+                button.image?.isTemplate = false
             }
         }
     }
-    
+
+    func ensureVisible() {
+        if statusItem.button == nil {
+            statusBar.removeStatusItem(statusItem)
+            statusItem = statusBar.statusItem(withLength: NSStatusItem.squareLength)
+            configureStatusItemButton()
+            return
+        }
+        statusItem.isVisible = true
+        if let button = statusItem.button, button.image == nil, button.title.isEmpty {
+            configureStatusItemButton()
+        }
+    }
+   
+    func destroy() {
+        hidePopover(self as AnyObject)
+        statusBar.removeStatusItem(statusItem)
+    }
+
+    private func statusIconImage() -> NSImage? {
+        guard let appIcon = NSApp.applicationIconImage.copy() as? NSImage else {
+            return nil
+        }
+        appIcon.size = NSSize(width: 18, height: 18)
+        return appIcon
+    }
 
 }
