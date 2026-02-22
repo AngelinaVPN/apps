@@ -1,9 +1,7 @@
 name: build
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
 env:
   IS_STABLE: ${{ !contains(github.ref, '-') }}
 
@@ -281,7 +279,7 @@ jobs:
           # Determine previous tag based on release type
           if [ "${{ env.IS_STABLE }}" == "true" ]; then
             # For stable: get latest stable release from API
-            preTag=$(curl --silent "https://api.github.com/repos/pluralplay/FlClashX/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
+            preTag=$(curl --silent "https://api.github.com/repos/AngelinaVPN/apps/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
           else
             # For pre-release: get the latest pre-release tag (last tag with '-' in name before current)
             preTag=""
@@ -293,7 +291,7 @@ jobs:
             done
             # If no previous pre-release found, use latest stable
             if [ -z "$preTag" ]; then
-              preTag=$(curl --silent "https://api.github.com/repos/pluralplay/FlClashX/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
+              preTag=$(curl --silent "https://api.github.com/repos/AngelinaVPN/apps/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' || echo "")
             fi
           fi
           

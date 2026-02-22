@@ -1,0 +1,164 @@
+name: Release Android + macOS
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      build_env:
+        description: "Build environment"
+        required: true
+        default: "stable"
+        type: choice
+        options:
+          - stable
+          - pre
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_NDK: /usr/local/lib/android/sdk/ndk/28.0.13004108
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;34.0.0" \
+            "ndk;28.0.13004108" \
+            "cmake;3.22.1"
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.0"
+          cache-dependency-path: core/go.sum
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.8"
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Setup Android signing (optional)
+        if: ${{ secrets.KEYSTORE != '' }}
+        run: |
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > android/app/keystore.jks
+          {
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+            echo "storePassword=${{ secrets.STORE_PASSWORD }}"
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+          } >> android/local.properties
+
+      - name: Build Android artifacts
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUILD_ENV="${{ github.event.inputs.build_env }}"
+          elif [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            BUILD_ENV="pre"
+          else
+            BUILD_ENV="stable"
+          fi
+          dart setup.dart android --env "$BUILD_ENV"
+
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-artifacts
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
+
+  macos:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.0"
+          cache-dependency-path: core/go.sum
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.32.8"
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build macOS artifacts
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUILD_ENV="${{ github.event.inputs.build_env }}"
+          elif [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            BUILD_ENV="pre"
+          else
+            BUILD_ENV="stable"
+          fi
+          dart setup.dart macos --arch arm64 --env "$BUILD_ENV"
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-artifacts
+          path: |
+            dist/*.dmg
+            build/macos/Build/Products/Release/*.app
+          if-no-files-found: error
+
+  release:
+    name: Publish Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - android
+      - macos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-artifacts
+          path: release-assets/android
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-artifacts
+          path: release-assets/macos
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-assets/android/*.apk
+            release-assets/macos/*.dmg
