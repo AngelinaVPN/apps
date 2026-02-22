@@ -13,7 +13,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.follow.clashx.GlobalState
 import com.follow.clashx.MainActivity
-import com.follow.clashx.R
+import ru.angelinavpn.client.R
 import com.follow.clashx.extensions.getActionPendingIntent
 import com.follow.clashx.models.VpnOptions
 import kotlinx.coroutines.CoroutineScope
