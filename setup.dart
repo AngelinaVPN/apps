@@ -131,7 +131,7 @@ class Build {
         ),
       ];
 
-  static String get appName => "FlClashX";
+  static String get appName => "AngelinaVPN";
 
   static String get coreName => "FlClashCore";
 
@@ -441,8 +441,11 @@ class BuildCommand extends Command {
       ].join(','),
       help: 'The $name build env',
     );
-    // Android builds always create both split and universal APKs
-    // No additional flags needed
+    argParser.addFlag(
+      "no-core",
+      negatable: false,
+      help: 'Skip Go core build and use existing binary in libclash/',
+    );
   }
 
   @override
@@ -531,41 +534,105 @@ class BuildCommand extends Command {
     final appPath = join(current, "build", "macos", "Build", "Products",
         "Release", "$appName.app");
 
+    print("Re-signing app bundle (ad-hoc)...");
+    await Build.exec(
+      name: "codesign",
+      ["codesign", "--force", "--deep", "--sign", "-", appPath],
+    );
+
     final distDir = Directory(Build.distPath);
     if (!distDir.existsSync()) {
       distDir.createSync(recursive: true);
     }
 
-    print("Creating DMG with create-dmg...");
-
-    await Build.exec(
-      name: "create-dmg",
-      [
-        "create-dmg",
-        "--overwrite",
-        "--dmg-title",
-        appName,
-        appPath,
-        Build.distPath,
-      ],
-    );
-
     final createdDmgName = "$appName $version.dmg";
     final createdDmgPath = join(Build.distPath, createdDmgName);
     final targetDmgName = "$appName-macos-${arch.name}.dmg";
     final targetDmgPath = join(Build.distPath, targetDmgName);
+    final targetDmg = File(targetDmgPath);
 
-    final createdDmg = File(createdDmgPath);
-    if (createdDmg.existsSync()) {
-      final targetDmg = File(targetDmgPath);
-      if (targetDmg.existsSync()) {
-        targetDmg.deleteSync();
+    if (targetDmg.existsSync()) {
+      targetDmg.deleteSync();
+    }
+
+    var dmgCreated = false;
+
+    print("Creating DMG with create-dmg...");
+    try {
+      await Build.exec(
+        name: "create-dmg",
+        [
+          "create-dmg",
+          "--overwrite",
+          "--dmg-title",
+          appName,
+          appPath,
+          Build.distPath,
+        ],
+      );
+
+      final createdDmg = File(createdDmgPath);
+      if (createdDmg.existsSync()) {
+        createdDmg.renameSync(targetDmgPath);
+        dmgCreated = true;
       }
+    } catch (e) {
+      print("create-dmg failed: $e");
+      print("Falling back to hdiutil (unsigned DMG)...");
+    }
 
-      createdDmg.renameSync(targetDmgPath);
+    if (!dmgCreated) {
+      final stagingDir = Directory(join(Build.distPath, ".dmg-staging"));
+      if (stagingDir.existsSync()) {
+        stagingDir.deleteSync(recursive: true);
+      }
+      stagingDir.createSync(recursive: true);
+
+      await Build.exec(
+        name: "cp app to staging",
+        [
+          "cp",
+          "-R",
+          appPath,
+          join(stagingDir.path, "$appName.app"),
+        ],
+      );
+
+      await Build.exec(
+        name: "create Applications symlink",
+        [
+          "ln",
+          "-s",
+          "/Applications",
+          join(stagingDir.path, "Applications"),
+        ],
+      );
+
+      await Build.exec(
+        name: "hdiutil",
+        [
+          "hdiutil",
+          "create",
+          "-volname",
+          appName,
+          "-srcfolder",
+          stagingDir.path,
+          "-ov",
+          "-format",
+          "UDZO",
+          targetDmgPath,
+        ],
+      );
+
+      if (stagingDir.existsSync()) {
+        stagingDir.deleteSync(recursive: true);
+      }
+    }
+
+    if (targetDmg.existsSync()) {
       print("✅ DMG created: $targetDmgPath");
     } else {
-      throw "DMG file not created: $createdDmgPath";
+      throw "DMG file not created: $targetDmgPath";
     }
   }
 
@@ -600,6 +667,7 @@ class BuildCommand extends Command {
     final String out = argResults?["out"] ?? (target.same ? "app" : "core");
     final archName = argResults?["arch"];
     final env = argResults?["env"] ?? "pre";
+    final noCore = argResults?["no-core"] as bool? ?? false;
     final currentArches =
         arches.where((element) => element.name == archName).toList();
     final arch = currentArches.isEmpty ? null : currentArches.first;
@@ -608,17 +676,23 @@ class BuildCommand extends Command {
       throw "Invalid arch parameter";
     }
 
-    final corePaths = await Build.buildCore(
-      target: target,
-      arch: arch,
-      mode: mode,
-    );
+    final List<String> corePaths;
+    if (noCore) {
+      print("⚡ Skipping core build (--no-core), using existing binary.");
+      corePaths = [];
+    } else {
+      corePaths = await Build.buildCore(
+        target: target,
+        arch: arch,
+        mode: mode,
+      );
+    }
 
     if (out != "app") {
       return;
     }
 
-    final coreVersion = await Build.extractCoreVersion();
+    final coreVersion = noCore ? "unknown" : await Build.extractCoreVersion();
 
     switch (target) {
       case Target.windows:
