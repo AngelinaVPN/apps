@@ -531,8 +531,25 @@ class BuildCommand extends Command {
     final version = versionMatch?.group(1)?.split('+').first ?? "0.0.0";
 
     final appName = Build.appName;
-    final appPath = join(current, "build", "macos", "Build", "Products",
-        "Release", "$appName.app");
+    final releaseDir =
+        Directory(join(current, "build", "macos", "Build", "Products", "Release"));
+    var appPath = join(releaseDir.path, "$appName.app");
+    if (!FileSystemEntity.isDirectorySync(appPath)) {
+      final fallbackApp = releaseDir
+          .listSync()
+          .whereType<Directory>()
+          .map((dir) => dir.path)
+          .firstWhere(
+            (path) => path.endsWith(".app"),
+            orElse: () => "",
+          );
+      if (fallbackApp.isNotEmpty) {
+        appPath = fallbackApp;
+      }
+    }
+    if (!FileSystemEntity.isDirectorySync(appPath)) {
+      throw "Built app bundle not found in ${releaseDir.path}";
+    }
 
     print("Re-signing app bundle (ad-hoc)...");
     await Build.exec(
