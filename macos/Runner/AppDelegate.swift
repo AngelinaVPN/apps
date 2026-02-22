@@ -57,7 +57,6 @@ class AppDelegate: FlutterAppDelegate {
     private func applyDockMode() {
         let ok = NSApp.setActivationPolicy(.regular)
         NSLog("AppDelegate: setActivationPolicy(.regular) = \(ok)")
-        statusBarController?.destroy()
         statusBarController = nil
         mainFlutterWindow?.contentMinSize = NSSize(width: 700, height: 1300)
         mainFlutterWindow?.setContentSize(dockWindowSize)
