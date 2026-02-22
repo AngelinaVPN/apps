@@ -169,4 +169,4 @@ jobs:
         with:
           files: |
             release-assets/android/*.apk
-            release-assets/macos/*.dmg
+            release-assets/macos/**/*.dmg
