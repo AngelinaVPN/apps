@@ -13,13 +13,13 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.follow.clashx.GlobalState
 import com.follow.clashx.MainActivity
-import com.follow.clashx.R
 import com.follow.clashx.extensions.getActionPendingIntent
 import com.follow.clashx.models.VpnOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import ru.angelinavpn.client.R
 
 interface BaseServiceInterface {
 
@@ -54,7 +54,7 @@ fun Service.createFlClashXNotificationBuilder(): Deferred<NotificationCompat.Bui
             )
         ) {
             setSmallIcon(R.drawable.ic)
-            setContentTitle("FlClashX")
+            setContentTitle("AngelinaVPN")
             setContentIntent(pendingIntent)
             setCategory(NotificationCompat.CATEGORY_SERVICE)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

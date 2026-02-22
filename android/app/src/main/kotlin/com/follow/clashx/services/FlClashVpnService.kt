@@ -106,7 +106,7 @@ class FlClashXVpnService : VpnService(), BaseServiceInterface {
                     }
                 }
             }
-            setSession("FlClashX")
+            setSession("AngelinaVPN")
             setBlocking(false)
             if (Build.VERSION.SDK_INT >= 29) {
                 setMetered(false)

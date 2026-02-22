@@ -6,13 +6,7 @@ import LaunchAtLogin
 @main
 class AppDelegate: FlutterAppDelegate {
     var statusBarController: StatusBarController?
-    
-    var flutterUIPopover = NSPopover.init()
-    
-    override init() {
-        super.init()
-        flutterUIPopover.behavior = NSPopover.Behavior.transient
-    }
+    private let dockWindowSize = NSSize(width: 760, height: 1500)
     
     override func applicationDidFinishLaunching(_ aNotification: Notification) {
         NSLog("AppDelegate: applicationDidFinishLaunching called")
@@ -26,19 +20,10 @@ class AppDelegate: FlutterAppDelegate {
         }
         
         
-        let popoverContainer = PopoverContainerViewController(flutterViewController: mainController)
-        
-        flutterUIPopover.contentSize = NSSize(width: 375, height: 600)
-        
-        flutterUIPopover.contentViewController = popoverContainer
-        
-        statusBarController = StatusBarController.init(flutterUIPopover)
-        
         setupStatusBarChannel(flutterViewController: mainController)
         
         super.applicationDidFinishLaunching(aNotification)
-        
-        mainFlutterWindow?.close()
+        applyDockMode()
     }
     
     func setupStatusBarChannel(flutterViewController: FlutterViewController) {
@@ -57,12 +42,32 @@ class AppDelegate: FlutterAppDelegate {
                 } else {
                     result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
                 }
+            case "getTrayMode":
+                result(false)
+            case "setTrayMode":
+                result(false)
             default:
                 result(FlutterMethodNotImplemented)
             }
         }
         
         NSLog("StatusBar channel set up successfully")
+    }
+    
+    private func applyDockMode() {
+        let ok = NSApp.setActivationPolicy(.regular)
+        NSLog("AppDelegate: setActivationPolicy(.regular) = \(ok)")
+        statusBarController?.destroy()
+        statusBarController = nil
+        mainFlutterWindow?.contentMinSize = NSSize(width: 700, height: 1300)
+        mainFlutterWindow?.setContentSize(dockWindowSize)
+        mainFlutterWindow?.setFrame(
+            NSRect(x: 0, y: 0, width: dockWindowSize.width, height: dockWindowSize.height),
+            display: true
+        )
+        mainFlutterWindow?.center()
+        mainFlutterWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
     
     func setupCoreInApplicationSupport() {
@@ -73,7 +78,7 @@ class AppDelegate: FlutterAppDelegate {
         
         let bundleURL = Bundle.main.bundleURL
         let bundleCorePath = bundleURL.appendingPathComponent("Contents/MacOS/FlClashCore")
-        let appSupportCorePath = appSupportURL.appendingPathComponent("com.follow.clash/cores/FlClashCore")
+        let appSupportCorePath = appSupportURL.appendingPathComponent("ru.angelinavpn.client/cores/AngelinaCore")
         let appSupportDir = appSupportCorePath.deletingLastPathComponent()
         
         do {
@@ -136,7 +141,7 @@ class AppDelegate: FlutterAppDelegate {
     func showPermissionRequiredAlert() {
         let alert = NSAlert()
         alert.messageText = "Administrator Access Required"
-        alert.informativeText = "FlClashX requires administrator privileges to set up the network core. The application cannot run without these permissions.\n\nPlease restart the application and grant administrator access when prompted."
+        alert.informativeText = "AngelinaVPN requires administrator privileges to set up the network core. The application cannot run without these permissions.\n\nPlease restart the application and grant administrator access when prompted."
         alert.alertStyle = .critical
         alert.addButton(withTitle: "Quit")
         alert.runModal()
@@ -166,10 +171,10 @@ class AppDelegate: FlutterAppDelegate {
     }
     
     override func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if !flag, let controller = statusBarController {
-            if !flutterUIPopover.isShown {
-                controller.showPopover(self)
-            }
+        if !flag {
+            mainFlutterWindow?.setContentSize(dockWindowSize)
+            mainFlutterWindow?.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
         }
         return true
     }

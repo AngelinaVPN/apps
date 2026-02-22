@@ -550,6 +550,14 @@ class BuildCommand extends Command {
     if (!FileSystemEntity.isDirectorySync(appPath)) {
       throw "Built app bundle not found in ${releaseDir.path}";
     }
+    final normalizedAppPath = join(releaseDir.path, "$appName.app");
+    if (appPath != normalizedAppPath) {
+      if (Directory(normalizedAppPath).existsSync()) {
+        Directory(normalizedAppPath).deleteSync(recursive: true);
+      }
+      appPath = Directory(appPath).renameSync(normalizedAppPath).path;
+      print("Renamed app bundle to $appPath");
+    }
 
     print("Re-signing app bundle (ad-hoc)...");
     await Build.exec(
